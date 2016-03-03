@@ -1,15 +1,27 @@
-diff -urNb VTK-6.1.0+74f4888/GUISupport/Qt/CMakeLists.txt VTK/GUISupport/Qt/CMakeLists.txt
---- VTK-6.1.0+74f4888/GUISupport/Qt/CMakeLists.txt	2014-09-24 14:50:44.000000000 +0200
-+++ VTK/GUISupport/Qt/CMakeLists.txt	2015-01-23 01:59:32.308391229 +0100
-@@ -153,6 +153,7 @@ if(BUILD_SHARED_LIBS)
+diff -urNb VTK-6.2.0.orig/Common/Core/vtkWin32ProcessOutputWindow.cxx VTK-6.2.0.patched/Common/Core/vtkWin32ProcessOutputWindow.cxx
+--- VTK-6.2.0.orig/Common/Core/vtkWin32ProcessOutputWindow.cxx	2015-03-03 21:37:14.000000000 +0100
++++ VTK-6.2.0.patched/Common/Core/vtkWin32ProcessOutputWindow.cxx	2016-03-03 14:47:17.565365700 +0100
+@@ -95,7 +95,7 @@
+ 
+   // Construct the executable name from the process id, pointer to
+   // this output window instance, and a count.  This should be unique.
+-  sprintf(exeName, "vtkWin32OWP_%"PRIdword"_%p_%u.exe",
++  sprintf(exeName, "vtkWin32OWP_%" PRIdword "_%p_%u.exe",
+           GetCurrentProcessId(), this, this->Count++);
+ 
+   // Allocate a buffer to hold the executable path.
+diff -urNb VTK-6.2.0.orig/GUISupport/Qt/CMakeLists.txt VTK-6.2.0.patched/GUISupport/Qt/CMakeLists.txt
+--- VTK-6.2.0.orig/GUISupport/Qt/CMakeLists.txt	2015-03-03 21:37:14.000000000 +0100
++++ VTK-6.2.0.patched/GUISupport/Qt/CMakeLists.txt	2016-03-03 14:45:54.943397800 +0100
+@@ -153,6 +153,7 @@
    endif()
-
+ 
    if(NOT VTK_INSTALL_NO_QT_PLUGIN)
 +    install(TARGETS QVTKWidgetPlugin DESTINATION ${VTK_INSTALL_QT_DIR})
      # Set default plugin install directory.
      set(DOLLAR "$")
      if(DEFINED VTK_INSTALL_QT_PLUGIN_DIR)
-@@ -169,8 +170,8 @@ if(BUILD_SHARED_LIBS)
+@@ -169,8 +170,8 @@
      configure_file(${CMAKE_CURRENT_SOURCE_DIR}/PluginInstall.cmake.in
        ${CMAKE_CURRENT_BINARY_DIR}/PluginInstall.cmake
        @ONLY)
@@ -19,3 +31,102 @@ diff -urNb VTK-6.1.0+74f4888/GUISupport/Qt/CMakeLists.txt VTK/GUISupport/Qt/CMak
 +    #  ${CMAKE_CURRENT_BINARY_DIR}/PluginInstall.cmake)
    endif()
  endif()
+ 
+diff -urNb VTK-6.2.0.orig/IO/EnSight/vtkEnSightReader.cxx VTK-6.2.0.patched/IO/EnSight/vtkEnSightReader.cxx
+--- VTK-6.2.0.orig/IO/EnSight/vtkEnSightReader.cxx	2015-03-03 21:37:14.000000000 +0100
++++ VTK-6.2.0.patched/IO/EnSight/vtkEnSightReader.cxx	2016-03-03 14:53:27.798973800 +0100
+@@ -1464,6 +1464,7 @@
+ }
+ 
+ //----------------------------------------------------------------------------
++#pragma optimize("", off)
+ int vtkEnSightReader::ReadVariableFiles(vtkMultiBlockDataSet *output)
+ {
+   int i, j;
+@@ -1781,6 +1782,7 @@
+ 
+   return 1;
+ }
++#pragma optimize("", on)
+ 
+ //----------------------------------------------------------------------------
+ void vtkEnSightReader::AddVariableFileName(const char* fileName1,
+diff -urNb VTK-6.2.0.orig/ThirdParty/hdf5/vtkhdf5/config/cmake/ConfigureChecks.cmake VTK-6.2.0.patched/ThirdParty/hdf5/vtkhdf5/config/cmake/ConfigureChecks.cmake
+--- VTK-6.2.0.orig/ThirdParty/hdf5/vtkhdf5/config/cmake/ConfigureChecks.cmake	2015-03-03 21:37:14.000000000 +0100
++++ VTK-6.2.0.patched/ThirdParty/hdf5/vtkhdf5/config/cmake/ConfigureChecks.cmake	2016-03-03 14:47:55.159246300 +0100
+@@ -183,7 +183,7 @@
+   endif (NOT UNIX AND NOT CYGWIN AND NOT MINGW)
+   set (H5_HAVE_FUNCTION 1)
+   set (H5_GETTIMEOFDAY_GIVES_TZ 1)
+-  set (H5_HAVE_TIMEZONE 1)
++#  set (H5_HAVE_TIMEZONE 1)
+   set (H5_HAVE_GETTIMEOFDAY 1)
+   set (H5_LONE_COLON 0)
+   if (MINGW)
+diff -urNb VTK-6.2.0.orig/ThirdParty/hdf5/vtkhdf5/config/cmake/HDF5Tests.c VTK-6.2.0.patched/ThirdParty/hdf5/vtkhdf5/config/cmake/HDF5Tests.c
+--- VTK-6.2.0.orig/ThirdParty/hdf5/vtkhdf5/config/cmake/HDF5Tests.c	2015-03-03 21:37:14.000000000 +0100
++++ VTK-6.2.0.patched/ThirdParty/hdf5/vtkhdf5/config/cmake/HDF5Tests.c	2016-03-03 14:52:17.865015900 +0100
+@@ -232,8 +232,27 @@
+ #include <stdlib.h>
+ #include <string.h>
+ 
++
++#if defined(_MSC_VER) && defined(_DEBUG)
++# include <crtdbg.h>
++int DebugReport(int reportType, char* message, int* returnValue)
++{
++  (void)reportType;
++  (void)message;
++  (void)returnValue;
++  return 1; /* no further handling required */
++}
++#endif
++
++
++
++
+ int main(void)
+ {
++#if defined(_MSC_VER) && defined(_DEBUG)
++  _CrtSetReportHook(DebugReport);
++#endif
++
+   char *llwidthArgs[] = { "l64", "l", "L", "q", "ll", NULL };
+   char *s = malloc(128);
+   char **currentArg = NULL;
+diff -urNb VTK-6.2.0.orig/ThirdParty/libxml2/vtklibxml2/config_cmake.h.in VTK-6.2.0.patched/ThirdParty/libxml2/vtklibxml2/config_cmake.h.in
+--- VTK-6.2.0.orig/ThirdParty/libxml2/vtklibxml2/config_cmake.h.in	2015-03-03 21:37:14.000000000 +0100
++++ VTK-6.2.0.patched/ThirdParty/libxml2/vtklibxml2/config_cmake.h.in	2016-03-03 14:48:36.838906700 +0100
+@@ -250,7 +250,7 @@
+ #cmakedefine _WINSOCKAPI_
+ 
+ /* Win32 Std C name mangling work-around */
+-#if defined(_MSC_VER)
++#if defined(_MSC_VER) && (_MSC_VER < 1900)
+ # define snprintf _snprintf
+ #endif
+ 
+diff -urNb VTK-6.2.0.orig/ThirdParty/tiff/vtktiff/CMakeLists.txt VTK-6.2.0.patched/ThirdParty/tiff/vtktiff/CMakeLists.txt
+--- VTK-6.2.0.orig/ThirdParty/tiff/vtktiff/CMakeLists.txt	2015-03-03 21:37:14.000000000 +0100
++++ VTK-6.2.0.patched/ThirdParty/tiff/vtktiff/CMakeLists.txt	2016-03-03 14:49:32.136668100 +0100
+@@ -68,6 +68,7 @@
+ CHECK_INCLUDE_FILES("memory.h" HAVE_MEMORY_H)
+ CHECK_INCLUDE_FILES("stdint.h" HAVE_STDINT_H)
+ CHECK_INCLUDE_FILES("stdlib.h" HAVE_STDLIB_H)
++CHECK_INCLUDE_FILES("search.h" HAVE_SEARCH_H)
+ CHECK_INCLUDE_FILES("string.h" HAVE_STRING_H)
+ CHECK_INCLUDE_FILES("strings.h" HAVE_STRINGS_H)
+ CHECK_INCLUDE_FILES("sys/stat.h" HAVE_SYS_STAT_H)
+diff -urNb VTK-6.2.0.orig/ThirdParty/tiff/vtktiff/tif_config.h.in VTK-6.2.0.patched/ThirdParty/tiff/vtktiff/tif_config.h.in
+--- VTK-6.2.0.orig/ThirdParty/tiff/vtktiff/tif_config.h.in	2015-03-03 21:37:14.000000000 +0100
++++ VTK-6.2.0.patched/ThirdParty/tiff/vtktiff/tif_config.h.in	2016-03-03 14:50:07.907320400 +0100
+@@ -70,6 +70,9 @@
+ /* Define if you have POSIX threads libraries and header files. */
+ #cmakedefine HAVE_PTHREAD
+ 
++/* Define to 1 if you have the <search.h> header file. */
++#cmakedefine HAVE_SEARCH_H @HAVE_SEARCH_H@
++
+ /* Define to 1 if you have the `sqrt' function. */
+ #cmakedefine HAVE_SQRT @HAVE_SQRT@
+ 
