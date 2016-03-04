@@ -732,6 +732,7 @@ if(WIN32)
   mitkFunctionCheckCompilerFlags("/wd4231" MITK_CXX_FLAGS) # warning C4231: nonstandard extension used : 'extern' before template explicit instantiation
   # the following line should be removed after fixing bug 17637
   mitkFunctionCheckCompilerFlags("/wd4316" MITK_CXX_FLAGS) # warning C4316: object alignment on heap
+  mitkFunctionCheckCompilerFlags("/wd4180" MITK_CXX_FLAGS) # warning C4316: pragma
 endif()
 
 if(NOT MSVC_VERSION)
