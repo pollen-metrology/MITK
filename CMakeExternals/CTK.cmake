@@ -115,7 +115,7 @@ if(MITK_USE_CTK)
      )
 =======
 	if(MITK_USE_Python)
-	  if(NOT $ENV{MITK_SOURCE})
+	  if(NOT EXISTS "$ENV{MITK_SOURCE}")
 	    message(FATAL_ERROR "Environment variable MITK_SOURCE not set, set it and build again")
 	  endif()
       ExternalProject_Add(${proj}
