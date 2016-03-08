@@ -108,10 +108,10 @@ if(MITK_USE_SimpleITK)
         # escape spaces in the install path for linux
         STRING(REPLACE " " "\ " _install_dir ${_install_dir})
       endif()
-
+	  
       if( MITK_USE_SYSTEM_PYTHON )
         ExternalProject_Add_Step(${proj} sitk_python_install_step
-          COMMAND PYTHONUSERBASE=${_install_dir} ${PYTHON_EXECUTABLE} setup.py install --prefix=${_install_dir}
+          COMMAND ${PYTHON_EXECUTABLE} setup.py install --prefix=${_install_dir}
           DEPENDEES install
           WORKING_DIRECTORY ${_sitk_build_dir}/Wrapping/PythonPackage
         )
