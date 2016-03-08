@@ -1,0 +1,7 @@
+diff -urNb PythonQt_36ab9c7c/CMakeLists.txt PythonQt/CMakeLists.txt
+--- PythonQt_36ab9c7c/CMakeLists.txt	2015-05-12 16:51:36.000000000 +0100
++++ PythonQt/CMakeLists.txt	2016-03-07 17:37:36.000000000 +0100
+@@ -121,0 +122,3 @@
++   if("${generated_cpp_suffix}" STREQUAL "_55")
++    set(generated_cpp_suffix "_54") # Same correction as in L166 for Qt version 5.5
++   endif()
