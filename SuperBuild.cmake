@@ -50,6 +50,21 @@ if(NOT PATCH_COMMAND)
 endif()
 
 #-----------------------------------------------------------------------------
+# Qt options for external projects and MITK
+#-----------------------------------------------------------------------------
+
+if(MITK_USE_QT)
+  set(qt_project_args -DDESIRED_QT_VERSION:STRING=${DESIRED_QT_VERSION})
+else()
+  set(qt_project_args )
+endif()
+
+if(MITK_USE_Qt4)
+  list(APPEND qt_project_args
+       -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE} )
+endif()
+
+#-----------------------------------------------------------------------------
 # ExternalProjects
 #-----------------------------------------------------------------------------
 
@@ -387,6 +402,7 @@ ExternalProject_Add(${proj}
     -DBOOST_LIBRARYDIR:PATH=${BOOST_LIBRARYDIR}
     -DMITK_USE_Boost_LIBRARIES:STRING=${MITK_USE_Boost_LIBRARIES}
 	-DEigen_INCLUDE_DIR:PATH=${Eigen_INCLUDE_DIR}
+    -DMITK_SHOW_CONSOLE_WINDOW:BOOL=${MITK_SHOW_CONSOLE_WINDOW}
 
   CMAKE_ARGS
     ${mitk_initial_cache_arg}
@@ -432,4 +448,3 @@ add_custom_target(MITK
   COMMAND ${mitk_build_cmd}
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/MITK-build
 )
-
