@@ -114,9 +114,9 @@ if(MITK_USE_SimpleITK)
       endif()
 	 
       if( MITK_USE_SYSTEM_PYTHON )
-	    set(testCommand COMMAND mkdir ${_site_packages} \& ${PYTHON_EXECUTABLE} setup.py install --prefix=${_install_dir})
+	    file(MAKE_DIRECTORY ${_site_packages})
         ExternalProject_Add_Step(${proj} sitk_python_install_step
-          testCommand
+          COMMAND ${PYTHON_EXECUTABLE} setup.py install --prefix=${_install_dir}
           DEPENDEES install
           WORKING_DIRECTORY ${_sitk_build_dir}/Wrapping/PythonPackage
         )
