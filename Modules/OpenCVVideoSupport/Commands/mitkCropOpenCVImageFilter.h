@@ -19,7 +19,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include "mitkAbstractOpenCVImageFilter.h"
 
-#include "cv.h"
+#include "cv.hpp"
 
 //itk headers
 #include <itkObjectFactory.h>

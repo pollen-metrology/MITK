@@ -36,7 +36,7 @@ static bool ImagesAreEqualInGray(const cv::Mat& img1, const cv::Mat& img2)
 
 static void ConvertTestLoadedImage(std::string mitkImagePath)
 {
-  cv::Mat image = cvLoadImage(mitkImagePath.c_str());
+  cv::Mat image = cv::cvarrToMat(cvLoadImage(mitkImagePath.c_str()));
   cv::Mat compareImg = image.clone();
 
 

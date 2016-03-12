@@ -28,9 +28,9 @@ See LICENSE.txt or http://www.mitk.org for details.
 static void GrabCutTestLoadedImage(std::string imagePath, std::string maskPath, std::string resultMaskPath)
 {
   // load test images
-  cv::Mat image = cvLoadImage(imagePath.c_str());
-  cv::Mat maskImage = cvLoadImage(maskPath.c_str());
-  cv::Mat resultMaskImage = cvLoadImage(resultMaskPath.c_str());
+  cv::Mat image = cv::cvarrToMat(cvLoadImage(imagePath.c_str()));
+  cv::Mat maskImage = cv::cvarrToMat(cvLoadImage(maskPath.c_str()));
+  cv::Mat resultMaskImage = cv::cvarrToMat(cvLoadImage(resultMaskPath.c_str()));
 
   // make sure that the loaded mask is a gray scale image
   cv::Mat maskImageGray;
