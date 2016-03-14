@@ -9,6 +9,7 @@ endif()
 
 set(proj ITK)
 set(proj_DEPENDENCIES GDCM)
+set(proj_DEPENDENCIES VTK)
 
 if(MITK_USE_OpenCV)
   list(APPEND proj_DEPENDENCIES OpenCV)
