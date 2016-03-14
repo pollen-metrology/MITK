@@ -230,18 +230,37 @@ set(mitk_depends )
 
 # Include external projects
 include(CMakeExternals/MITKData.cmake)
+# -------- uncomment for itkvtkglue support --------
+# Hack for VTK to be configured before ITK,
+# allowing compilation of ITKVTKGlue
+# include(CMakeExternals/VTK.cmake)
+# list(APPEND mitk_superbuild_ep_args -DMITK_USE_${p}:BOOL=${MITK_USE_${p}})
+# get_property(_package GLOBAL PROPERTY MITK_${p}_PACKAGE)
+# if(_package)
+# list(APPEND mitk_superbuild_ep_args -D${p}_DIR:PATH=${${p}_DIR})
+# endif()
+# list(APPEND mitk_depends ${${p}_DEPENDS})
+# /hack
+# --------------------------------------------------
 foreach(p ${external_projects})
-  include(CMakeExternals/${p}.cmake)
+  # -------- uncomment for itkvtkglue support --------
+  # VTK already configured above
+  # if(NOT (${p} STREQUAL "VTK"))
+  # --------------------------------------------------
+      include(CMakeExternals/${p}.cmake)
 
-  list(APPEND mitk_superbuild_ep_args
-       -DMITK_USE_${p}:BOOL=${MITK_USE_${p}}
+      list(APPEND mitk_superbuild_ep_args
+           -DMITK_USE_${p}:BOOL=${MITK_USE_${p}}
       )
-  get_property(_package GLOBAL PROPERTY MITK_${p}_PACKAGE)
-  if(_package)
-    list(APPEND mitk_superbuild_ep_args -D${p}_DIR:PATH=${${p}_DIR})
-  endif()
-
-  list(APPEND mitk_depends ${${p}_DEPENDS})
+      get_property(_package GLOBAL PROPERTY MITK_${p}_PACKAGE)
+      if(_package)
+          list(APPEND mitk_superbuild_ep_args -D${p}_DIR:PATH=${${p}_DIR})
+      endif()
+	  
+      list(APPEND mitk_depends ${${p}_DEPENDS})
+  # -------- uncomment for itkvtkglue support --------
+  # endif()
+  # --------------------------------------------------
 endforeach()
 
 #-----------------------------------------------------------------------------
@@ -387,6 +406,7 @@ ExternalProject_Add(${proj}
     -DMITK_WHITELIST:STRING=${MITK_WHITELIST}
     -DMITK_WHITELISTS_EXTERNAL_PATH:STRING=${MITK_WHITELISTS_EXTERNAL_PATH}
     -DMITK_WHITELISTS_INTERNAL_PATH:STRING=${MITK_WHITELISTS_INTERNAL_PATH}
+    ${qt_project_args}
     -DMITK_ACCESSBYITK_INTEGRAL_PIXEL_TYPES:STRING=${MITK_ACCESSBYITK_INTEGRAL_PIXEL_TYPES}
     -DMITK_ACCESSBYITK_FLOATING_PIXEL_TYPES:STRING=${MITK_ACCESSBYITK_FLOATING_PIXEL_TYPES}
     -DMITK_ACCESSBYITK_COMPOSITE_PIXEL_TYPES:STRING=${MITK_ACCESSBYITK_COMPOSITE_PIXEL_TYPES}
@@ -403,6 +423,7 @@ ExternalProject_Add(${proj}
     -DMITK_USE_Boost_LIBRARIES:STRING=${MITK_USE_Boost_LIBRARIES}
 	-DEigen_INCLUDE_DIR:PATH=${Eigen_INCLUDE_DIR}
     -DMITK_SHOW_CONSOLE_WINDOW:BOOL=${MITK_SHOW_CONSOLE_WINDOW}
+    -DITK_WRAP_PYTHON:BOOL=${ITK_WRAP_PYTHON}
 
   CMAKE_ARGS
     ${mitk_initial_cache_arg}
