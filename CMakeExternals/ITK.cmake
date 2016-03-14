@@ -85,6 +85,7 @@ if(NOT DEFINED ITK_DIR)
        -DITK_USE_SYSTEM_GDCM:BOOL=ON
        -DGDCM_DIR:PATH=${GDCM_DIR}
        -DModule_ITKVtkGlue:BOOL=ON
+       -DVTK_DIR:PATH=${VTK_DIR}
      CMAKE_CACHE_ARGS
        ${ep_common_cache_args}
      CMAKE_CACHE_DEFAULT_ARGS
