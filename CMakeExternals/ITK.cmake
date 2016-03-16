@@ -9,7 +9,9 @@ endif()
 
 set(proj ITK)
 set(proj_DEPENDENCIES GDCM)
-set(proj_DEPENDENCIES VTK)
+# -------- Uncomment to use itkvtkglue -------- 
+# set(proj_DEPENDENCIES VTK)
+# ---------------------------------------------
 
 if(MITK_USE_OpenCV)
   list(APPEND proj_DEPENDENCIES OpenCV)
@@ -85,8 +87,10 @@ if(NOT DEFINED ITK_DIR)
        -DBUILD_EXAMPLES:BOOL=OFF
        -DITK_USE_SYSTEM_GDCM:BOOL=ON
        -DGDCM_DIR:PATH=${GDCM_DIR}
-       -DModule_ITKVtkGlue:BOOL=ON
-       -DVTK_DIR:PATH=${VTK_DIR}
+	 # -------- Uncomment to use itkvtkglue --------   
+     #  -DModule_ITKVtkGlue:BOOL=ON
+     #   -DVTK_DIR:PATH=${VTK_DIR}
+	 # ---------------------------------------------
      CMAKE_CACHE_ARGS
        ${ep_common_cache_args}
      CMAKE_CACHE_DEFAULT_ARGS
