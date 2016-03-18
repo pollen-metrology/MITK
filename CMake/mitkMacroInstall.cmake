@@ -171,9 +171,26 @@ macro(_fixup_target)
     message(\"globbed plugins: \${PLUGINS}\")
 
     set(CMAKE_MODULE_PATH ${MITK_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH} )
-
-    set(DIRS \"${_search_paths}\")
-
+	
+    #Dirty hack to change directory names during Debug install
+	set(new_search_paths \"${_search_paths}\")
+	if(\"${CMAKE_BUILD_TYPE}\" MATCHES \"\^([Dd][Ee][Bb][Uu][Gg])\$\")
+	  set(new_search_paths )
+	  foreach(cur_search_path \${new_search_paths})
+	     set(stringBuffRel )
+	     set(stringBuffRestApi )
+	     set(stringBuffCtkCtk )
+	     string(REPLACE \"/Release\" \"/Debug\" stringBuffRel \${cur_search_path})
+		 string(REPLACE \"/qRestAPI-build\" \"/qRestAPI-build/Debug\" stringBuffRestApi \${stringBuffRel})
+		 string(REPLACE \"/CTK-build/bin\" \"/CTK-build/bin/Debug\" stringBuffCtkCtk \${stringBuffRestApi})
+		 list(APPEND new_search_paths \${stringBuffCtkCtk})
+	  endforeach()
+      set(DIRS \${new_search_paths})
+	else()
+      set(DIRS \${new_search_paths})
+	endif()
+    #end of hack
+	
     set(_additional_search_paths ${_install_LIBRARY_DIRS})
     if(_additional_search_paths)
       set(DIRS \"\${DIRS};\${_additional_search_paths}\")
