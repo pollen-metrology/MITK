@@ -174,9 +174,10 @@ macro(_fixup_target)
 	
     #Dirty hack to change directory names during Debug install
 	set(new_search_paths \"${_search_paths}\")
+	set(new_search_paths_iterator \"${_search_paths}\")
 	if(\"${CMAKE_BUILD_TYPE}\" MATCHES \"\^([Dd][Ee][Bb][Uu][Gg])\$\")
 	  set(new_search_paths )
-	  foreach(cur_search_path \${new_search_paths})
+	  foreach(cur_search_path \${new_search_paths_iterator})
 	     set(stringBuffRel )
 	     set(stringBuffRestApi )
 	     set(stringBuffCtkCtk )
