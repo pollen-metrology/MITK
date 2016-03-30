@@ -64,12 +64,6 @@ if(MITK_USE_CTK)
       )
     endif()
 
-    set (ctk_qt_args -DCTK_QT_VERSION:STRING=${DESIRED_QT_VERSION})
-
-    if (DESIRED_QT_VERSION MATCHES "4")
-      list(APPEND ctk_qt_args -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE})
-    endif()
-
     FOREACH(type RUNTIME ARCHIVE LIBRARY)
       IF(DEFINED CTK_PLUGIN_${type}_OUTPUT_DIRECTORY)
         LIST(APPEND mitk_optional_cache_args -DCTK_PLUGIN_${type}_OUTPUT_DIRECTORY:PATH=${CTK_PLUGIN_${type}_OUTPUT_DIRECTORY})
@@ -113,7 +107,6 @@ if(MITK_USE_CTK)
         ${ep_common_cache_default_args}
       DEPENDS ${proj_DEPENDENCIES}
      )
-=======
 	if(MITK_USE_Python)
 	  if(NOT EXISTS "$ENV{MITK_SOURCE}")
 	    message(FATAL_ERROR "Environment variable MITK_SOURCE not set, set it and build again")
@@ -195,7 +188,6 @@ if(MITK_USE_CTK)
 			DEPENDS ${proj_DEPENDENCIES}
 		   )
 	   endif()
->>>>>>> 89f81b6 Patch is now applied only when python is used
 
     ExternalProject_Get_Property(${proj} binary_dir)
     set(CTK_DIR ${binary_dir})
