@@ -315,6 +315,12 @@ protected:
    */
   QHash<QString, QVariant> getFrameworkProperties() const;
 
+  /*
+  * Initialize and display the splash screen if an image filename is given
+  *
+  */
+  void initializeSplashScreen(QCoreApplication * application) const;
+
 private:
 
   struct Impl;

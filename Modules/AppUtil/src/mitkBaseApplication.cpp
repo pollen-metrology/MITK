@@ -61,7 +61,7 @@ QString BaseApplication::ARG_CONSOLELOG = "BlueBerry.consoleLog";
 QString BaseApplication::ARG_TESTPLUGIN = "BlueBerry.testplugin";
 QString BaseApplication::ARG_TESTAPPLICATION = "BlueBerry.testapplication";
 
-QString BaseApplication::ARG_SPLASH_IMAGE = "BlueBerry.splashpixmap";
+QString BaseApplication::ARG_SPLASH_IMAGE = "BlueBerry.splashscreen";
 
 QString BaseApplication::ARG_NO_REGISTRY_CACHE = "BlueBerry.noRegistryCache";
 QString BaseApplication::ARG_NO_LAZY_REGISTRY_CACHE_LOADING = "BlueBerry.noLazyRegistryCacheLoading";
@@ -82,6 +82,19 @@ QString BaseApplication::PROP_TESTPLUGIN = "BlueBerry.testplugin";
 QString BaseApplication::PROP_TESTAPPLICATION = "BlueBerry.testapplication";
 
 
+class SplashCloserCallback : public QRunnable
+{
+public:
+  SplashCloserCallback(QSplashScreen* splashscreen) {
+    this->m_Splashscreen = splashscreen;
+  }
+  void SplashCloserCallback::run() {
+    this->m_Splashscreen->close();
+  }
+private:
+  QSplashScreen* m_Splashscreen;
+};
+
 struct BaseApplication::Impl
 {
   ctkProperties m_FWProps;
@@ -97,7 +110,9 @@ struct BaseApplication::Impl
 
   bool m_SingleMode;
   bool m_SafeMode;
+  
   QSplashScreen* m_Splashscreen;
+  SplashCloserCallback* m_SplashscreenClosingCallback;
 
   QStringList m_PreloadLibs;
   QString m_ProvFile;
@@ -108,6 +123,7 @@ struct BaseApplication::Impl
     , m_SingleMode(false)
     , m_SafeMode(true)
     ,m_Splashscreen(0)
+    , m_SplashscreenClosingCallback(NULL)
   {
 #ifdef Q_OS_MAC
     /*
@@ -322,6 +338,10 @@ BaseApplication::~BaseApplication()
   if (d->m_Splashscreen != 0)
   {
     delete(d->m_Splashscreen);
+  }
+  if (d->m_SplashscreenClosingCallback != 0)
+  {
+    delete(d->m_SplashscreenClosingCallback);
   }
 }
 
@@ -688,20 +708,6 @@ void BaseApplication::initializeLibraryPaths()
   }
 }
 
-
-class SplashCloserCallback : public QRunnable
-{
-public:
-  SplashCloserCallback(QSplashScreen* splashscreen) {
-    this->m_Splashscreen = splashscreen;
-  }
-  void SplashCloserCallback::run() {
-    this->m_Splashscreen->close();
-  }
-private:
-  QSplashScreen* m_Splashscreen;
-};
-
 int BaseApplication::main(const std::vector<std::string>& args)
 {
   // Start the plugin framework and all installed plug-ins according with
@@ -713,15 +719,14 @@ int BaseApplication::main(const std::vector<std::string>& args)
     arguments.push_back(QString::fromStdString(arg));
   }
 
-  SplashCloserCallback* splashCloserCallback = NULL;
   if (d->m_Splashscreen != 0)
   {
     // a splash screen is displayed,
     // creating the closing callback
-    splashCloserCallback = new SplashCloserCallback(d->m_Splashscreen);
+    d->m_SplashscreenClosingCallback = new SplashCloserCallback(d->m_Splashscreen);
   }
 
-  return ctkPluginFrameworkLauncher::run(splashCloserCallback, QVariant::fromValue(arguments)).toInt();
+  return ctkPluginFrameworkLauncher::run(d->m_SplashscreenClosingCallback, QVariant::fromValue(arguments)).toInt();
 }
 
 void BaseApplication::defineOptions(Poco::Util::OptionSet& options)
