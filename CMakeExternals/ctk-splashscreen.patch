@@ -1,39 +1,6 @@
-diff -urNb CTK_b721b7ca.orig/CMakeExternals/PythonQt.cmake b721b7ca.patched/CMakeExternals/PythonQt.cmake
---- CTK_b721b7ca.orig/CMakeExternals/PythonQt.cmake	2016-29-02 16:51:36.000000000 +0100
-+++ b721b7ca.patched/CMakeExternals/PythonQt.cmake	2016-07-03 17:37:36.000000000 +0100
-@@ -79,9 +79,31 @@
-                       GIT_TAG ${revision_tag})
-   endif()
-
-+  macro(downloadFile url dest)
-+    file(DOWNLOAD ${url} ${dest} STATUS status)
-+    list(GET status 0 error_code)
-+    list(GET status 1 error_msg)
-+    if(error_code)
-+      message(FATAL_ERROR "error: Failed to download ${url} - ${error_msg}")
-+    endif()
-+  endmacro()
-+  if(NOT MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL)
-+    set(MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL http://mitk.org/download/thirdparty)
-+  endif()
-+  if((NOT PATCH_COMMAND OR NOT EXISTS ${PATCH_COMMAND}) AND WIN32)
-+    downloadFile(${MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL}/patch.exe
-+               ${CMAKE_CURRENT_BINARY_DIR}/patch.exe)
-+    find_program(PATCH_COMMAND patch ${CMAKE_CURRENT_BINARY_DIR})
-+  endif()
-+  if(NOT PATCH_COMMAND)
-+    message(FATAL_ERROR "No patch program found.")
-+  endif()
-+  set(MITK_SOURCE_DIR $ENV{MITK_SOURCE})
-+  find_program(PATCH_COMMAND patch)
-   ExternalProject_Add(${proj}
-     ${${proj}_EXTERNAL_PROJECT_ARGS}
-     SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj}
-+    PATCH_COMMAND ${PATCH_COMMAND} -N -p1 -i ${MITK_SOURCE_DIR}/CMakeExternals/PythonQt-36ab9c7c.patch
-     BINARY_DIR ${proj}-build
-     PREFIX ${proj}${ep_suffix}
-     ${location_args}
-
+Only in CTK: .git
+Only in CTK: .gitattributes
+Only in CTK: .gitignore
 diff -rub CTK/Libs/PluginFramework/ctkPluginFrameworkLauncher.cpp CTK.updated/Libs/PluginFramework/ctkPluginFrameworkLauncher.cpp
 --- CTK/Libs/PluginFramework/ctkPluginFrameworkLauncher.cpp	2016-04-05 17:22:26.940828000 +0200
 +++ CTK.updated/Libs/PluginFramework/ctkPluginFrameworkLauncher.cpp	2016-04-05 17:12:40.235424400 +0200
