@@ -23,7 +23,7 @@ if(MITK_USE_SUPERBUILD)
   set(MITK_SOURCE_DIR ${PROJECT_SOURCE_DIR})
   set(MITK_BINARY_DIR ${PROJECT_BINARY_DIR})
 else()
-  project(MITK VERSION 2015.05.99)
+  project(MITK VERSION 2016.03.99)
 endif()
 
 #-----------------------------------------------------------------------------
@@ -204,7 +204,10 @@ env_option(MITK_USE_QT "Use Qt library" ON)
 
 if(MITK_USE_QT)
   set(MITK_QT5_MINIMUM_VERSION 5.0.0)
-  set(MITK_QT5_COMPONENTS Concurrent OpenGL PrintSupport Script Sql Svg Widgets WebKitWidgets Xml XmlPatterns UiTools Help)
+  set(MITK_QT5_COMPONENTS Concurrent OpenGL PrintSupport Script Sql Svg Widgets WebKitWidgets Xml XmlPatterns UiTools Help LinguistTools)
+  if(APPLE)
+    set(MITK_QT5_COMPONENTS ${MITK_QT5_COMPONENTS} DBus)
+  endif()
   find_package(Qt5 ${MITK_QT5_MINIMUM_VERSION} COMPONENTS ${MITK_QT5_COMPONENTS} REQUIRED)
   if(Qt5_DIR)
     get_filename_component(_Qt5_DIR "${Qt5_DIR}/../../../" ABSOLUTE)
@@ -523,6 +526,7 @@ include(mitkFunctionCheckModuleDependencies)
 include(mitkFunctionCompileSnippets)
 include(mitkFunctionConvertXPSchema)
 include(mitkFunctionCreateBlueBerryApplication)
+include(mitkFunctionCreateCommandLineApp)
 include(mitkFunctionCreateModule)
 include(mitkFunctionCreatePlugin)
 include(mitkFunctionCreateProvisioningFile)
@@ -889,19 +893,19 @@ if(MITK_USE_QT)
   endif()
 
   find_program(QT_HELPGENERATOR_EXECUTABLE
-    NAMES qhelpgenerator qhelpgenerator-qt4 qhelpgenerator4
+    NAMES qhelpgenerator qhelpgenerator-qt5 qhelpgenerator5
     PATHS ${QT_BINARY_DIR}
     NO_DEFAULT_PATH
   )
 
   find_program(QT_COLLECTIONGENERATOR_EXECUTABLE
-    NAMES qcollectiongenerator qcollectiongenerator-qt4 qcollectiongenerator4
+    NAMES qcollectiongenerator qcollectiongenerator-qt5 qcollectiongenerator5
     PATHS ${QT_BINARY_DIR}
     NO_DEFAULT_PATH
   )
 
   find_program(QT_ASSISTANT_EXECUTABLE
-    NAMES assistant-qt4 assistant4 assistant
+    NAMES assistant assistant-qt5 assistant5
     PATHS ${QT_BINARY_DIR}
     NO_DEFAULT_PATH
   )
