@@ -84,6 +84,10 @@ if(MITK_USE_OpenCV)
         -DBUILD_EXAMPLES:BOOL=OFF
         -DBUILD_DOXYGEN_DOCS:BOOL=OFF
         -DWITH_CUDA:BOOL=OFF
+        -DWITH_IPP:BOOL=${WITH_IPP}
+        -DEIGEN_INCLUDE_PATH:PATH=${EIGEN_INCLUDE_PATH}
+        -DWITH_VFW:BOOL=${WITH_VFW}
+        -DWITH_VTK:BOOL=${WITH_VTK}
         ${additional_cmake_args}
       CMAKE_CACHE_ARGS
         ${ep_common_cache_args}
