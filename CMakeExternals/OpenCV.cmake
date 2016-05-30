@@ -88,6 +88,29 @@ if(MITK_USE_OpenCV)
         -DEIGEN_INCLUDE_PATH:PATH=${EIGEN_INCLUDE_PATH}
         -DWITH_VFW:BOOL=${WITH_VFW}
         -DWITH_VTK:BOOL=${WITH_VTK}
+        -DOPENCV_EXTRA_MODULES_PATH:PATH=c:/dev/libraries/unpack/opencv_contrib-master/modules 
+        -DBUILD_opencv_adas:BOOL=OFF 
+        -DBUILD_opencv_bgsegm:BOOL=OFF 
+        -DBUILD_opencv_bioinspired:BOOL=OFF 
+        -DBUILD_opencv_ccalib:BOOL=OFF 
+        -DBUILD_opencv_datasets:BOOL=OFF 
+        -DBUILD_opencv_datasettools:BOOL=OFF 
+        -DBUILD_opencv_face:BOOL=OFF 
+        -DBUILD_opencv_latentsvm:BOOL=OFF 
+        -DBUILD_opencv_line_descriptor:BOOL=OFF
+        -DBUILD_opencv_matlab:BOOL=OFF 
+        -DBUILD_opencv_optflow:BOOL=OFF 
+        -DBUILD_opencv_reg:BOOL=OFF
+        -DBUILD_opencv_rgbd:BOOL=OFF 
+        -DBUILD_opencv_saliency:BOOL=OFF 
+        -DBUILD_opencv_surface_matching:BOOL=OFF
+        -DBUILD_opencv_text:BOOL=OFF
+        -DBUILD_opencv_tracking:BOOL=OFF
+        -DBUILD_opencv_xfeatures2d:BOOL=OFF
+        -DBUILD_opencv_xobjdetect:BOOL=OFF
+        -DBUILD_opencv_stereo:BOOL=OFF
+        -DBUILD_opencv_cvv:BOOL=OFF
+        -DBUILD_opencv_hdf:BOOL=OFF
         ${additional_cmake_args}
       CMAKE_CACHE_ARGS
         ${ep_common_cache_args}
