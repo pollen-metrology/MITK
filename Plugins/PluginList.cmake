@@ -12,9 +12,8 @@ set(MITK_PLUGINS
   org.blueberry.ui.qt.log:ON
   org.blueberry.ui.qt.objectinspector:OFF
 
-  #org.blueberry.test:ON
-  #org.blueberry.uitest:ON
-
+  org.blueberry.test:ON
+  org.blueberry.uitest:ON
   #Testing/org.blueberry.core.runtime.tests:ON
   #Testing/org.blueberry.osgi.tests:ON
 

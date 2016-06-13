@@ -33,8 +33,8 @@ static bool ImagesAreEqualInGray(const cv::Mat& img1, const cv::Mat& img2)
 
 static void CropTestLoadedImage(std::string mitkImagePath, std::string mitkCroppedImagePath)
 {
-  cv::Mat image = cvLoadImage(mitkImagePath.c_str());
-  cv::Mat croppedImage = cvLoadImage(mitkCroppedImagePath.c_str());
+  cv::Mat image = cv::cvarrToMat(cvLoadImage(mitkImagePath.c_str()));
+  cv::Mat croppedImage = cv::cvarrToMat(cvLoadImage(mitkCroppedImagePath.c_str()));
 
   MITK_INFO << mitkImagePath.c_str();
   MITK_INFO << mitkCroppedImagePath.c_str();

@@ -50,6 +50,21 @@ if(NOT PATCH_COMMAND)
 endif()
 
 #-----------------------------------------------------------------------------
+# Qt options for external projects and MITK
+#-----------------------------------------------------------------------------
+
+if(MITK_USE_QT)
+  set(qt_project_args -DDESIRED_QT_VERSION:STRING=${DESIRED_QT_VERSION})
+else()
+  set(qt_project_args )
+endif()
+
+if(MITK_USE_Qt4)
+  list(APPEND qt_project_args
+       -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE} )
+endif()
+
+#-----------------------------------------------------------------------------
 # ExternalProjects
 #-----------------------------------------------------------------------------
 
@@ -215,18 +230,37 @@ set(mitk_depends )
 
 # Include external projects
 include(CMakeExternals/MITKData.cmake)
+# -------- uncomment for itkvtkglue support --------
+# Hack for VTK to be configured before ITK,
+# allowing compilation of ITKVTKGlue
+# include(CMakeExternals/VTK.cmake)
+# list(APPEND mitk_superbuild_ep_args -DMITK_USE_${p}:BOOL=${MITK_USE_${p}})
+# get_property(_package GLOBAL PROPERTY MITK_${p}_PACKAGE)
+# if(_package)
+# list(APPEND mitk_superbuild_ep_args -D${p}_DIR:PATH=${${p}_DIR})
+# endif()
+# list(APPEND mitk_depends ${${p}_DEPENDS})
+# /hack
+# --------------------------------------------------
 foreach(p ${external_projects})
-  include(CMakeExternals/${p}.cmake)
+  # -------- uncomment for itkvtkglue support --------
+  # VTK already configured above
+  # if(NOT (${p} STREQUAL "VTK"))
+  # --------------------------------------------------
+      include(CMakeExternals/${p}.cmake)
 
-  list(APPEND mitk_superbuild_ep_args
-       -DMITK_USE_${p}:BOOL=${MITK_USE_${p}}
+      list(APPEND mitk_superbuild_ep_args
+           -DMITK_USE_${p}:BOOL=${MITK_USE_${p}}
       )
-  get_property(_package GLOBAL PROPERTY MITK_${p}_PACKAGE)
-  if(_package)
-    list(APPEND mitk_superbuild_ep_args -D${p}_DIR:PATH=${${p}_DIR})
-  endif()
-
-  list(APPEND mitk_depends ${${p}_DEPENDS})
+      get_property(_package GLOBAL PROPERTY MITK_${p}_PACKAGE)
+      if(_package)
+          list(APPEND mitk_superbuild_ep_args -D${p}_DIR:PATH=${${p}_DIR})
+      endif()
+	  
+      list(APPEND mitk_depends ${${p}_DEPENDS})
+  # -------- uncomment for itkvtkglue support --------
+  # endif()
+  # --------------------------------------------------
 endforeach()
 
 #-----------------------------------------------------------------------------
@@ -372,6 +406,7 @@ ExternalProject_Add(${proj}
     -DMITK_WHITELIST:STRING=${MITK_WHITELIST}
     -DMITK_WHITELISTS_EXTERNAL_PATH:STRING=${MITK_WHITELISTS_EXTERNAL_PATH}
     -DMITK_WHITELISTS_INTERNAL_PATH:STRING=${MITK_WHITELISTS_INTERNAL_PATH}
+    ${qt_project_args}
     -DMITK_ACCESSBYITK_INTEGRAL_PIXEL_TYPES:STRING=${MITK_ACCESSBYITK_INTEGRAL_PIXEL_TYPES}
     -DMITK_ACCESSBYITK_FLOATING_PIXEL_TYPES:STRING=${MITK_ACCESSBYITK_FLOATING_PIXEL_TYPES}
     -DMITK_ACCESSBYITK_COMPOSITE_PIXEL_TYPES:STRING=${MITK_ACCESSBYITK_COMPOSITE_PIXEL_TYPES}
@@ -386,6 +421,15 @@ ExternalProject_Add(${proj}
     -DBOOST_ROOT:PATH=${BOOST_ROOT}
     -DBOOST_LIBRARYDIR:PATH=${BOOST_LIBRARYDIR}
     -DMITK_USE_Boost_LIBRARIES:STRING=${MITK_USE_Boost_LIBRARIES}
+	-DEigen_INCLUDE_DIR:PATH=${Eigen_INCLUDE_DIR}
+    -DMITK_SHOW_CONSOLE_WINDOW:BOOL=${MITK_SHOW_CONSOLE_WINDOW}
+    -DITK_WRAP_PYTHON:BOOL=${ITK_WRAP_PYTHON}
+    -DWITH_IPP:BOOL=${WITH_IPP}
+    -DEIGEN_INCLUDE_PATH:PATH=${EIGEN_INCLUDE_PATH}
+    -DWITH_VFW:BOOL=${WITH_VFW}
+    -DWITH_VTK:BOOL=${WITH_VTK}
+    -DBLUEBERRY_DEBUG_SMARTPOINTER:BOOL=${BLUEBERRY_DEBUG_SMARTPOINTER}
+
   CMAKE_ARGS
     ${mitk_initial_cache_arg}
     ${MAC_OSX_ARCHITECTURE_ARGS}
@@ -430,4 +474,3 @@ add_custom_target(MITK
   COMMAND ${mitk_build_cmd}
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/MITK-build
 )
-

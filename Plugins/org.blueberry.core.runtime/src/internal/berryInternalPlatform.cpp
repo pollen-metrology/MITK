@@ -237,9 +237,11 @@ void InternalPlatform::Start(ctkPluginContext* context)
 
   this->InitializePluginPaths();
 
+/*
 #ifdef BLUEBERRY_DEBUG_SMARTPOINTER
   DebugUtil::RestoreState(m_UserPath);
 #endif
+*/
 
   InitializeDebugFlags();
   this->m_Initialized = true;
@@ -252,9 +254,11 @@ void InternalPlatform::Stop(ctkPluginContext* /*context*/)
   this->m_Initialized = false;
   CloseServiceTrackers();
 
+/*
 #ifdef BLUEBERRY_DEBUG_SMARTPOINTER
   DebugUtil::SaveState(m_UserPath);
 #endif
+*/
 
   this->m_Context = nullptr;
 }

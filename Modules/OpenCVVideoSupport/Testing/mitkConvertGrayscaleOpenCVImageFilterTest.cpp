@@ -18,12 +18,12 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <mitkTestingMacros.h>
 
 #include <highgui.h>
-#include <cv.h>
+#include <cv.hpp>
 
 static void ConvertTestLoadedImage(std::string mitkImagePath, std::string mitkGrayscaleImagePath)
 {
-  cv::Mat image = cvLoadImage(mitkImagePath.c_str());
-  cv::Mat compareImg = cvLoadImage(mitkGrayscaleImagePath.c_str());
+  cv::Mat image = cv::cvarrToMat(cvLoadImage(mitkImagePath.c_str()));
+  cv::Mat compareImg = cv::cvarrToMat(cvLoadImage(mitkGrayscaleImagePath.c_str()));
 
   // directly convert the image for comparison
   cv::Mat comparisonImg;

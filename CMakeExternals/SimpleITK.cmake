@@ -99,19 +99,24 @@ if(MITK_USE_SimpleITK)
       # changing dir delimiter for Windows
       if(MITK_USE_SYSTEM_PYTHON)
         set(_install_dir ${ep_prefix})
+		set(_site_packages ${ep_prefix}/lib/site-packages)
       else()
         set(_install_dir ${Python_DIR})
+		set(_site_packages "dump")
       endif()
       if(WIN32)
         STRING(REPLACE "/" "\\\\" _install_dir ${_install_dir})
+        STRING(REPLACE "/" "\\\\" _site_packages ${_site_packages})
       else()
         # escape spaces in the install path for linux
         STRING(REPLACE " " "\ " _install_dir ${_install_dir})
+        STRING(REPLACE " " "\ " _site_packages ${_site_packages})
       endif()
-
+	 
       if( MITK_USE_SYSTEM_PYTHON )
+	    file(MAKE_DIRECTORY ${_site_packages})
         ExternalProject_Add_Step(${proj} sitk_python_install_step
-          COMMAND PYTHONUSERBASE=${_install_dir} ${PYTHON_EXECUTABLE} setup.py install --prefix=${_install_dir}
+          COMMAND ${PYTHON_EXECUTABLE} setup.py install --prefix=${_install_dir}
           DEPENDEES install
           WORKING_DIRECTORY ${_sitk_build_dir}/Wrapping/PythonPackage
         )

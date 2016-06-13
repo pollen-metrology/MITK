@@ -77,6 +77,7 @@ if(MITK_USE_CTK)
       #GIT_TAG origin/master
       URL_MD5 9ebeb78c78ff9f458045e0a5ecffc73f
       UPDATE_COMMAND ""
+	  PATCH_COMMAND ${PATCH_COMMAND} -N -p1 -i ${CMAKE_CURRENT_LIST_DIR}/CTK.patch
       INSTALL_COMMAND ""
       CMAKE_GENERATOR ${gen}
       CMAKE_ARGS
