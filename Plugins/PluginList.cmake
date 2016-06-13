@@ -14,7 +14,7 @@ set(MITK_PLUGINS
 
   org.blueberry.test:ON
   org.blueberry.uitest:ON
-  #Testing/org.blueberry.core.runtime.tests:ON
+  Testing/org.blueberry.core.runtime.tests:ON
   #Testing/org.blueberry.osgi.tests:ON
 
   org.mitk.core.services:ON

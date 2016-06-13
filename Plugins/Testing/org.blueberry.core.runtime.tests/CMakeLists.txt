@@ -1,10 +1,14 @@
+
+include(mitkTestPluginGenerator)
+
 project(org_blueberry_core_runtime_tests)
 
 mitk_create_plugin(
   EXPORT_DIRECTIVE BERRY_RUNTIME_TESTS
+  PACKAGE_DEPENDS PRIVATE CppUnit
   TEST_PLUGIN
 )
 
-target_link_libraries(${PROJECT_NAME} optimized CppUnit debug CppUnitd)
-
-MACRO_TEST_PLUGIN()
+include(mitkFunctionTestPlugin)
+set(BLUEBERRY_ENABLE_GUI_TESTING true)
+MACRO_TEST_UIPLUGIN()

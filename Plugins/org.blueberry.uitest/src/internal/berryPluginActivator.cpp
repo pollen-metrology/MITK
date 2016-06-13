@@ -29,7 +29,7 @@ org_blueberry_uitest_Activator::org_blueberry_uitest_Activator()
 
 void org_blueberry_uitest_Activator::start(ctkPluginContext* context)
 {
-  BERRY_REGISTER_EXTENSION_CLASS(UITestApplication, context)
+  //BERRY_REGISTER_EXTENSION_CLASS(UITestApplication, context)
   BERRY_REGISTER_EXTENSION_CLASS(EmptyPerspective, context)
 }
 
