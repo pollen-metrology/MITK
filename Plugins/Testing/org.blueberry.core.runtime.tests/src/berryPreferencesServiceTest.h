@@ -28,7 +28,7 @@ public:
 
   static CppUnit::Test* Suite();
 
-  PreferencesServiceTest(const std::string& testName);
+  PreferencesServiceTest();
 
   void TestAll();
 };
