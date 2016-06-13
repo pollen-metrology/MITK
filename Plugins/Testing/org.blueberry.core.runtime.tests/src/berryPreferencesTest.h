@@ -26,7 +26,7 @@ class PreferencesTest : public berry::TestCase
 {
 public:
 
-  PreferencesTest(const std::string& testName);
+  PreferencesTest();
 
   static CppUnit::Test* Suite();
 

@@ -35,17 +35,16 @@ CoreTestApplication::CoreTestApplication(const CoreTestApplication& other)
 }
 
 int CoreTestApplication::Start() {
-  std::string testPlugin;
-  try {
-    testPlugin = Platform::GetConfiguration().getString(Platform::ARG_TESTPLUGIN.toStdString());
+
+  QString testPlugin = Platform::GetDebugOption(Platform::PROP_TESTPLUGIN).toString();
+  if (QString::null != testPlugin) {
+    return BlueBerryTestDriver::Run(testPlugin);
   }
-  catch (const Poco::NotFoundException& /*e*/)
+  else
   {
-    BERRY_ERROR << "You must specify a test plug-in id via " << Platform::ARG_TESTPLUGIN << "=<id>";
+    BERRY_ERROR << "You must specify a test plug-in id via " << Platform::PROP_TESTPLUGIN << "=<id>";
     return 1;
   }
-
-  return BlueBerryTestDriver::Run(QString::fromStdString(testPlugin));
 }
 
 void CoreTestApplication::Stop() {

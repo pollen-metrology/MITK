@@ -18,9 +18,9 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include <berryBlueBerryTestDriver.h>
 #include <berryPlatformUI.h>
+#include <berryPlatform.h>
 #include <berryIExtensionRegistry.h>
 #include <berryIExtension.h>
-#include <berryStarter.h>
 
 #include "internal/berryUITestWorkbenchAdvisor.h"
 
@@ -74,14 +74,11 @@ UITestApplication::UITestApplication()
 int UITestApplication::Start()
 {
   // Get the plug-in to test
-  try
-  {
-    testPlugin = QString::fromStdString(Platform::GetConfiguration().getString(
-                                          Platform::ARG_TESTPLUGIN.toStdString()));
-  } catch (const Poco::NotFoundException& /*e*/)
-  {
+  testPlugin = Platform::GetDebugOption(Platform::PROP_TESTPLUGIN).toString();
+  if(QString::null == testPlugin)
+      {
     BERRY_ERROR << "You must specify a test plug-in id via "
-        << Platform::ARG_TESTPLUGIN << "=<id>";
+        << Platform::PROP_TESTPLUGIN << "=<id>";
     return 1;
   }
 
@@ -123,7 +120,7 @@ IApplication* UITestApplication::GetApplication()
       Starter::XP_APPLICATIONS, GetApplicationToRun());*/
 
   QList<IConfigurationElement::Pointer> extensions(
-        Platform::GetExtensionRegistry()->GetConfigurationElementsFor(Starter::XP_APPLICATIONS));
+        Platform::GetExtensionRegistry()->GetConfigurationElementsFor(Platform::PROP_TESTAPPLICATION));
 
   QString appToRun = GetApplicationToRun();
   QString id;
@@ -160,17 +157,7 @@ IApplication* UITestApplication::GetApplication()
 
 QString UITestApplication::GetApplicationToRun()
 {
-
-  QString testApp;
-  try
-  {
-    testApp = QString::fromStdString(Platform::GetConfiguration().getString(
-                                       Platform::ARG_TESTAPPLICATION.toStdString()));
-  }
-  catch (const Poco::NotFoundException&)
-  {
-  }
-
+  QString testApp = Platform::GetDebugOption(Platform::PROP_TESTAPPLICATION).toString();
   return testApp;
 }
 
@@ -182,7 +169,7 @@ int UITestApplication::RunApplication(IApplication* application)
   if (application == dynamic_cast<IApplication*>(this))
   return RunUITestWorkbench();
 
-  return application->Start();
+  return application->Start(nullptr).toInt();
 }
 
 int UITestApplication::RunUITestWorkbench()

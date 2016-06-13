@@ -2,7 +2,7 @@
 # This file is included in the top-level MITK CMakeLists.txt file to
 # allow early dependency checking
 
-option(MITK_BUILD_APP_CoreApp "Build the MITK CoreApp" OFF)
+option(MITK_BUILD_APP_CoreApp "Build the MITK CoreApp" ON)
 option(MITK_BUILD_APP_Workbench "Build the MITK Workbench executable" ON)
 option(MITK_BUILD_APP_Diffusion "Build the MITK Diffusion executable" OFF)
 
