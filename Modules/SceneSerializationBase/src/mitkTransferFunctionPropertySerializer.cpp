@@ -31,6 +31,8 @@ TiXmlElement* mitk::TransferFunctionPropertySerializer::Serialize()
 {
   if (const TransferFunctionProperty* prop = dynamic_cast<const TransferFunctionProperty*>(mitk::BasePropertySerializer::m_Property.GetPointer()))
   {
+    LocaleSwitch localeSwitch("C");
+
     TransferFunction* transferfunction = prop->GetValue();
     if (!transferfunction)
       return nullptr;
