@@ -38,6 +38,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include <itkNiftiImageIO.h>
 #include <itkGDCMImageIO.h>
+#include "itkTIFFImageIO.h"
 
 // Micro Services
 #include <usGetModuleContext.h>
@@ -408,6 +409,12 @@ void MitkCoreActivator::RegisterItkReaderWriter()
       // MITK provides its own DICOM reader (which internally uses GDCMImageIO).
       continue;
     }
+
+	// skip TIFF because Platypus has its own
+	if (dynamic_cast<itk::TIFFImageIO*>(io))
+	{
+		continue;
+	}
 
     if (io)
     {
