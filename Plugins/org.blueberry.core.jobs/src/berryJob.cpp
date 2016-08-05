@@ -125,6 +125,11 @@ void Job::RemoveJobChangeListener(IJobChangeListener* listener)
   InternalJob::RemoveJobChangeListener(listener);
 }
 
+void Job::AddJobChangeListener(IJobChangeListener* listener)
+{
+  InternalJob::AddJobChangeListener(listener);
+}
+
 void Job::Schedule()
 {
   Poco::Timestamp::TimeDiff tmpNoDelay = 0;
