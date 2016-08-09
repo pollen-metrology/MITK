@@ -556,13 +556,16 @@ void JobManager::DoSchedule(InternalJob::Pointer job,
   }
   if (delay > 0)
   {
-    job->SetStartTime(Poco::Timestamp() + delay * 100);
+    // *1000 because job api uses milliseconds where 
+    // Poco::Timestamp uses microseconds
+    job->SetStartTime(Poco::Timestamp() + delay * 1000);
     InternalJob::Pointer sptr_job(job);
     ChangeState(sptr_job, Job::SLEEPING);
   }
   else
   {
-    job->SetStartTime(Poco::Timestamp() + DelayFor(job->GetPriority()) * 100);
+    // *1000 because job api uses milliseconds where Poco::Timestamp uses microseconds
+    job->SetStartTime(Poco::Timestamp() + DelayFor(job->GetPriority()) * 1000);
     job->SetWaitQueueStamp(m_waitQueueCounter++);
     InternalJob::Pointer sptr_job(job);
     ChangeState(sptr_job, Job::WAITING);
@@ -860,18 +863,32 @@ void JobManager::EndJob(InternalJob::Pointer ptr_job, IStatus::Pointer result, b
     ptr_job->SetResult(result);
     ptr_job->SetProgressMonitor(IProgressMonitor::Pointer(nullptr));
     ptr_job->SetThread(nullptr);
-    rescheduleDelay = ptr_job->GetStartTime().epochMicroseconds();
+    rescheduleDelay = ptr_job->GetStartTime() - Poco::Timestamp();
     InternalJob::Pointer sptr_job(ptr_job);
     ChangeState(sptr_job, Job::NONE);
   }
 
-  //notify listeners outside sync block
-  bool reschedule = m_active && rescheduleDelay > InternalJob::T_NONE && ptr_job->ShouldSchedule();
+  Poco::Timestamp tmp_currentTime;
+  Poco::Timestamp currentStartTime = ptr_job->GetStartTime();
+  bool isScheduleInFuture = tmp_currentTime < currentStartTime;
+  bool isScheduled = rescheduleDelay > InternalJob::T_NONE;
+  bool reschedule = m_active && isScheduled && isScheduleInFuture  && ptr_job->ShouldSchedule();
+
+
   if (notify)
     m_JobListeners.Done(ptr_job.Cast<Job>(), result, reschedule);
+
   //reschedule the job if requested and we are still active
   if (reschedule)
+  {
     Schedule(ptr_job, rescheduleDelay, reschedule);
+  }
+  else
+  {
+    // job ended, listeners notified : removing job from queue
+    // and let let its destructor to be called
+    ptr_job->Remove();
+  }
 }
 
 
@@ -1031,7 +1048,13 @@ void JobManager::Schedule(InternalJob::Pointer job, Poco::Timestamp::TimeDiff de
     //if the job is already running, set it to be rescheduled when done
     if (job->GetState() == Job::RUNNING)
     {
-      job->SetStartTime(delay);
+      Poco::Timestamp newTs;
+
+      // *1000 because job API uses milliseconds where
+      // Poco timestamps uses microseconds
+      Poco::Timestamp::TimeDiff diff = delay * 1000;
+      newTs += diff;
+      job->SetStartTime(newTs);
       return;
     }
     //can't schedule a job that is waiting or sleeping

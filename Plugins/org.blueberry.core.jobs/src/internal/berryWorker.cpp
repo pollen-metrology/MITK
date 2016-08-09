@@ -48,9 +48,8 @@ void Worker::JobRunnable::run()
 
       try
      {
-
         ptr_currentWorker->ptr_currentJob->SetThread(ptr_currentWorker);
-        ptr_currentWorker->ptr_currentJob->Run(ptr_currentWorker->ptr_currentJob->GetProgressMonitor());
+        result = ptr_currentWorker->ptr_currentJob->Run(ptr_currentWorker->ptr_currentJob->GetProgressMonitor());
 
        // java thread.interrupted
        throw FinallyThrowException();
