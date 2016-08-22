@@ -1203,7 +1203,7 @@ LayoutPart::Pointer PerspectiveHelper::FindPart(const QString& primaryId,
     {
       PartPane::Pointer pane = part.Cast<PartPane>();
       IViewReference::Pointer ref = pane->GetPartReference().Cast<IViewReference>();
-      if (ref->GetId() == primaryId && ref->GetSecondaryId() == secondaryId)
+      if (ref && ref->GetId() == primaryId && ref->GetSecondaryId() == secondaryId)
       {
         return part;
       }
