@@ -1300,7 +1300,25 @@ void PerspectiveHelper::RemovePart(LayoutPart::Pointer part)
   if (container != 0)
   {
     QString placeHolderId = part->GetPlaceHolderId();
-    container->Replace(part, LayoutPart::Pointer(new PartPlaceholder(placeHolderId)));
+    QString secondaryId;
+    IViewReference::Pointer ref;
+    if (part.Cast<PartPane>() != 0)
+    {
+      PartPane::Pointer pane = part.Cast<PartPane>();
+      ref = pane->GetPartReference().Cast<IViewReference>();
+      if (ref != 0)
+      {
+        secondaryId = ref->GetSecondaryId();
+      }
+    }
+    if (secondaryId != "")
+    {
+      container->Replace(part, LayoutPart::Pointer(new PartPlaceholder(placeHolderId + QString(":") + secondaryId)));
+    }
+    else
+    {
+      container->Replace(part, LayoutPart::Pointer(new PartPlaceholder(placeHolderId)));
+    }
 
 //    // If the parent is root we're done. Do not try to replace
 //    // it with placeholder.
