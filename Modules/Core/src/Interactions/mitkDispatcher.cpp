@@ -49,12 +49,24 @@ mitk::Dispatcher::Dispatcher( const std::string& rendererName )
 
 void mitk::Dispatcher::AddDataInteractor(const DataNode* dataNode)
 {
-  RemoveDataInteractor(dataNode);
+  //RemoveDataInteractor(dataNode);
   RemoveOrphanedInteractors();
   DataInteractor::Pointer dataInteractor = dataNode->GetDataInteractor();
   if (dataInteractor.IsNotNull())
   {
-    m_Interactors.push_back(dataInteractor);
+    bool interactorAlreadyRegistered = false;
+    for (ListInteractorType::iterator i = m_Interactors.begin(); i != m_Interactors.end(); i++)
+    {
+      if ((*i) == dataInteractor)
+      {
+        interactorAlreadyRegistered = true;
+        break;
+      }
+    }
+    if (!interactorAlreadyRegistered)
+    {
+      m_Interactors.push_back(dataInteractor);
+    }
   }
 }
 
@@ -71,13 +83,13 @@ void mitk::Dispatcher::RemoveDataInteractor(const DataNode* dataNode)
   {
     if ((*it)->GetDataNode() == dataNode)
     {
-      (*it)->DeletedNode();
+     // (*it)->DeletedNode();
       it = m_Interactors.erase(it);
     }
-    else if ((*it)->GetDataNode() == nullptr)
+   /* else if ((*it)->GetDataNode() == nullptr)
     {
       it = m_Interactors.erase(it);
-    }
+    }*/
     else
     {
       ++it;
@@ -214,18 +226,19 @@ void mitk::Dispatcher::RemoveOrphanedInteractors()
     {
       it = m_Interactors.erase(it);
     }
-    else
+    /*else
     {
       DataInteractor::Pointer interactor = dn->GetDataInteractor();
       if (interactor != it->GetPointer())
       {
         it = m_Interactors.erase(it);
       }
+      */
       else
       {
         ++it;
       }
-    }
+    //}
   }
 }
 
