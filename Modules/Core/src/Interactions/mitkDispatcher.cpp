@@ -139,7 +139,15 @@ bool mitk::Dispatcher::ProcessEvent(InteractionEvent* event)
     // give event to selected interactor
     if (eventIsHandled == false && m_SelectedInteractor.IsNotNull())
     {
-      eventIsHandled = m_SelectedInteractor->HandleEvent(event, m_SelectedInteractor->GetDataNode());
+     // eventIsHandled = m_SelectedInteractor->HandleEvent(event, m_SelectedInteractor->GetDataNode());
+      const std::list<DataInteractor::Pointer> tmpInteractorList(m_Interactors);
+      std::list<DataInteractor::Pointer>::const_iterator it;
+      for (it = tmpInteractorList.cbegin(); it != tmpInteractorList.cend(); ++it)
+      {
+        DataInteractor::Pointer dataInteractor = *it;
+        eventIsHandled |= (*it)->HandleEvent(event, dataInteractor->GetDataNode());
+      }
+      // delete re
     }
     break;
 
@@ -182,7 +190,7 @@ bool mitk::Dispatcher::ProcessEvent(InteractionEvent* event)
           m_ProcessingMode = CONNECTEDMOUSEACTION;
         }
         eventIsHandled = true;
-        break;
+       // break;
       }
     }
   }
