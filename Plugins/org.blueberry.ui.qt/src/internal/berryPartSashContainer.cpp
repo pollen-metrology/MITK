@@ -153,9 +153,11 @@ void PartSashContainer::DropObject(const QList<PartPane::Pointer>& toDrop,
       LayoutPart::Pointer next = toDrop[idx];
       this->Stack(next, newPart);
     }
-
-    this->AddEnhanced(newPart, side, this->GetDockingRatio(newPart, targetStack),
+    if (toDrop.size() > 0)
+    {
+      this->AddEnhanced(newPart, side, this->GetDockingRatio(newPart, targetStack),
         targetLayoutPart);
+    }
   }
 
   if (visiblePart != 0)
