@@ -5,4 +5,6 @@ set(CPP_FILES
   mitkClassicDICOMSeriesReaderService.cpp
   mitkDICOMReaderServicesActivator.cpp
   mitkDICOMTagsOfInterestService.cpp
+  mitkDICOMSegmentationWriterService.cpp
+  #mitkDICOMSegmentationReaderService.cpp
 )
