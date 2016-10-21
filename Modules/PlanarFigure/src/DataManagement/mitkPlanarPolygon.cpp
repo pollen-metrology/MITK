@@ -194,7 +194,7 @@ bool mitk::PlanarPolygon::CheckForLineIntersection( const mitk::Point2D& p1, con
   const double x = ( pre * (x3 - x4) - (x1 - x2) * post ) / d;
   const double y = ( pre * (y3 - y4) - (y1 - y2) * post ) / d;
 
-  double tolerance = 0.001;
+  double tolerance = 0.00;
   // Check if the x coordinates are within both lines, including tolerance
   if ( x < ( std::min(x1, x2) - tolerance )
     || x > ( std::max(x1, x2) + tolerance )
