@@ -61,7 +61,8 @@ void LabelSetImageIO::Write()
 
   const LabelSetImage* input = static_cast<const LabelSetImage*>(this->GetInput());
 
-  mitk::LocaleSwitch("C");
+  // Switch the current locale to "C"
+  LocaleSwitch localeSwitch("C");
 
   mitk::Image::Pointer inputVector = mitk::LabelSetImageConverter::ConvertLabelSetImageToImage(input);
 
@@ -247,7 +248,7 @@ IFileIO::ConfidenceLevel LabelSetImageIO::GetReaderConfidenceLevel() const
 
 std::vector<BaseData::Pointer> LabelSetImageIO::Read()
 {
-  mitk::LocaleSwitch("C");
+  LocaleSwitch localeSwitch("C");
 
   // begin regular image loading, adapted from mitkItkImageIO
   itk::NrrdImageIO::Pointer nrrdImageIO = itk::NrrdImageIO::New();
