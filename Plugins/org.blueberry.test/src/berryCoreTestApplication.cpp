@@ -34,7 +34,7 @@ CoreTestApplication::CoreTestApplication(const CoreTestApplication& other)
   Q_UNUSED(other)
 }
 
-int CoreTestApplication::Start() {
+QVariant CoreTestApplication::Start(IApplicationContext* context) {
 
   QString testPlugin = Platform::GetDebugOption(Platform::PROP_TESTPLUGIN).toString();
   if (QString::null != testPlugin) {

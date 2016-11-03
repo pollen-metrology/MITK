@@ -34,7 +34,7 @@ public:
   CoreTestApplication();
   CoreTestApplication(const CoreTestApplication& other);
 
-  int Start();
+  QVariant Start(IApplicationContext * context);
   void Stop();
 };
 
