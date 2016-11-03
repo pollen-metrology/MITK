@@ -21,8 +21,10 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <berryPlatform.h>
 #include <berryIExtensionRegistry.h>
 #include <berryIExtension.h>
+#include "berryIApplicationContext.h"
 
 #include "internal/berryUITestWorkbenchAdvisor.h"
+
 
 namespace berry
 {
@@ -73,15 +75,23 @@ UITestApplication::UITestApplication()
 
 QVariant UITestApplication::Start(IApplicationContext* context)
 {
-  // Get the plug-in to test
-  testPlugin = Platform::GetDebugOption(Platform::PROP_TESTPLUGIN).toString();
-  if(QString::null == testPlugin)
-      {
+	QString platypusPluginToTestPrefix("platypusPluginToTest=");
+	QString testPlugin;
+	for (QString unProcessedArg : Platform::GetApplicationArgs())
+	{
+		if (unProcessedArg.startsWith(platypusPluginToTestPrefix))
+		{
+			testPlugin = unProcessedArg.mid(platypusPluginToTestPrefix.size());
+		}
+	}
+
+	if (!testPlugin.isNull())
+	{
     BERRY_ERROR << "You must specify a test plug-in id via "
         << Platform::PROP_TESTPLUGIN << "=<id>";
     return 1;
   }
-
+  
   // Get the application to test
   IApplication* application = GetApplication();
   poco_assert(application);
