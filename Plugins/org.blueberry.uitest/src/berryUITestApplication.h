@@ -36,7 +36,7 @@ public:
 
   UITestApplication();
 
-  int Start();
+  QVariant Start(IApplicationContext* context);
 
   void Stop();
 

@@ -71,7 +71,7 @@ UITestApplication::UITestApplication()
 
 }
 
-int UITestApplication::Start()
+QVariant UITestApplication::Start(IApplicationContext* context)
 {
   // Get the plug-in to test
   testPlugin = Platform::GetDebugOption(Platform::PROP_TESTPLUGIN).toString();
