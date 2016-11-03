@@ -969,7 +969,7 @@ public:
   /**
    * See IWorkbenchPage.
    */
-  bool IsEditorAreaVisible();
+  bool IsEditorAreaVisible() override;
 
   /**
    * Returns whether the view is fast.
@@ -1184,7 +1184,7 @@ public:
   /**
    * See IWorkbenchPage.
    */
-  void SetEditorAreaVisible(bool showEditorArea);
+  void SetEditorAreaVisible(bool showEditorArea) override;
 
   /**
    * Sets the perspective.

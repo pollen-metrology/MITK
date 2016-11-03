@@ -864,6 +864,25 @@ struct BERRY_UI_QT IWorkbenchPage : public IPartService, public ISelectionServic
    *         reference can be found.
    */
   virtual IWorkbenchPartReference::Pointer GetReference(IWorkbenchPart::Pointer part) = 0;
+
+  /**
+  * Returns whether the page's current perspective is showing the editor
+  * area.
+  *
+  * @return <code>true</code> when editor area visible, <code>false</code>
+  *         otherwise
+  */
+  virtual bool IsEditorAreaVisible() = 0;
+
+  /**
+  * Show or hide the editor area for the page's active perspective.
+  *
+  * @param showEditorArea
+  *            <code>true</code> to show the editor area,
+  *            <code>false</code> to hide the editor area
+  */
+  virtual void SetEditorAreaVisible(bool showEditorArea) = 0;
+
 };
 
 }  // namespace berry
