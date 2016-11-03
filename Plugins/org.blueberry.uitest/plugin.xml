@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?BlueBerry version="0.1"?>
 <plugin>
-  <extension id="uitestapplication" point="org.blueberry.osgi.applications">
+  <extension id="org.blueberry.uitest" point="org.blueberry.osgi.applications">
     <application>
       <run class="berry::UITestApplication"/>
     </application>

@@ -62,7 +62,7 @@ QString TestDescriptor::GetDescription() const
 bool TestDescriptor::IsUITest() const
 {
   QString isUi = configElem->GetAttribute(TestRegistry::ATT_UITEST);
-  return isUi.compare("true", Qt::CaseInsensitive);
+  return isUi.compare("true", Qt::CaseInsensitive) == 0;
 }
 
 }

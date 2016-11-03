@@ -18,8 +18,11 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include <berryPlatform.h>
 #include <berryLog.h>
+#include "berryIApplicationContext.h"
 
 #include "berryBlueBerryTestDriver.h"
+
+#include <QString>
 
 namespace berry {
 
@@ -34,10 +37,19 @@ CoreTestApplication::CoreTestApplication(const CoreTestApplication& other)
   Q_UNUSED(other)
 }
 
-int CoreTestApplication::Start() {
+QVariant CoreTestApplication::Start(IApplicationContext* context) {
 
-  QString testPlugin = Platform::GetDebugOption(Platform::PROP_TESTPLUGIN).toString();
-  if (QString::null != testPlugin) {
+	QString platypusPluginToTestPrefix("platypusPluginToTest=");
+	QString testPlugin;
+	for (QString unProcessedArg : Platform::GetApplicationArgs())
+	{
+		if (unProcessedArg.startsWith(platypusPluginToTestPrefix))
+		{
+			testPlugin = unProcessedArg.mid(platypusPluginToTestPrefix.size());
+		}
+	}
+
+  if (!testPlugin.isNull()) {
     return BlueBerryTestDriver::Run(testPlugin);
   }
   else
