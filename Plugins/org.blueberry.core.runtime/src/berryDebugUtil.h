@@ -91,30 +91,10 @@ private:
   static bool GetPersistencePath(QDir& path);
   
   typedef QHash<quint32, const Object* > TraceIdToObjectType;
-  static inline QHash<quint32, QList<unsigned int> >* GetTraceIdToSmartPointerMap()
-  {
-	  static QHash<quint32, QList<unsigned int> >* m_TraceIdToSmartPointerMap = new QHash<quint32, QList<unsigned int> >();
-	  return m_TraceIdToSmartPointerMap;
-  }
-
-  static inline TraceIdToObjectType* GetTraceIdToObjectMap()
-  {
-	  static TraceIdToObjectType* m_TraceIdToObjectMap = new TraceIdToObjectType();
-	  return m_TraceIdToObjectMap;
-  }
-
-  static inline QSet<unsigned int>* GetTracedObjects()
-  {
-	  static QSet<unsigned int>* m_TracedObjects = new QSet<unsigned int>();
-	  return m_TracedObjects;
-  }
-
-  static inline QSet<QString>* GetTracedClasses()
-  {
-	  static QSet<QString>* m_TracedClasses = new QSet<QString>();
-	  return m_TracedClasses;
-  }
-
+  static QHash<quint32, QList<unsigned int> >* GetTraceIdToSmartPointerMap();
+  static TraceIdToObjectType* GetTraceIdToObjectMap();
+  static QSet<unsigned int>* GetTracedObjects();
+  static QSet<QString>* GetTracedClasses();
 };
 
 }

@@ -537,4 +537,28 @@ void DebugUtil::RestoreState(const QDir& path)
   GetBreakpointManager()->RestoreState(path.absoluteFilePath(QString::fromStdString(DebugBreakpointManager::BREAKPOINTS_XML)));
 }
 
+QHash<quint32, QList<unsigned int> >* DebugUtil::GetTraceIdToSmartPointerMap()
+{
+	static QHash<quint32, QList<unsigned int> >* m_TraceIdToSmartPointerMap = new QHash<quint32, QList<unsigned int> >();
+	return m_TraceIdToSmartPointerMap;
+}
+
+DebugUtil::TraceIdToObjectType* DebugUtil::GetTraceIdToObjectMap()
+{
+	static TraceIdToObjectType* m_TraceIdToObjectMap = new TraceIdToObjectType();
+	return m_TraceIdToObjectMap;
+}
+
+QSet<unsigned int>* DebugUtil::GetTracedObjects()
+{
+	static QSet<unsigned int>* m_TracedObjects = new QSet<unsigned int>();
+	return m_TracedObjects;
+}
+
+QSet<QString>* DebugUtil::GetTracedClasses()
+{
+	static QSet<QString>* m_TracedClasses = new QSet<QString>();
+	return m_TracedClasses;
+}
+
 }
