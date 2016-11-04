@@ -20,7 +20,7 @@ function(mitkFunctionTestPlugin)
   if(NOT BUNDLE-SYMBOLICNAME)
     string(REPLACE "_" "." BUNDLE-SYMBOLICNAME ${PROJECT_NAME})
   endif()
-  add_test(${BUNDLE-SYMBOLICNAME} ${BLUEBERRY_TEST_APP} ${_cla_switch}BlueBerry.application=coretestapplication ${_cla_switch}BlueBerry.testplugin=${BUNDLE-SYMBOLICNAME})
+  add_test(${BUNDLE-SYMBOLICNAME} ${BLUEBERRY_TEST_APP} ${_cla_switch}BlueBerry.application=org.blueberry.tests ${_cla_switch}BlueBerry.testplugin=${BUNDLE-SYMBOLICNAME})
 
   set(_labels ${ARGN})
   if(NOT _labels)
@@ -57,7 +57,7 @@ macro(MACRO_TEST_UIPLUGIN)
       set(_app_id_arg )
     endif()
 
-    add_test(${BUNDLE-SYMBOLICNAME} ${BLUEBERRY_UI_TEST_APP} ${_cla_switch}BlueBerry.application=uitestapplication ${_app_id_arg} ${_cla_switch}BlueBerry.testplugin=${BUNDLE-SYMBOLICNAME})
+    add_test(${BUNDLE-SYMBOLICNAME} ${BLUEBERRY_UI_TEST_APP} ${_cla_switch}BlueBerry.application=org.blueberry.uitest ${_app_id_arg} ${_cla_switch}BlueBerry.testplugin=${BUNDLE-SYMBOLICNAME})
 
     set(_labels ${ARGN})
     if(NOT _labels)
