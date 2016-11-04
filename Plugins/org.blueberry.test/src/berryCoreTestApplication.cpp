@@ -19,6 +19,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <berryPlatform.h>
 #include <berryLog.h>
 #include "berryIApplicationContext.h"
+#include "internal/berryPluginActivator.h"
 
 #include "berryBlueBerryTestDriver.h"
 
@@ -39,16 +40,9 @@ CoreTestApplication::CoreTestApplication(const CoreTestApplication& other)
 
 QVariant CoreTestApplication::Start(IApplicationContext* context) {
 
-	QString platypusPluginToTestPrefix("platypusPluginToTest=");
-	QString testPlugin;
-	for (QString unProcessedArg : Platform::GetApplicationArgs())
-	{
-		if (unProcessedArg.startsWith(platypusPluginToTestPrefix))
-		{
-			testPlugin = unProcessedArg.mid(platypusPluginToTestPrefix.size());
-		}
-	}
+  ctkPluginContext* pluginContext = org_blueberry_test_Activator::GetInstance()->GetContext();
 
+  QString testPlugin = pluginContext->getProperty(Platform::PROP_TESTPLUGIN).toString();
   if (!testPlugin.isNull()) {
     return BlueBerryTestDriver::Run(testPlugin);
   }

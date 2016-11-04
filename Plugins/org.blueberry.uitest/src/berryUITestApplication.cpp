@@ -22,6 +22,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <berryIExtensionRegistry.h>
 #include <berryIExtension.h>
 #include "berryIApplicationContext.h"
+#include "internal/berryPluginActivator.h"
 
 #include "internal/berryUITestWorkbenchAdvisor.h"
 
@@ -75,16 +76,10 @@ UITestApplication::UITestApplication()
 
 QVariant UITestApplication::Start(IApplicationContext* context)
 {
-	QString platypusPluginToTestPrefix("platypusPluginToTest=");
-	QString testPlugin;
-	for (QString unProcessedArg : Platform::GetApplicationArgs())
-	{
-		if (unProcessedArg.startsWith(platypusPluginToTestPrefix))
-		{
-			testPlugin = unProcessedArg.mid(platypusPluginToTestPrefix.size());
-		}
-	}
+	ctkPluginContext* pluginContext = org_blueberry_uitest_Activator::GetInstance()->GetContext();
+	QString blueBerryTestapplication = pluginContext->getProperty(Platform::PROP_TESTAPPLICATION).toString();
 
+	QString testPlugin = pluginContext->getProperty(Platform::PROP_TESTPLUGIN).toString();
 	if (!testPlugin.isNull())
 	{
     BERRY_ERROR << "You must specify a test plug-in id via "

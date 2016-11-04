@@ -20,19 +20,37 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 namespace berry {
 
+org_blueberry_test_Activator* org_blueberry_test_Activator::m_Instance = nullptr;
+
 org_blueberry_test_Activator::org_blueberry_test_Activator()
 {
+	m_Instance = this;
+}
 
+org_blueberry_test_Activator::~org_blueberry_test_Activator()
+{
+	m_Instance = nullptr;
 }
 
 void org_blueberry_test_Activator::start(ctkPluginContext* context)
 {
-  BERRY_REGISTER_EXTENSION_CLASS(CoreTestApplication, context)
+	m_Context = context;
+	BERRY_REGISTER_EXTENSION_CLASS(CoreTestApplication, context);
 }
 
 void org_blueberry_test_Activator::stop(ctkPluginContext* context)
 {
   Q_UNUSED(context)
+}
+
+ctkPluginContext* org_blueberry_test_Activator::GetContext() const
+{
+	return m_Context;
+}
+
+org_blueberry_test_Activator* org_blueberry_test_Activator::GetInstance()
+{
+	return m_Instance;
 }
 
 }

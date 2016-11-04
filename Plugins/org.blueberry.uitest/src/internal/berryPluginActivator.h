@@ -31,9 +31,18 @@ class org_blueberry_uitest_Activator :
 
 public:
   org_blueberry_uitest_Activator();
+  virtual ~org_blueberry_uitest_Activator();
 
   void start(ctkPluginContext* context);
   void stop(ctkPluginContext* context);
+
+  ctkPluginContext* GetContext() const;
+
+  static org_blueberry_uitest_Activator* GetInstance();
+
+private:
+	static org_blueberry_uitest_Activator* m_Instance;
+	ctkPluginContext* m_Context;
 };
 
 typedef org_blueberry_uitest_Activator PluginActivator;
