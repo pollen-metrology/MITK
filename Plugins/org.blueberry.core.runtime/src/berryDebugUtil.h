@@ -52,8 +52,6 @@ public:
   static bool IsTraced(unsigned int traceId);
   static bool IsTraced(const QString& className);
 
-  static QSet<unsigned int> GetTracedObjects();
-
   static const Object* GetObject(unsigned int traceId);
 
   static QList<unsigned int> GetSmartPointerIDs(const Object* objectPointer, const QList<unsigned int>& excludeList = QList<unsigned int>());
@@ -91,12 +89,32 @@ private:
   static const QString NAME_ATTR;
 
   static bool GetPersistencePath(QDir& path);
-
-  static QHash<quint32, QList<unsigned int> > m_TraceIdToSmartPointerMap;
+  
   typedef QHash<quint32, const Object* > TraceIdToObjectType;
-  static TraceIdToObjectType m_TraceIdToObjectMap;
-  static QSet<unsigned int> m_TracedObjects;
-  static QSet<QString> m_TracedClasses;
+  static inline QHash<quint32, QList<unsigned int> >* GetTraceIdToSmartPointerMap()
+  {
+	  static QHash<quint32, QList<unsigned int> >* m_TraceIdToSmartPointerMap = new QHash<quint32, QList<unsigned int> >();
+	  return m_TraceIdToSmartPointerMap;
+  }
+
+  static inline TraceIdToObjectType* GetTraceIdToObjectMap()
+  {
+	  static TraceIdToObjectType* m_TraceIdToObjectMap = new TraceIdToObjectType();
+	  return m_TraceIdToObjectMap;
+  }
+
+  static inline QSet<unsigned int>* GetTracedObjects()
+  {
+	  static QSet<unsigned int>* m_TracedObjects = new QSet<unsigned int>();
+	  return m_TracedObjects;
+  }
+
+  static inline QSet<QString>* GetTracedClasses()
+  {
+	  static QSet<QString>* m_TracedClasses = new QSet<QString>();
+	  return m_TracedClasses;
+  }
+
 };
 
 }
