@@ -430,13 +430,11 @@ namespace mitk
     matrix[1][2] = inverseMatrix[axes[2]][1] * directions[2] * spacings[2];
     matrix[2][2] = inverseMatrix[axes[2]][2] * directions[2] * spacings[2];
 
-    /// The "world origin" is the corner with the lowest physical coordinates.
-    /// We use it as a reference point so that we get the correct anatomical
-    /// orientations.
-    Point3D worldOrigin = geometry3D->GetOrigin();
+    /// The new origin is the bottom left back corner in the world coordinate system.
+    Point3D origin = geometry3D->GetOrigin();
     for (int i = 0; i < 3; ++i)
     {
-      /// The distance of the plane origin from the world origin in voxels.
+      /// The distance of the origin from the bottom left back corner in voxels.
       double offset = directions[i] > 0 ? 0.0 : extents[i];
 
       if (geometry3D->GetImageGeometry())
@@ -446,7 +444,7 @@ namespace mitk
 
       for (int j = 0; j < 3; ++j)
       {
-        worldOrigin[j] -= offset * matrix[j][i];
+        origin[j] -= offset * matrix[j][i];
       }
     }
 
@@ -476,10 +474,10 @@ namespace mitk
 
     AffineTransform3D::Pointer transform = AffineTransform3D::New();
     transform->SetMatrix(matrix);
-    transform->SetOffset(worldOrigin.GetVectorFromOrigin());
+    transform->SetOffset(origin.GetVectorFromOrigin());
 
     InitializeStandardPlane(
-      width, height, transform, planeorientation, zPosition, frontside, rotated, top);
+      width, height, transform, planeorientation, zPosition, frontside, rotated);
   }
 
   void PlaneGeometry::InitializeStandardPlane(
@@ -521,7 +519,7 @@ namespace mitk
 
     ScalarType zPosition = top ? 0.5 : geometry3D->GetExtent(dominantAxis) - 0.5;
 
-    InitializeStandardPlane(geometry3D, planeorientation, zPosition, frontside, rotated, top);
+    InitializeStandardPlane(geometry3D, planeorientation, zPosition, frontside, rotated);
   }
 
   void PlaneGeometry::InitializeStandardPlane(const Vector3D &rightVector,
