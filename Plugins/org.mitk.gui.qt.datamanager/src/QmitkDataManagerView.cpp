@@ -202,35 +202,6 @@ void QmitkDataManagerView::CreateQtPartControl(QWidget* parent)
   auto surfaceDataNodeDescriptor =
     QmitkNodeDescriptorManager::GetInstance()->GetDescriptor("Surface");
 
-  auto labelSetImageDataNodeDescriptor =
-    QmitkNodeDescriptorManager::GetInstance()->GetDescriptor("LabelSetImage");
-
-  auto pointSetNodeDescriptor =
-    QmitkNodeDescriptorManager::GetInstance()->GetDescriptor("PointSet");
-
-  auto planarLineNodeDescriptor =
-    QmitkNodeDescriptorManager::GetInstance()->GetDescriptor("PlanarLine");
-  auto planarCircleNodeDescriptor =
-    QmitkNodeDescriptorManager::GetInstance()->GetDescriptor("PlanarCircle");
-  auto planarEllipseNodeDescriptor =
-    QmitkNodeDescriptorManager::GetInstance()->GetDescriptor("PlanarEllipse");
-  auto planarAngleNodeDescriptor =
-    QmitkNodeDescriptorManager::GetInstance()->GetDescriptor("PlanarAngle");
-  auto planarFourPointAngleNodeDescriptor =
-    QmitkNodeDescriptorManager::GetInstance()->GetDescriptor("PlanarFourPointAngle");
-  auto planarRectangleNodeDescriptor =
-    QmitkNodeDescriptorManager::GetInstance()->GetDescriptor("PlanarRectangle");
-  auto planarPolygonNodeDescriptor =
-    QmitkNodeDescriptorManager::GetInstance()->GetDescriptor("PlanarPolygon");
-  auto planarPathNodeDescriptor =
-    QmitkNodeDescriptorManager::GetInstance()->GetDescriptor("PlanarPath");
-  auto planarDoubleEllipseNodeDescriptor =
-    QmitkNodeDescriptorManager::GetInstance()->GetDescriptor("PlanarDoubleEllipse");
-  auto planarBezierCurveNodeDescriptor =
-    QmitkNodeDescriptorManager::GetInstance()->GetDescriptor("PlanarBezierCurve");
-  auto planarSubdivisionPolygonNodeDescriptor =
-    QmitkNodeDescriptorManager::GetInstance()->GetDescriptor("PlanarSubdivisionPolygon");
-
   QAction* globalReinitAction = new QAction(QIcon(":/org.mitk.gui.qt.datamanager/Refresh_48.png"), tr("Global Reinit"), this);
   QObject::connect( globalReinitAction, SIGNAL( triggered(bool) )
     , this, SLOT( GlobalReinit(bool) ) );
