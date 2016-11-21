@@ -58,9 +58,12 @@ QmitkCommonActivator::start(ctkPluginContext* context)
 void
 QmitkCommonActivator::stop(ctkPluginContext* context)
 {
-  Q_UNUSED(context)
+	Q_UNUSED(context)
 
-  m_ViewCoordinator->Stop();
+	if (!m_ViewCoordinator.isNull())
+	{
+		m_ViewCoordinator->Stop();
+	}
   m_ViewCoordinator.reset();
 
   this->m_PrefServiceTracker.reset();
