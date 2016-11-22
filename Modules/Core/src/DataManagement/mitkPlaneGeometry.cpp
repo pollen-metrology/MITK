@@ -382,6 +382,7 @@ namespace mitk
   void PlaneGeometry::InitializeStandardPlane(const BaseGeometry *geometry3D,
                                               PlaneOrientation planeorientation,
                                               ScalarType zPosition,
+                                              bool top,
                                               bool frontside,
                                               bool rotated,
                                               bool top)
@@ -477,7 +478,7 @@ namespace mitk
     transform->SetOffset(origin.GetVectorFromOrigin());
 
     InitializeStandardPlane(
-      width, height, transform, planeorientation, zPosition, frontside, rotated);
+      width, height, transform, planeorientation, zPosition, frontside, rotated, top);
   }
 
   void PlaneGeometry::InitializeStandardPlane(
@@ -519,7 +520,7 @@ namespace mitk
 
     ScalarType zPosition = top ? 0.5 : geometry3D->GetExtent(dominantAxis) - 0.5;
 
-    InitializeStandardPlane(geometry3D, planeorientation, zPosition, frontside, rotated);
+    InitializeStandardPlane(geometry3D, planeorientation, zPosition, frontside, rotated, top);
   }
 
   void PlaneGeometry::InitializeStandardPlane(const Vector3D &rightVector,
