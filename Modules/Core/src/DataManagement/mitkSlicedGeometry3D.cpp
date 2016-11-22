@@ -251,9 +251,9 @@ void mitk::SlicedGeometry3D::InitializePlanes(const mitk::BaseGeometry *geometry
 #ifndef NDEBUG
   int upDirection = itk::Function::Sign(inverseMatrix[dominantAxis][worldAxis]);
 
-  /// The normal vector of an imaginary plane that points from the world origin (bottom left back
-  /// corner or the world, with the lowest physical coordinates) towards the inside of the volume,
-  /// along the renderer axis. Length is the slice thickness.
+  /// The normal vector of an imaginary plane that points from the "world origin"
+  /// (the corner with the lowest physical coordinates) towards the inside of the
+  /// volume, along the renderer axis. Length is the slice thickness.
   Vector3D worldPlaneNormal = inverseMatrix.get_row(dominantAxis) * (upDirection * viewSpacing);
 
   /// The normal of the standard plane geometry just created.
