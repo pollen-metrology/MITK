@@ -85,7 +85,7 @@ int BlueBerryTestDriver::Run()
 
 
   // Print test for humans
-  CppUnit::TextOutputter outputter(&result, std::cerr);
+  CppUnit::TextOutputter outputter(&result, std::cout);
   outputter.write();
 
   // Print test for jenkins
