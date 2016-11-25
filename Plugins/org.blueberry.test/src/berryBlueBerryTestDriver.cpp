@@ -22,6 +22,9 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include "cppunit/TestResult.h"
 #include "cppunit/TestResultCollector.h"
 
+#include "cppunit/TextOutputter.h"
+#include "cppunit/XmlOutputter.h"
+
 namespace berry
 {
 
@@ -79,6 +82,20 @@ int BlueBerryTestDriver::Run()
   controller.addListener(&result);
 
   runner.run(controller);
+
+
+  // Print test for humans
+  CppUnit::TextOutputter outputter(&result, std::cout);
+  outputter.write();
+
+  // Print test for jenkins
+  std::ofstream testFile;
+  testFile.open("cppUnit.xml");
+  CppUnit::XmlOutputter xmlOutputter(&result, testFile);
+  xmlOutputter.write();
+  testFile.close();
+
+
   return result.wasSuccessful() ? 0 : 1;
 }
 
