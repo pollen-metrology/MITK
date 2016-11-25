@@ -62,7 +62,7 @@ void mitk::BindDispatcherInteractor::RegisterInteractor(const mitk::DataNode* da
 {
   if (m_Dispatcher.IsNotNull())
   {
-    m_Dispatcher->AddDataInteractor(dataNode);
+    //m_Dispatcher->AddDataInteractor(dataNode);
   }
 
 }
