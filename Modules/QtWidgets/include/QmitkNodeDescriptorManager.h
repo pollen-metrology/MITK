@@ -68,6 +68,13 @@ public:
   QmitkNodeDescriptor* GetDescriptor(const mitk::DataNode* _Node) const;
 
   ///
+  /// Get all the descriptor in the descriptors list that matches the given node.
+  /// \return a List of QmitkNodeDescriptor for the given node or a QmitkNodeDescriptor describing unknown nodes (never 0)
+  /// \sa AddDescriptor()
+  ///
+  QList<QmitkNodeDescriptor*> GetDescriptorList(const mitk::DataNode * _Node) const;
+
+  ///
   /// Get the last QmitkNodeDescriptor for the given class name
   ///
   /// \return a QmitkNodeDescriptor for the given class name or 0 if there is no QmitkNodeDescriptor for _ClassName
