@@ -29,8 +29,6 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <mitkHotspotMaskGenerator.h>
 #include <mitkImageMaskGenerator.h>
 
-#include <mitkIOUtil.h>
-
 /**
  \section hotspotCalculationTestCases Testcases
 
@@ -520,7 +518,6 @@ struct mitkImageStatisticsHotspotTestClass
 
       mitk::HotspotMaskGenerator::Pointer hotspotMaskGen = mitk::HotspotMaskGenerator::New();
       hotspotMaskGen->SetInputImage(image);
-      hotspotMaskGen->SetLabel(testParameters.m_Label[label]);
       hotspotMaskGen->SetMask(imgMaskGen.GetPointer());
       hotspotMaskGen->SetHotspotRadiusInMM(testParameters.m_HotspotRadiusInMM);
       if(testParameters.m_EntireHotspotInImage == 1)
@@ -554,7 +551,8 @@ struct mitkImageStatisticsHotspotTestClass
       }
       MITK_DEBUG << "Masking is set to hotspot only";
     }
-    result = statisticsCalculator->GetStatistics(0);
+
+    result = statisticsCalculator->GetStatistics(0, label);
 
     return result;
   }

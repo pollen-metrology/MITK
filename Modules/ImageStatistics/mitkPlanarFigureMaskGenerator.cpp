@@ -350,14 +350,6 @@ void PlanarFigureMaskGenerator::CalculateMask()
     m_InternalMask = planarFigureMaskImage;
 }
 
-void PlanarFigureMaskGenerator::SetTimeStep(unsigned int timeStep)
-{
-    if (timeStep != m_TimeStep)
-    {
-        m_TimeStep = timeStep;
-    }
-}
-
 mitk::Image::Pointer PlanarFigureMaskGenerator::GetMask()
 {
     if (IsUpdateRequired())
@@ -366,7 +358,7 @@ mitk::Image::Pointer PlanarFigureMaskGenerator::GetMask()
         this->Modified();
     }
 
-    m_InternalMaskUpdateTime = this->GetMTime();
+    m_InternalMaskUpdateTime = m_InternalMask->GetMTime();
     return m_InternalMask;
 }
 

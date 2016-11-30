@@ -81,12 +81,6 @@ namespace mitk
          */
         vnl_vector<int> GetConvolutionImageMinIndex();
 
-        /**
-         * @brief SetTimeStep is used to set the time step for which the mask is to be generated
-         * @param timeStep
-         */
-        void SetTimeStep(unsigned int timeStep);
-
     protected:
         HotspotMaskGenerator();
 

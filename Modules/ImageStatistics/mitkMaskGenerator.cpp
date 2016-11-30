@@ -2,6 +2,14 @@
 
 namespace mitk
 {
+void MaskGenerator::SetTimeStep(unsigned int timeStep)
+{
+    if (m_TimeStep != timeStep)
+    {
+        m_TimeStep = timeStep;
+        this->Modified();
+    }
+}
 
 MaskGenerator::MaskGenerator():
     m_TimeStep(0)
@@ -26,14 +34,6 @@ mitk::Image::Pointer MaskGenerator::GetMask()
 
 
 //}
-
-void MaskGenerator::SetTimeStep(unsigned int timeStep)
-{
-    if (timeStep != m_TimeStep)
-    {
-        m_TimeStep = timeStep;
-    }
-}
 
 void MaskGenerator::SetInputImage(mitk::Image::Pointer inputImg)
 {

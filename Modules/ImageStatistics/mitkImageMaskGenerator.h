@@ -26,8 +26,6 @@ public:
 
     mitk::Image::Pointer GetMask();
 
-    void SetTimeStep(unsigned int timeStep);
-
     void SetImageMask(mitk::Image::Pointer maskImage);
 
 protected:
@@ -38,7 +36,6 @@ protected:
 
 private:
     bool IsUpdateRequired() const;
-    void UpdateInternalMask();
 
     mitk::Image::Pointer m_internalMaskImage;
     unsigned long m_InternalMaskUpdateTime;
