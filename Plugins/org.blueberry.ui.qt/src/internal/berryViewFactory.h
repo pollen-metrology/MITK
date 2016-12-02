@@ -37,7 +37,7 @@ struct IViewRegistry;
  * It implements a reference counting strategy so that one view can be shared
  * by more than one client.
  */
-class ViewFactory { // implements IExtensionChangeHandler {
+class BERRY_UI_QT ViewFactory { // implements IExtensionChangeHandler {
 
 private:
 

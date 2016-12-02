@@ -41,7 +41,7 @@ class PerspectiveHelper;
  * \ingroup org_blueberry_ui_internal
  *
  */
-class Perspective : public Object {
+class BERRY_UI_QT Perspective : public Object {
 
 public:
 
