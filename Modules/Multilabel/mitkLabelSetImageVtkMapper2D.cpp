@@ -259,10 +259,43 @@ void mitk::LabelSetImageVtkMapper2D::GenerateDataForRenderer( mitk::BaseRenderer
 
   if (image->GetActiveLabel())
   {
-    int pixelValue = image->GetActiveLabel()->GetValue();
-    //MITK_INFO << "pixValue VTK " << pixelValue;
     //generate contours/outlines
-    localStorage->m_OutlinePolyData = this->CreateOutlinePolyData( renderer, localStorage->m_ReslicedImageVector[image->GetActiveLayer()], pixelValue );
+
+	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New(); //the points to draw
+	vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New(); //the lines to connect the points
+
+	bool labelsetContourAll;
+	node->GetBoolProperty("labelset.contour.all", labelsetContourAll);
+
+	bool labelsetContourActive;
+	node->GetBoolProperty("labelset.contour.active", labelsetContourActive);
+	
+	if (labelsetContourAll)
+	{
+		auto labelIt = image->GetActiveLabelSet()->IteratorBegin();
+		++labelIt; // skip first layer
+		auto labelItEnd = image->GetActiveLabelSet()->IteratorEnd();
+		for (; labelIt != labelItEnd; ++labelIt)
+		{
+			unsigned short pixelValue = labelIt->second->GetValue();
+			this->UpdateOutlinePolyData(renderer, localStorage->m_ReslicedImageVector[image->GetActiveLayer()], pixelValue, points, lines);
+		}
+	}
+	else if (labelsetContourActive)
+	{
+		int pixelValue = image->GetActiveLabel()->GetValue();
+		//MITK_INFO << "pixValue VTK " << pixelValue;
+		this->UpdateOutlinePolyData(renderer, localStorage->m_ReslicedImageVector[image->GetActiveLayer()], pixelValue, points, lines);
+	}
+
+	// Create a polydata to store everything in
+	localStorage->m_OutlinePolyData = vtkSmartPointer<vtkPolyData>::New();
+	// Add the points to the dataset
+	localStorage->m_OutlinePolyData->SetPoints(points);
+	// Add the lines to the dataset
+	localStorage->m_OutlinePolyData->SetLines(lines);
+
+
     localStorage->m_OutlineActor->SetVisibility(true);
     localStorage->m_OutlineShadowActor->SetVisibility(true);
     const mitk::Color& color = image->GetActiveLabel()->GetColor();
@@ -306,8 +339,8 @@ bool mitk::LabelSetImageVtkMapper2D::RenderingGeometryIntersectsImage( const Pla
   return false;
 }
 
-vtkSmartPointer<vtkPolyData>
-mitk::LabelSetImageVtkMapper2D::CreateOutlinePolyData(mitk::BaseRenderer* renderer, vtkImageData* image, int pixelValue )
+void
+mitk::LabelSetImageVtkMapper2D::UpdateOutlinePolyData(mitk::BaseRenderer* renderer, vtkImageData* image, int pixelValue, vtkSmartPointer<vtkPoints> & points, vtkSmartPointer<vtkCellArray> & lines)
 {
   LocalStorage* localStorage = this->GetLocalStorage(renderer);
 
@@ -326,9 +359,6 @@ mitk::LabelSetImageVtkMapper2D::CreateOutlinePolyData(mitk::BaseRenderer* render
 
   //get the depth for each contour
   float depth = this->CalculateLayerDepth(renderer);
-
-  vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New(); //the points to draw
-  vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New(); //the lines to connect the points
 
   // We take the pointer to the first pixel of the image
   mitk::Label::PixelType* currentPixel = static_cast< mitk::Label::PixelType* >( image->GetScalarPointer() );
@@ -440,14 +470,6 @@ mitk::LabelSetImageVtkMapper2D::CreateOutlinePolyData(mitk::BaseRenderer* render
     // sure we do not exceed the bounds of the image
     currentPixel++;
   }//end of while
-
-  // Create a polydata to store everything in
-  vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
-  // Add the points to the dataset
-  polyData->SetPoints(points);
-  // Add the lines to the dataset
-  polyData->SetLines(lines);
-  return polyData;
 }
 
 void mitk::LabelSetImageVtkMapper2D::ApplyColor( mitk::BaseRenderer* renderer, const mitk::Color& color )

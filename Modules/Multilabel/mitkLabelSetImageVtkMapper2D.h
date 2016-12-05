@@ -41,6 +41,7 @@ class vtkMitkThickSlicesFilter;
 class vtkPolyData;
 class vtkMitkLevelWindowFilter;
 class vtkNeverTranslucentTexture;
+class vtkCellArray;
 
 namespace mitk {
 
@@ -174,7 +175,7 @@ protected:
       \param renderer: Pointer to the renderer containing the needed information
       \note This code is based on code from the iil library.
       */
-  vtkSmartPointer<vtkPolyData> CreateOutlinePolyData(mitk::BaseRenderer* renderer, vtkImageData* image, int pixelValue = 1);
+  void UpdateOutlinePolyData(mitk::BaseRenderer* renderer, vtkImageData* image, int pixelValue, vtkSmartPointer<vtkPoints> & points, vtkSmartPointer<vtkCellArray> & lines);
 
   /** Default constructor */
   LabelSetImageVtkMapper2D();
