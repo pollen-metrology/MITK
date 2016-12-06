@@ -202,21 +202,21 @@ void mitkImageStatisticsCalculatorTestSuite::tearDown()
 
 void mitkImageStatisticsCalculatorTestSuite::setUp()
 {
-    std::string filename = this->GetTestDataFilePath("ImageStatistics/testimage.dcm");
+    std::string filename = this->GetTestDataFilePath("ImageStatisticsTestData/testimage.dcm");
 
     std::string Pic3DFile = this->GetTestDataFilePath("Pic3D.nrrd");
-    std::string Pic3DImageMaskFile = this->GetTestDataFilePath("ImageStatistics/Pic3D-labels.nrrd");
-    std::string Pic3DImageMaskFile2 = this->GetTestDataFilePath("ImageStatistics/Pic3D-labels2.nrrd");
-    std::string Pic3DAxialPlanarFigureFile = this->GetTestDataFilePath("ImageStatistics/Pic3DAxialPlanarFigure.pf");
-    std::string Pic3DSagittalPlanarFigureFile = this->GetTestDataFilePath("ImageStatistics/Pic3DSagittalPlanarFigure.pf");
-    std::string Pic3DCoronalPlanarFigureFile = this->GetTestDataFilePath("ImageStatistics/Pic3DCoronalPlanarFigure.pf");
+    std::string Pic3DImageMaskFile = this->GetTestDataFilePath("ImageStatisticsTestData/Pic3D-labels.nrrd");
+    std::string Pic3DImageMaskFile2 = this->GetTestDataFilePath("ImageStatisticsTestData/Pic3D-labels2.nrrd");
+    std::string Pic3DAxialPlanarFigureFile = this->GetTestDataFilePath("ImageStatisticsTestData/Pic3DAxialPlanarFigure.pf");
+    std::string Pic3DSagittalPlanarFigureFile = this->GetTestDataFilePath("ImageStatisticsTestData/Pic3DSagittalPlanarFigure.pf");
+    std::string Pic3DCoronalPlanarFigureFile = this->GetTestDataFilePath("ImageStatisticsTestData/Pic3DCoronalPlanarFigure.pf");
 
     std::string US4DFile = this->GetTestDataFilePath("US4DCyl.nrrd");
-    std::string US4DImageMaskFile = this->GetTestDataFilePath("ImageStatistics/US4D-labels.nrrd");
-    std::string US4DImageMaskFile2 = this->GetTestDataFilePath("ImageStatistics/US4D-labels2.nrrd");
-    std::string US4DAxialPlanarFigureFile = this->GetTestDataFilePath("ImageStatistics/US4DAxialPlanarFigure.pf");
-    std::string US4DSagittalPlanarFigureFile = this->GetTestDataFilePath("ImageStatistics/US4DSagittalPlanarFigure.pf");
-    std::string US4DCoronalPlanarFigureFile = this->GetTestDataFilePath("ImageStatistics/US4DCoronalPlanarFigure.pf");
+    std::string US4DImageMaskFile = this->GetTestDataFilePath("ImageStatisticsTestData/US4D-labels.nrrd");
+    std::string US4DImageMaskFile2 = this->GetTestDataFilePath("ImageStatisticsTestData/US4D-labels2.nrrd");
+    std::string US4DAxialPlanarFigureFile = this->GetTestDataFilePath("ImageStatisticsTestData/US4DAxialPlanarFigure.pf");
+    std::string US4DSagittalPlanarFigureFile = this->GetTestDataFilePath("ImageStatisticsTestData/US4DSagittalPlanarFigure.pf");
+    std::string US4DCoronalPlanarFigureFile = this->GetTestDataFilePath("ImageStatisticsTestData/US4DCoronalPlanarFigure.pf");
 
   if (filename.empty() ||
           Pic3DFile.empty() || Pic3DImageMaskFile.empty() ||
@@ -1046,7 +1046,7 @@ void mitkImageStatisticsCalculatorTestSuite::TestPic3DSecondaryMaskStatistics()
     imgMaskGen2->SetTimeStep(0);
 
     const mitk::ImageStatisticsCalculator::StatisticsContainer::Pointer result = ComputeStatisticsNew(m_Pic3DImage, 0, imgMaskGen2.GetPointer(), ignPixelValMask.GetPointer());
-    std::cout << result->GetAsString();
+    //std::cout << result->GetAsString();
 
     VerifyStatistics(result,
                      expected_N,
@@ -1099,7 +1099,7 @@ void mitkImageStatisticsCalculatorTestSuite::TestUS4DCylStatistics_time1()
     expected_maxIndex[2] = 0;
 
     const mitk::ImageStatisticsCalculator::StatisticsContainer::Pointer result = ComputeStatisticsNew(m_US4DImage, 1);
-    std::cout << result->GetAsString();
+    //std::cout << result->GetAsString();
 
     VerifyStatistics(result,
                      expected_N,
@@ -1156,7 +1156,7 @@ void mitkImageStatisticsCalculatorTestSuite::TestUS4DCylAxialPlanarFigureMaskSta
     pfMaskGen->SetPlanarFigure(m_US4DPlanarFigureAxial);
 
     const mitk::ImageStatisticsCalculator::StatisticsContainer::Pointer result = ComputeStatisticsNew(m_US4DImage, 1, pfMaskGen.GetPointer());
-    std::cout << result->GetAsString();
+    //std::cout << result->GetAsString();
 
     VerifyStatistics(result,
                      expected_N,
@@ -1213,7 +1213,7 @@ void mitkImageStatisticsCalculatorTestSuite::TestUS4DCylSagittalPlanarFigureMask
     pfMaskGen->SetPlanarFigure(m_US4DPlanarFigureSagittal);
 
     const mitk::ImageStatisticsCalculator::StatisticsContainer::Pointer result = ComputeStatisticsNew(m_US4DImage, 1, pfMaskGen.GetPointer());
-    std::cout << result->GetAsString();
+    //std::cout << result->GetAsString();
 
     VerifyStatistics(result,
                      expected_N,
@@ -1270,7 +1270,7 @@ void mitkImageStatisticsCalculatorTestSuite::TestUS4DCylCoronalPlanarFigureMaskS
     pfMaskGen->SetPlanarFigure(m_US4DPlanarFigureCoronal);
 
     const mitk::ImageStatisticsCalculator::StatisticsContainer::Pointer result = ComputeStatisticsNew(m_US4DImage, 1, pfMaskGen.GetPointer());
-    std::cout << result->GetAsString();
+    //std::cout << result->GetAsString();
 
     VerifyStatistics(result,
                      expected_N,
@@ -1327,7 +1327,7 @@ void mitkImageStatisticsCalculatorTestSuite::TestUS4DCylImageMaskStatistics_time
     imgMask1->SetImageMask(m_US4DImageMask);
 
     const mitk::ImageStatisticsCalculator::StatisticsContainer::Pointer result = ComputeStatisticsNew(m_US4DImage, 1, imgMask1.GetPointer(), nullptr, 1);
-    std::cout << result->GetAsString();
+    //std::cout << result->GetAsString();
 
     VerifyStatistics(result,
                      expected_N,
@@ -1384,7 +1384,7 @@ void mitkImageStatisticsCalculatorTestSuite::TestUS4DCylImageMaskStatistics_time
     imgMask1->SetImageMask(m_US4DImageMask);
 
     const mitk::ImageStatisticsCalculator::StatisticsContainer::Pointer result = ComputeStatisticsNew(m_US4DImage, 2, imgMask1.GetPointer(), nullptr, 1);
-    std::cout << result->GetAsString();
+    //std::cout << result->GetAsString();
 
     VerifyStatistics(result,
                      expected_N,
@@ -1441,7 +1441,7 @@ void mitkImageStatisticsCalculatorTestSuite::TestUS4DCylImageMaskStatistics_time
     imgMask1->SetImageMask(m_US4DImageMask);
 
     const mitk::ImageStatisticsCalculator::StatisticsContainer::Pointer result = ComputeStatisticsNew(m_US4DImage, 1, imgMask1.GetPointer(), nullptr, 2);
-    std::cout << result->GetAsString();
+    //std::cout << result->GetAsString();
 
     VerifyStatistics(result,
                      expected_N,
@@ -1499,7 +1499,7 @@ void mitkImageStatisticsCalculatorTestSuite::TestUS4DCylIgnorePixelValueMaskStat
     ignPixelValMask->SetTimeStep(1);
 
     const mitk::ImageStatisticsCalculator::StatisticsContainer::Pointer result = ComputeStatisticsNew(m_US4DImage, 1, ignPixelValMask.GetPointer());
-    std::cout << result->GetAsString();
+    //std::cout << result->GetAsString();
 
     VerifyStatistics(result,
                      expected_N,
@@ -1560,7 +1560,7 @@ void mitkImageStatisticsCalculatorTestSuite::TestUS4DCylSecondaryMaskStatistics_
     imgMaskGen2->SetInputImage(m_US4DImage);
 
     const mitk::ImageStatisticsCalculator::StatisticsContainer::Pointer result = ComputeStatisticsNew(m_US4DImage, 1, imgMaskGen2.GetPointer(), ignPixelValMask.GetPointer());
-    std::cout << result->GetAsString();
+    //std::cout << result->GetAsString();
 
     VerifyStatistics(result,
                      expected_N,
