@@ -73,8 +73,56 @@ public:
     sliceNavigationController->SetViewDirection(mitk::SliceNavigationController::Axial);
     sliceNavigationController->Update();
 
-    mitk::Point3D origin;
-    mitk::FillVector3D(origin, 10.0, 70.0, 229.0);
+int testReorientPlanes()
+{
+  // Create PlaneGeometry
+  mitk::PlaneGeometry::Pointer planegeometry = mitk::PlaneGeometry::New();
+
+  mitk::Point3D origin;
+  mitk::Vector3D right, bottom, normal;
+  mitk::ScalarType width, height;
+  mitk::ScalarType widthInMM, heightInMM, thicknessInMM;
+
+  width = 100;
+  widthInMM = width;
+  height = 200;
+  heightInMM = height;
+  thicknessInMM = 1.5;
+
+  mitk::FillVector3D(origin, 4.5, 7.3, 11.2);
+  mitk::FillVector3D(right, widthInMM, 0, 0);
+  mitk::FillVector3D(bottom, 0, heightInMM, 0);
+  mitk::FillVector3D(normal, 0, 0, thicknessInMM);
+
+  mitk::Vector3D spacing;
+  normal.Normalize();
+  normal *= thicknessInMM;
+  mitk::FillVector3D(spacing, 1.0, 1.0, thicknessInMM);
+  planegeometry->InitializeStandardPlane(right.GetVnlVector(), bottom.GetVnlVector(), &spacing);
+  planegeometry->SetOrigin(origin);
+
+  // Create SlicedGeometry3D out of planeGeometry
+  mitk::SlicedGeometry3D::Pointer slicedgeometry1 = mitk::SlicedGeometry3D::New();
+  unsigned int numSlices = 20;
+  slicedgeometry1->InitializeEvenlySpaced(planegeometry, thicknessInMM, numSlices);
+
+  // Create another slicedgeo which will be rotated
+  mitk::SlicedGeometry3D::Pointer slicedgeometry2 = mitk::SlicedGeometry3D::New();
+  slicedgeometry2->InitializeEvenlySpaced(planegeometry, thicknessInMM, numSlices);
+
+  // Create  geo3D as reference
+  mitk::Geometry3D::Pointer geometry = mitk::Geometry3D::New();
+  geometry->SetBounds(slicedgeometry1->GetBounds());
+  geometry->SetIndexToWorldTransform(slicedgeometry1->GetIndexToWorldTransform());
+
+  // Initialize planes
+  for (int i = 0; i < (int)numSlices; i++)
+  {
+    mitk::PlaneGeometry::Pointer geo2d = mitk::PlaneGeometry::New();
+    geo2d->Initialize();
+    geo2d->SetReferenceGeometry(geometry);
+    slicedgeometry1->SetPlaneGeometry(geo2d, i);
+  }
 
     mitk::Vector3D firstAxisVector;
     mitk::FillVector3D(firstAxisVector, 100.0, 0.0, 0.0);
@@ -121,8 +169,56 @@ public:
     sliceNavigationController->SetViewDirection(mitk::SliceNavigationController::Sagittal);
     sliceNavigationController->Update();
 
-    mitk::Point3D origin;
-    mitk::FillVector3D(origin, 10.5, 20.0, 30.0);
+int testRestorePlanePostionOperation()
+{
+  // Create PlaneGeometry
+  mitk::PlaneGeometry::Pointer planegeometry = mitk::PlaneGeometry::New();
+
+  mitk::Point3D origin;
+  mitk::Vector3D right, bottom, normal;
+  mitk::ScalarType width, height;
+  mitk::ScalarType widthInMM, heightInMM, thicknessInMM;
+
+  width = 100;
+  widthInMM = width;
+  height = 200;
+  heightInMM = height;
+  thicknessInMM = 1.5;
+
+  mitk::FillVector3D(origin, 4.5, 7.3, 11.2);
+  mitk::FillVector3D(right, widthInMM, 0, 0);
+  mitk::FillVector3D(bottom, 0, heightInMM, 0);
+  mitk::FillVector3D(normal, 0, 0, thicknessInMM);
+
+  mitk::Vector3D spacing;
+  normal.Normalize();
+  normal *= thicknessInMM;
+  mitk::FillVector3D(spacing, 1.0, 1.0, thicknessInMM);
+  planegeometry->InitializeStandardPlane(right.GetVnlVector(), bottom.GetVnlVector(), &spacing);
+  planegeometry->SetOrigin(origin);
+
+  // Create SlicedGeometry3D out of planeGeometry
+  mitk::SlicedGeometry3D::Pointer slicedgeometry1 = mitk::SlicedGeometry3D::New();
+  unsigned int numSlices = 300;
+  slicedgeometry1->InitializeEvenlySpaced(planegeometry, thicknessInMM, numSlices);
+
+  // Create another slicedgeo which will be rotated
+  mitk::SlicedGeometry3D::Pointer slicedgeometry2 = mitk::SlicedGeometry3D::New();
+  slicedgeometry2->InitializeEvenlySpaced(planegeometry, thicknessInMM, numSlices);
+
+  // Create  geo3D as reference
+  mitk::Geometry3D::Pointer geometry = mitk::Geometry3D::New();
+  geometry->SetBounds(slicedgeometry1->GetBounds());
+  geometry->SetIndexToWorldTransform(slicedgeometry1->GetIndexToWorldTransform());
+
+  // Initialize planes
+  for (int i = 0; i < (int)numSlices; i++)
+  {
+    mitk::PlaneGeometry::Pointer geo2d = mitk::PlaneGeometry::New();
+    geo2d->Initialize();
+    geo2d->SetReferenceGeometry(geometry);
+    slicedgeometry1->SetPlaneGeometry(geo2d, i);
+  }
 
     mitk::Vector3D firstAxisVector;
     mitk::FillVector3D(firstAxisVector, 0.0, 50.0, 0.0);
@@ -144,8 +240,56 @@ private:
 
     std::cout << "  Origin" << std::endl;
 
-    if (!mitk::Equal(geometry->GetOrigin(), origin, mitk::eps, true))
-      result = false;
+int mitkSliceNavigationControllerTest(int /*argc*/, char * /*argv*/ [])
+{
+  int result = EXIT_FAILURE;
+
+  std::cout << "Creating and initializing a PlaneGeometry: ";
+  mitk::PlaneGeometry::Pointer planegeometry = mitk::PlaneGeometry::New();
+
+  mitk::Point3D origin;
+  mitk::Vector3D right, bottom, normal;
+  mitk::ScalarType width, height;
+  mitk::ScalarType widthInMM, heightInMM, thicknessInMM;
+
+  width = 100;
+  widthInMM = width;
+  height = 200;
+  heightInMM = height;
+  thicknessInMM = 1.5;
+  //  mitk::FillVector3D(origin,         0,          0, thicknessInMM*0.5);
+  mitk::FillVector3D(origin, 4.5, 7.3, 11.2);
+  mitk::FillVector3D(right, widthInMM, 0, 0);
+  mitk::FillVector3D(bottom, 0, heightInMM, 0);
+  mitk::FillVector3D(normal, 0, 0, thicknessInMM);
+
+  mitk::Vector3D spacing;
+  normal.Normalize();
+  normal *= thicknessInMM;
+  mitk::FillVector3D(spacing, 1.0, 1.0, thicknessInMM);
+  planegeometry->InitializeStandardPlane(right.GetVnlVector(), bottom.GetVnlVector(), &spacing);
+  planegeometry->SetOrigin(origin);
+  std::cout << "[PASSED]" << std::endl;
+
+  std::cout << "Creating and initializing a SlicedGeometry3D with the PlaneGeometry: ";
+  mitk::SlicedGeometry3D::Pointer slicedgeometry = mitk::SlicedGeometry3D::New();
+  unsigned int numSlices = 5;
+  slicedgeometry->InitializeEvenlySpaced(planegeometry, thicknessInMM, numSlices);
+  std::cout << "[PASSED]" << std::endl;
+
+  std::cout << "Creating a Geometry3D with the same extent as the SlicedGeometry3D: ";
+  mitk::Geometry3D::Pointer geometry = mitk::Geometry3D::New();
+  geometry->SetBounds(slicedgeometry->GetBounds());
+  geometry->SetIndexToWorldTransform(slicedgeometry->GetIndexToWorldTransform());
+  std::cout << "[PASSED]" << std::endl;
+
+  mitk::Point3D cornerpoint0;
+  cornerpoint0 = geometry->GetCornerPoint(0);
+
+  result = testGeometry(
+    geometry, width, height, numSlices, widthInMM, heightInMM, thicknessInMM, cornerpoint0, right, bottom, normal);
+  if (result != EXIT_SUCCESS)
+    return result;
 
     std::cout << "  First axis vector" << std::endl;
 
