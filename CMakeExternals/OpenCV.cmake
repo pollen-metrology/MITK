@@ -66,7 +66,7 @@ if(MITK_USE_OpenCV)
       )
     endif()
 
-    set(openCVURL "c:/dev/libraries/archives/opencv-3.1.0.zip")
+    set(openCVURL ${OPENCV_LIBRARY_ARCHIVE})
     set(opencv_url ${openCVURL})
     #set(opencv_url_md5 54fe3dba49ea276ec0228f8819e653bc)
 
@@ -87,8 +87,10 @@ if(MITK_USE_OpenCV)
         -DWITH_IPP:BOOL=${WITH_IPP}
         -DEIGEN_INCLUDE_PATH:PATH=${EIGEN_INCLUDE_PATH}
         -DWITH_VFW:BOOL=${WITH_VFW}
+        -DWITH_V4L:BOOL=FALSE
+        -DWITH_GSTREAMER:BOOL=FALSE 
         -DWITH_VTK:BOOL=${WITH_VTK}
-        -DOPENCV_EXTRA_MODULES_PATH:PATH=c:/dev/libraries/unpack/opencv_contrib-master/modules 
+        -DOPENCV_EXTRA_MODULES_PATH:PATH=${OPENCV_EXTRA_MODULES_PATH}
         -DBUILD_opencv_adas:BOOL=OFF 
         -DBUILD_opencv_bgsegm:BOOL=OFF 
         -DBUILD_opencv_bioinspired:BOOL=OFF 
