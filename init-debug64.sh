@@ -1,0 +1,25 @@
+#!/bin/bash
+
+mkdir debug
+cd debug
+cmake .. \
+-G"Eclipse CDT4 - Unix Makefiles" \
+-DDESIRED_QT_VERSION=5 \
+-DMITK_USE_QT=ON \
+-DMITK_USE_BOOST=ON \
+-DCMAKE_BUILD_TYPE=Debug \
+-DBUILD_SHARED_LIBS=true \
+-DVTK_USE_QVTK=ON \
+-DVTK_USE_QVTK_QTOPENGL=ON \
+-DMITK_USE_Redland=ON \
+-DMITK_BUILD_ALL_PLUGINS:BOOL=ON \
+-DMITK_SHOW_CONSOLE_WINDOW=OFF \
+-DMITK_USE_OpenCV=ON \
+-DMITK_USE_Python=OFF \
+-DWITH_IPP:BOOL=FALSE \
+-DWITH_VFW:BOOL=FALSE \
+-DWITH_VTK:BOOL=NO \
+-DBUILD_TESTING:BOOL=YES \
+-DEIGEN_INCLUDE_PATH:PATH=/usr/include/eigen3 \
+-DEigen_INCLUDE_DIR=/usr/include/eigen3 \
+-DCMAKE_INSTALL_PREFIX=/pollen/dist/gcc/amd64/mitk-debug64
