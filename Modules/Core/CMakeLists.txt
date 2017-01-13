@@ -73,6 +73,11 @@ if(MSVC_IDE OR MSVC_VERSION OR MINGW)
   target_link_libraries(${MODULE_TARGET} PRIVATE psapi.lib)
 endif(MSVC_IDE OR MSVC_VERSION OR MINGW)
 
+if(CMAKE_COMPILER_IS_GNUXX)
+        mitkFunctionCheckCAndCXXCompilerFlags("-Wno-error=deprecated" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+        mitkFunctionCheckCAndCXXCompilerFlags("-Wno-error=deprecated-declarations" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+endif(CMAKE_COMPILER_IS_GNUXX)
+
 add_subdirectory(TestingHelper)
 
 add_subdirectory(test)
