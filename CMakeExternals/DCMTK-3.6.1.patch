@@ -38,3 +38,19 @@ diff -urNb dcmtk-3.6.1_20121102/CMake/osconfig.h.in DCMTK-src/CMake/osconfig.h.i
 +
  /* Define to the version of this package. */
  #define PACKAGE_VERSION "@DCMTK_PACKAGE_VERSION@"
+
+diff -rub dcmtk-3.6.1_20121102/ofstd/libsrc/ofstd.cc DCMTK/ofstd/libsrc/ofstd.cc
+--- dcmtk-3.6.1_20121102/ofstd/libsrc/ofstd.cc	2012-11-02 14:35:36.000000000 +0100
++++ DCMTK/ofstd/libsrc/ofstd.cc	2017-01-13 12:20:56.732200000 +0100
+@@ -151,6 +151,11 @@
+ #include <process.h>     /* needed for declaration of getpid() */
+ #endif
+ 
++#ifndef _WIN32
++#define isnan std::isnan
++#define isinf std::isinf
++#endif
++
+ #include "dcmtk/ofstd/ofnetdb.h"
+ #include "dcmtk/ofstd/ofgrp.h"
+ #include "dcmtk/ofstd/ofpwd.h"
