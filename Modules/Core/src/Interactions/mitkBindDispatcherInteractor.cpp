@@ -58,7 +58,7 @@ mitk::BindDispatcherInteractor::~BindDispatcherInteractor()
   }
 }
 
-void mitk::BindDispatcherInteractor::RegisterInteractor(const mitk::DataNode* dataNode)
+void mitk::BindDispatcherInteractor::RegisterInteractor(const mitk::DataNode* /*dataNode*/)
 {
   if (m_Dispatcher.IsNotNull())
   {
