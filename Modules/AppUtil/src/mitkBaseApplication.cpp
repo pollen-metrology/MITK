@@ -30,7 +30,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include <Poco/Util/HelpFormatter.h>
 
-#include <QSplashscreen>
+#include <QSplashScreen> 
 #include <QRunnable> 
 #include <QFileInfo>
 
@@ -88,7 +88,7 @@ public:
   SplashCloserCallback(QSplashScreen* splashscreen) {
     this->m_Splashscreen = splashscreen;
   }
-  void SplashCloserCallback::run() {
+  void run() {
     this->m_Splashscreen->close();
   }
 private:
