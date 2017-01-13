@@ -25,28 +25,6 @@ macro(REMOVE_LAST_PATH_ELEMENT_IF_EQUALS INPUT_VAR TARGET_VALUE)
   set(${INPUT_VAR} ${NEW_VAR})
 endmacro()
 
-# bug in opencv 2.4.2 and mitk: if we have a submodule OpenCV_LIB_DIR_OPT and
-# OpenCV_LIB_DIR_DBG is cached when find_package is called
-# resulting in wrong windows output paths, e.g. C:\OpenCV\lib\Release\Release
-# removing last Release and Debug string manually to fix it
-if( OpenCV_LIB_DIR )
-
-  # remove the Release/Debug in <path>\Release and <path>\Debug
-  # of OpenCV_LIB_DIR_OPT and OpenCV_LIB_DIR_DBG here
-  REMOVE_LAST_PATH_ELEMENT_IF_EQUALS(OpenCV_LIB_DIR_DBG Debug)
-  #message("OpenCV_LIB_DIR_DBG: ${OpenCV_LIB_DIR_DBG}")
-
-  set(OpenCV_LIB_DIR_OPT ${OpenCV_LIB_DIR_DBG})
-  #message("OpenCV_LIB_DIR_OPT: ${OpenCV_LIB_DIR_OPT}")
-
-  REMOVE_LAST_PATH_ELEMENT_IF_EQUALS(OpenCV_3RDPARTY_LIB_DIR_DBG Debug)
-  #message("OpenCV_3RDPARTY_LIB_DIR_DBG: ${OpenCV_3RDPARTY_LIB_DIR_DBG}")
-
-  set(OpenCV_3RDPARTY_LIB_DIR_OPT ${OpenCV_3RDPARTY_LIB_DIR_DBG})
-  #message("OpenCV_3RDPARTY_LIB_DIR_OPT: ${OpenCV_3RDPARTY_LIB_DIR_OPT}")
-
-endif()
-
 list(APPEND ALL_LIBRARIES ${OpenCV_LIBS})
 list(APPEND ALL_INCLUDE_DIRECTORIES ${OpenCV_INCLUDE_DIRS})
 
