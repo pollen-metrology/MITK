@@ -22,7 +22,7 @@ cmake .. \
 -DWITH_VFW:BOOL=FALSE \
 -DWITH_VTK:BOOL=NO \
 -DOPENCV_LIBRARY_ARCHIVE=/pollen/libraries/opencv-3.1.0.zip \
--DOPENCV_EXTRA_MODULES_PATH:PATH=/pollen/libraries/opencv_contrib-3.1.0 \
+-DOPENCV_EXTRA_MODULES_PATH:PATH=/pollen/libraries/opencv_contrib-3.1.0/modules \
 -DBUILD_TESTING:BOOL=YES \
 -DEIGEN_INCLUDE_PATH:PATH=/usr/include/eigen3 \
 -DEigen_INCLUDE_DIR=/usr/include/eigen3 \
