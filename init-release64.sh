@@ -3,6 +3,11 @@
 mkdir release
 cd release
 
+# workaround for patch 
+# detection for PythonQt
+# in CTK CMake files
+cp /usr/bin/patch .
+
 cmake .. \
 -G"Eclipse CDT4 - Unix Makefiles" \
 -DDESIRED_QT_VERSION=5 \
