@@ -16,10 +16,10 @@ diff -urNb CTK_b721b7ca.orig/CMakeExternals/PythonQt.cmake b721b7ca.patched/CMak
 +  if(NOT MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL)
 +    set(MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL http://mitk.org/download/thirdparty)
 +  endif()
++  find_program(PATCH_COMMAND patch ${CMAKE_CURRENT_BINARY_DIR})
 +  if((NOT PATCH_COMMAND OR NOT EXISTS ${PATCH_COMMAND}) AND WIN32)
 +    downloadFile(${MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL}/patch.exe
 +               ${CMAKE_CURRENT_BINARY_DIR}/patch.exe)
-+    find_program(PATCH_COMMAND patch ${CMAKE_CURRENT_BINARY_DIR})
 +  endif()
 +  if(NOT PATCH_COMMAND)
 +    message(FATAL_ERROR "No patch program found.")
