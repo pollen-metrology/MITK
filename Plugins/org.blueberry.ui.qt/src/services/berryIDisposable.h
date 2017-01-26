@@ -46,7 +46,7 @@ namespace berry {
  * This interface can be extended or implemented by clients.
  * </p>
  */
-struct IDisposable : public virtual Object
+struct BERRY_UI_QT IDisposable : public virtual Object
 {
 
   berryObjectMacro(berry::IDisposable)
