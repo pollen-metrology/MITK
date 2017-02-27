@@ -319,7 +319,7 @@ std::vector<int> mitk::CustomTagParser::GetExternalRevisions()
   return availableRevisionsVector;
 }
 
-std::string mitk::CustomTagParser::GetClosestLowerRevision(std::string revisionString, std::vector<int> &availableRevisionsVector)
+std::string mitk::CustomTagParser::GetClosestLowerRevision(std::string revisionString, std::vector<int> availableRevisionsVector)
 {
 
   // descending order
@@ -508,7 +508,7 @@ std::string mitk::CustomTagParser::GetOffsetString(std::string samplingType, std
 
       std::sort(offsetVector.begin(), offsetVector.end(), std::greater<>());
 
-      for (int index = 0; index < offsetVector.size(); ++index)
+      for (unsigned int index = 0; index < offsetVector.size(); ++index)
       {
         offsetVector[index] = std::pow(-1, index) * offsetVector[index];
       }
