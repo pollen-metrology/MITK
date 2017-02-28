@@ -1,8 +1,7 @@
-diff --git a/CMake/UseITK.cmake b/CMake/UseITK.cmake
-index 596c69c..085da7a 100644
---- a/CMake/UseITK.cmake
-+++ b/CMake/UseITK.cmake
-@@ -108,7 +108,11 @@ if(NOT ITK_NO_IO_FACTORY_REGISTER_MANAGER)
+diff -rub a/CMake/UseITK.cmake b/CMake/UseITK.cmake
+--- a/CMake/UseITK.cmake	2015-02-16 04:22:14.000000000 +0100
++++ b/CMake/UseITK.cmake	2016-11-05 04:30:09.318322800 +0100
+@@ -108,7 +108,11 @@
    unset(LIST_OF_FACTORY_NAMES)
  
    #-------------------
@@ -14,11 +13,10 @@ index 596c69c..085da7a 100644
    include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR}/ITKIOFactoryRegistration)
  
  endif()
-diff --git a/Modules/IO/GDCM/src/itkGDCMImageIO.cxx b/Modules/IO/GDCM/src/itkGDCMImageIO.cxx
-index 68b09ea..4cdb36b 100644
---- a/Modules/IO/GDCM/src/itkGDCMImageIO.cxx
-+++ b/Modules/IO/GDCM/src/itkGDCMImageIO.cxx
-@@ -477,10 +477,15 @@ void GDCMImageIO::InternalReadImageInformation()
+diff -rub a/Modules/IO/GDCM/src/itkGDCMImageIO.cxx b/Modules/IO/GDCM/src/itkGDCMImageIO.cxx
+--- a/Modules/IO/GDCM/src/itkGDCMImageIO.cxx	2015-02-16 04:22:14.000000000 +0100
++++ b/Modules/IO/GDCM/src/itkGDCMImageIO.cxx	2016-11-05 04:30:09.318322800 +0100
+@@ -477,10 +477,15 @@
              break;
            }
          }
@@ -34,10 +32,10 @@ index 68b09ea..4cdb36b 100644
        break;
      default:
        {
-diff --git a/Modules/ThirdParty/GDCM/CMakeLists.txt b/Modules/ThirdParty/GDCM/CMakeLists.txt
---- a/Modules/ThirdParty/GDCM/CMakeLists.txt
-+++ b/Modules/ThirdParty/GDCM/CMakeLists.txt
-@@ -8,7 +8,7 @@ if(ITK_USE_SYSTEM_GDCM)
+diff -rub a/Modules/ThirdParty/GDCM/CMakeLists.txt b/Modules/ThirdParty/GDCM/CMakeLists.txt
+--- a/Modules/ThirdParty/GDCM/CMakeLists.txt	2015-02-16 04:22:14.000000000 +0100
++++ b/Modules/ThirdParty/GDCM/CMakeLists.txt	2016-11-05 04:30:09.318322800 +0100
+@@ -8,7 +8,7 @@
    set(ITKGDCM_SYSTEM_LIBRARY_DIRS
      ${GDCM_LIBRARY_DIRS}
      )
@@ -46,12 +44,28 @@ diff --git a/Modules/ThirdParty/GDCM/CMakeLists.txt b/Modules/ThirdParty/GDCM/CM
  else()
    set(ITKGDCM_INCLUDE_DIRS
      ${ITKGDCM_BINARY_DIR}
-@@ -30,7 +30,7 @@ else()
+@@ -30,7 +30,7 @@
        endif()
      endif()
    endif()
 -  set(ITKGDCM_LIBRARIES  gdcmDICT gdcmMSFF )
 +  set(ITKGDCM_LIBRARIES  gdcmDICT gdcmMSFF gdcmDSED)
  endif()
-
+ 
  itk_module_impl()
+diff -rub a/Modules/Video/BridgeOpenCV/include/itkOpenCVImageBridge.hxx b/Modules/Video/BridgeOpenCV/include/itkOpenCVImageBridge.hxx
+--- a/Modules/Video/BridgeOpenCV/include/itkOpenCVImageBridge.hxx	2015-02-16 04:22:14.000000000 +0100
++++ b/Modules/Video/BridgeOpenCV/include/itkOpenCVImageBridge.hxx	2017-02-28 08:42:16.883187700 +0100
+@@ -258,7 +258,12 @@
+ {
+   // Extra copy, but necessary to prevent memory leaks
+   IplImage* temp = ITKImageToIplImage<TInputImageType>(in, force3Channels);
++
++#if CV_VERSION_MAJOR >= 3
++  cv::Mat out = cv::cvarrToMat(temp, true);
++#else
+   cv::Mat out(temp, true);
++#endif
+   cvReleaseImage(&temp);
+   return out;
+ }
