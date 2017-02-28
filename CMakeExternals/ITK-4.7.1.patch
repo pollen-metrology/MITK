@@ -1,6 +1,6 @@
-diff -rub a/CMake/UseITK.cmake b/CMake/UseITK.cmake
---- a/CMake/UseITK.cmake	2015-02-16 04:22:14.000000000 +0100
-+++ b/CMake/UseITK.cmake	2016-11-05 04:30:09.318322800 +0100
+diff -Nauri itk-pure/CMake/UseITK.cmake ITK/CMake/UseITK.cmake
+--- itk-pure/CMake/UseITK.cmake	2015-02-16 04:22:14.000000000 +0100
++++ ITK/CMake/UseITK.cmake	2017-02-28 15:41:42.969019200 +0100
 @@ -108,7 +108,11 @@
    unset(LIST_OF_FACTORY_NAMES)
  
@@ -13,9 +13,9 @@ diff -rub a/CMake/UseITK.cmake b/CMake/UseITK.cmake
    include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR}/ITKIOFactoryRegistration)
  
  endif()
-diff -rub a/Modules/IO/GDCM/src/itkGDCMImageIO.cxx b/Modules/IO/GDCM/src/itkGDCMImageIO.cxx
---- a/Modules/IO/GDCM/src/itkGDCMImageIO.cxx	2015-02-16 04:22:14.000000000 +0100
-+++ b/Modules/IO/GDCM/src/itkGDCMImageIO.cxx	2016-11-05 04:30:09.318322800 +0100
+diff -Nauri itk-pure/Modules/IO/GDCM/src/itkGDCMImageIO.cxx ITK/Modules/IO/GDCM/src/itkGDCMImageIO.cxx
+--- itk-pure/Modules/IO/GDCM/src/itkGDCMImageIO.cxx	2015-02-16 04:22:14.000000000 +0100
++++ ITK/Modules/IO/GDCM/src/itkGDCMImageIO.cxx	2017-02-28 15:41:42.978027800 +0100
 @@ -477,10 +477,15 @@
              break;
            }
@@ -32,9 +32,9 @@ diff -rub a/Modules/IO/GDCM/src/itkGDCMImageIO.cxx b/Modules/IO/GDCM/src/itkGDCM
        break;
      default:
        {
-diff -rub a/Modules/ThirdParty/GDCM/CMakeLists.txt b/Modules/ThirdParty/GDCM/CMakeLists.txt
---- a/Modules/ThirdParty/GDCM/CMakeLists.txt	2015-02-16 04:22:14.000000000 +0100
-+++ b/Modules/ThirdParty/GDCM/CMakeLists.txt	2016-11-05 04:30:09.318322800 +0100
+diff -Nauri itk-pure/Modules/ThirdParty/GDCM/CMakeLists.txt ITK/Modules/ThirdParty/GDCM/CMakeLists.txt
+--- itk-pure/Modules/ThirdParty/GDCM/CMakeLists.txt	2015-02-16 04:22:14.000000000 +0100
++++ ITK/Modules/ThirdParty/GDCM/CMakeLists.txt	2017-02-28 15:41:42.982044400 +0100
 @@ -8,7 +8,7 @@
    set(ITKGDCM_SYSTEM_LIBRARY_DIRS
      ${GDCM_LIBRARY_DIRS}
@@ -53,9 +53,9 @@ diff -rub a/Modules/ThirdParty/GDCM/CMakeLists.txt b/Modules/ThirdParty/GDCM/CMa
  endif()
  
  itk_module_impl()
-diff -rub a/Modules/Video/BridgeOpenCV/include/itkOpenCVImageBridge.hxx b/Modules/Video/BridgeOpenCV/include/itkOpenCVImageBridge.hxx
---- a/Modules/Video/BridgeOpenCV/include/itkOpenCVImageBridge.hxx	2015-02-16 04:22:14.000000000 +0100
-+++ b/Modules/Video/BridgeOpenCV/include/itkOpenCVImageBridge.hxx	2017-02-28 08:42:16.883187700 +0100
+diff -Nauri itk-pure/Modules/Video/BridgeOpenCV/include/itkOpenCVImageBridge.hxx ITK/Modules/Video/BridgeOpenCV/include/itkOpenCVImageBridge.hxx
+--- itk-pure/Modules/Video/BridgeOpenCV/include/itkOpenCVImageBridge.hxx	2015-02-16 04:22:14.000000000 +0100
++++ ITK/Modules/Video/BridgeOpenCV/include/itkOpenCVImageBridge.hxx	2017-02-28 15:41:42.986050300 +0100
 @@ -258,7 +258,12 @@
  {
    // Extra copy, but necessary to prevent memory leaks
