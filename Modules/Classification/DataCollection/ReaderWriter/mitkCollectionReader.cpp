@@ -19,9 +19,7 @@
 #include <vtkXMLDataElement.h>
 
 #include <mitkIOUtil.h>
-#include <mitkBaseDataIOFactory.h>
-#include <mitkFiberBundle.h>
-#include <mitkFiberBundleVtkReader.h>
+//#include <mitkBaseDataIOFactory.h>
 
 #include <QDir>
 
@@ -131,24 +129,8 @@ mitk::DataCollection::Pointer mitk::CollectionReader::FolderToCollection(std::st
     DataCollection::Pointer subCollection = DataCollection::New();
     for (unsigned int i=0; i< suffixes.size(); ++i)
     {
-      std::string fileName = fileList.at(i).at(k);
-      if (fileName.find(".fib") >= fileName.length())
-      {
-        Image::Pointer image = IOUtil::LoadImage(fileList.at(i).at(k));
-        subCollection->AddData(image.GetPointer(),seriesNames.at(i), fileList.at(i).at(k));
-      }
-      else
-      {
-        const std::string s1="", s2="";
-
-        std::vector<mitk::BaseData::Pointer> fiber_infile = mitk::BaseDataIO::LoadBaseDataFromFile( fileName, s1, s2, false );
-        if( fiber_infile.empty() )
-        {
-            MITK_INFO << "Fiber bundle could not be read " << fileName ;
-        }
-        mitk::BaseData* fiber_baseData = fiber_infile.at(0);
-        subCollection->AddData(fiber_baseData,seriesNames.at(i), fileList.at(i).at(k));
-      }
+      Image::Pointer image = IOUtil::LoadImage(fileList.at(i).at(k));
+      subCollection->AddData(image.GetPointer(),seriesNames.at(i), fileList.at(i).at(k));
     }
     std::string sDate =  GetDate(fileList.at(0).at(k),suffixes.at(0));
     collection->AddData(subCollection.GetPointer(),sDate,"--");
@@ -216,26 +198,11 @@ void mitk::CollectionReader::StartElement(const char* elementName, const char **
       return;
 
     // Populate Sub-Collection
-    if (itemLink.find(".fib") >= itemLink.length())
-    {
-      Image::Pointer image = IOUtil::LoadImage(itemLink);
-      if (image.IsNotNull())
-        m_DataItemCollection->AddData(image.GetPointer(),itemName,relativeItemLink);
-      else
-        MITK_ERROR << "File could not be loaded: " << itemLink << ". Wihtin Sub-Collection " << m_SubCollection->GetName() << ", within " <<  m_DataItemCollection->GetName() ;
-    }
+    Image::Pointer image = IOUtil::LoadImage(itemLink);
+    if (image.IsNotNull())
+      m_DataItemCollection->AddData(image.GetPointer(),itemName,relativeItemLink);
     else
-    {
-      const std::string s1="", s2="";
-
-      std::vector<mitk::BaseData::Pointer> fiber_infile = mitk::BaseDataIO::LoadBaseDataFromFile( itemLink, s1, s2, false );
-      if( fiber_infile.empty() )
-      {
-          MITK_INFO << "Fiber bundle could not be read " << itemLink ;
-      }
-      mitk::BaseData* fiber_baseData = fiber_infile.at(0);
-      m_DataItemCollection->AddData(fiber_baseData,itemName, relativeItemLink);
-    }
+      MITK_ERROR << "File could not be loaded: " << itemLink << ". Wihtin Sub-Collection " << m_SubCollection->GetName() << ", within " <<  m_DataItemCollection->GetName() ;
   }
   else
     MITK_WARN<< "Malformed description ? --  unknown tag: " << name;

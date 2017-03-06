@@ -1,14 +1,19 @@
 file(GLOB_RECURSE H_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include/*")
 
 set(CPP_FILES
+  mitkBaseDICOMReaderService.cpp
   mitkDICOMFileReader.cpp
+  mitkDICOMTagScanner.cpp
   mitkDICOMGDCMTagScanner.cpp
+  mitkDICOMDCMTKTagScanner.cpp
   mitkDICOMImageBlockDescriptor.cpp
   mitkDICOMITKSeriesGDCMReader.cpp
   mitkDICOMDatasetSorter.cpp
   mitkDICOMTagBasedSorter.cpp
   mitkDICOMGDCMImageFrameInfo.cpp
   mitkDICOMImageFrameInfo.cpp
+  mitkDICOMGenericImageFrameInfo.cpp
+  mitkDICOMDatasetAccessingImageFrameInfo.cpp
   mitkDICOMSortCriterion.cpp
   mitkDICOMSortByTag.cpp
   mitkITKDICOMSeriesReaderHelper.cpp
@@ -19,13 +24,17 @@ set(CPP_FILES
   mitkClassicDICOMSeriesReader.cpp
   mitkThreeDnTDICOMSeriesReader.cpp
   mitkDICOMTag.cpp
-  mitkDICOMTagHelper.cpp
+  mitkDICOMTagsOfInterestHelper.cpp
   mitkDICOMTagCache.cpp
+  mitkDICOMGDCMTagCache.cpp
+  mitkDICOMGenericTagCache.cpp
   mitkDICOMEnums.cpp
   mitkDICOMReaderConfigurator.cpp
   mitkDICOMFileReaderSelector.cpp
   mitkIDICOMTagsOfInterest.cpp
+  mitkDICOMTagPath.cpp
   mitkDICOMProperty.cpp
+  mitkDICOMFilesHelper.cpp
 )
 
 set(RESOURCE_FILES

@@ -56,7 +56,9 @@ namespace mitk
       }
 
       m_DiffusionImageNrrdReaderService = new DiffusionImageNrrdReaderService();
-      m_DiffusionImageNiftiReaderService = new DiffusionImageNiftiReaderService();
+      m_DiffusionImageNiftiReaderService = new DiffusionImageNiftiReaderService( CustomMimeType( mitk::DiffusionCoreIOMimeTypes::DWI_NIFTI_MIMETYPE() ), mitk::DiffusionCoreIOMimeTypes::DWI_NIFTI_MIMETYPE_DESCRIPTION() );
+      m_DiffusionImageFslNiftiReaderService = new DiffusionImageNiftiReaderService( CustomMimeType( mitk::DiffusionCoreIOMimeTypes::DWI_FSL_MIMETYPE() ), mitk::DiffusionCoreIOMimeTypes::DWI_FSL_MIMETYPE_DESCRIPTION() );
+
       m_NrrdTensorImageReader = new NrrdTensorImageReader();
       m_NrrdQBallImageReader = new NrrdQBallImageReader();
 
@@ -75,10 +77,19 @@ namespace mitk
       mitk::CoreServices::GetPropertyDescriptions()->AddDescription(mitk::DiffusionPropertyHelper::GRADIENTCONTAINERPROPERTYNAME, "The gradients used during acquisition.");
       mitk::CoreServices::GetPropertyDescriptions()->AddDescription(mitk::DiffusionPropertyHelper::MODALITY, "Defines the modality used for acquisition. DWMRI signifies diffusion weighted images.");
 
-      mitk::CoreServices::GetPropertyPersistence()->AddInfo(mitk::DiffusionPropertyHelper::REFERENCEBVALUEPROPERTYNAME, mitk::PropertyPersistenceInfo::New("DWMRI_b-value"));
-      mitk::CoreServices::GetPropertyPersistence()->AddInfo(mitk::DiffusionPropertyHelper::MEASUREMENTFRAMEPROPERTYNAME, mitk::PropertyPersistenceInfo::New("measurement frame"));
-      mitk::CoreServices::GetPropertyPersistence()->AddInfo(mitk::DiffusionPropertyHelper::GRADIENTCONTAINERPROPERTYNAME, mitk::PropertyPersistenceInfo::New("DWMRI_gradient"));
-      mitk::CoreServices::GetPropertyPersistence()->AddInfo(mitk::DiffusionPropertyHelper::MODALITY, mitk::PropertyPersistenceInfo::New("modality"));
+      mitk::PropertyPersistenceInfo::Pointer PPI_referenceBValue = mitk::PropertyPersistenceInfo::New();
+      PPI_referenceBValue->SetNameAndKey(mitk::DiffusionPropertyHelper::REFERENCEBVALUEPROPERTYNAME, "DWMRI_b-value");
+      mitk::PropertyPersistenceInfo::Pointer PPI_measurementFrame = mitk::PropertyPersistenceInfo::New();
+      PPI_measurementFrame->SetNameAndKey(mitk::DiffusionPropertyHelper::MEASUREMENTFRAMEPROPERTYNAME, "measurement frame");
+      mitk::PropertyPersistenceInfo::Pointer PPI_gradientContainer = mitk::PropertyPersistenceInfo::New();
+      PPI_gradientContainer->SetNameAndKey(mitk::DiffusionPropertyHelper::GRADIENTCONTAINERPROPERTYNAME, "DWMRI_gradient");
+      mitk::PropertyPersistenceInfo::Pointer PPI_modality = mitk::PropertyPersistenceInfo::New();
+      PPI_modality->SetNameAndKey(mitk::DiffusionPropertyHelper::MODALITY, "modality");
+
+      mitk::CoreServices::GetPropertyPersistence()->AddInfo(PPI_referenceBValue.GetPointer() , true);
+      mitk::CoreServices::GetPropertyPersistence()->AddInfo(PPI_measurementFrame.GetPointer(), true);
+      mitk::CoreServices::GetPropertyPersistence()->AddInfo(PPI_gradientContainer.GetPointer(), true);
+      mitk::CoreServices::GetPropertyPersistence()->AddInfo(PPI_modality.GetPointer(), true);
     }
 
     void Unload(us::ModuleContext*) override
@@ -90,6 +101,7 @@ namespace mitk
 
       delete m_DiffusionImageNrrdReaderService;
       delete m_DiffusionImageNiftiReaderService;
+      delete m_DiffusionImageFslNiftiReaderService;
       delete m_NrrdTensorImageReader;
       delete m_NrrdQBallImageReader;
 
@@ -103,6 +115,7 @@ namespace mitk
 
     DiffusionImageNrrdReaderService * m_DiffusionImageNrrdReaderService;
     DiffusionImageNiftiReaderService * m_DiffusionImageNiftiReaderService;
+    DiffusionImageNiftiReaderService * m_DiffusionImageFslNiftiReaderService;
     NrrdTensorImageReader * m_NrrdTensorImageReader;
     NrrdQBallImageReader * m_NrrdQBallImageReader;
 

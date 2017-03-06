@@ -911,6 +911,13 @@ namespace itk
       PrintToLog("\n", false, false);
       PrintToLog("Generating " + boost::lexical_cast<std::string>(numFiberCompartments+numNonFiberCompartments)
                  + "-compartment diffusion-weighted signal.");
+           
+      std::vector< int > bVals = m_Parameters.m_SignalGen.GetBvalues();
+      PrintToLog("b-values: ", false, false, true);
+      for (auto v : bVals)
+        PrintToLog(boost::lexical_cast<std::string>(v) + " ", false, false, true);
+      PrintToLog("\n", false, false, true);
+      PrintToLog("\n", false, false, true);
 
       int numFibers = m_FiberBundleWorkingCopy->GetNumFibers();
       boost::progress_display disp(numFibers*m_Parameters.m_SignalGen.GetNumVolumes());
@@ -1467,7 +1474,8 @@ namespace itk
         double extraAxonalVolume = m_VoxelVolume-intraAxonalVolume;    // non-fiber volume
         if (extraAxonalVolume<0)
         {
-          MITK_ERROR << "Corrupted intra-axonal signal voxel detected. Fiber volume larger voxel volume!";
+          if (extraAxonalVolume<-0.001)
+            MITK_ERROR << "Corrupted intra-axonal signal voxel detected. Fiber volume larger voxel volume! " << m_VoxelVolume << "<" << intraAxonalVolume;
           extraAxonalVolume = 0;
         }
         double interAxonalVolume = 0;
@@ -1476,7 +1484,8 @@ namespace itk
         double other = extraAxonalVolume - interAxonalVolume;        // rest of compartment
         if (other<0)
         {
-          MITK_ERROR << "Corrupted signal voxel detected. Fiber volume larger voxel volume!";
+          if (other<-0.001)
+            MITK_ERROR << "Corrupted signal voxel detected. Fiber volume larger voxel volume!";
           other = 0;
         }
 

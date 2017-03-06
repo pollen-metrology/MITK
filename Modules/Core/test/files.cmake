@@ -75,8 +75,10 @@ set(MODULE_TESTS
   mitkTransferFunctionTest.cpp
   mitkStepperTest.cpp
   mitkRenderingManagerTest.cpp
+  mitkCompositePixelValueToStringTest.cpp
   vtkMitkThickSlicesFilterTest.cpp
   mitkNodePredicateSourceTest.cpp
+  mitkNodePredicateDataPropertyTest.cpp
   mitkVectorTest.cpp
   mitkClippedSurfaceBoundsCalculatorTest.cpp
   mitkExceptionTest.cpp
@@ -112,6 +114,8 @@ set(MODULE_TESTS
   mitkLevelWindowManagerCppUnitTest.cpp
   mitkVectorPropertyTest.cpp
   mitkTemporoSpatialStringPropertyTest.cpp
+  mitkPropertyNameHelperTest.cpp
+  mitkNodePredicateGeometryTest.cpp
 )
 
 if(MITK_ENABLE_RENDERING_TESTING)
