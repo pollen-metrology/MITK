@@ -84,3 +84,15 @@ diff -rub CTK/Libs/PluginFramework/ctkPluginFrameworkLauncher.cpp CTK.updated/Li
    return d->fwFactory->getFramework()->getPluginContext();
  }
  
+diff -rub CTK/Libs/PluginFramework/ctkLDAPExpr.cpp CTK.updated/Libs/PluginFramework/ctkLDAPExpr.cpp
+--- CTK/Libs/PluginFramework/ctkLDAPExpr.cpp  2016-02-29 04:51:39.000000000 +0100
++++ CTK.updated/Libs/PluginFramework/ctkLDAPExpr.cpp  2017-06-15 11:10:25.186841400 +0200
+@@ -189,7 +189,7 @@
+ {
+   if (d->m_operator == EQ)
+   {
+-    if (d->m_attrName.compare(ctkPluginConstants::OBJECTCLASS, Qt::CaseInsensitive) &&
++    if (d->m_attrName.compare(ctkPluginConstants::OBJECTCLASS, Qt::CaseInsensitive) == 0 &&
+       d->m_attrValue.indexOf(WILDCARD) < 0) 
+     {
+       objClasses.insert( d->m_attrValue );
