@@ -40,6 +40,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <itkGDCMImageIO.h>
 #include "itkTIFFImageIO.h"
 #include "itkJPEGImageIO.h"
+#include "itkPNGImageIO.h"
 
 // Micro Services
 #include <usGetModuleContext.h>
@@ -417,11 +418,17 @@ void MitkCoreActivator::RegisterItkReaderWriter()
 		continue;
 	}
 
-    // skip JPEG because Platypus has its own
+  // skip JPEG because Platypus has its own
 	if (dynamic_cast<itk::JPEGImageIO*>(io))
 	{
 		continue;
 	}
+
+  // skip PNG because Platypus has its own
+  if (dynamic_cast<itk::PNGImageIO*>(io))
+  {
+    continue;
+  }
 
 
     if (io)
