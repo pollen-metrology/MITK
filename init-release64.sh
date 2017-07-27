@@ -21,7 +21,7 @@ cmake .. \
 -DPYTHON_EXECUTABLE=/usr/bin/python2.7 \
 -DPYTHON_INCLUDE_DIR=/usr/include/python2.7/ \
 -DPYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython2.7.so.1.0 \
--DPYTHON_PACKAGES_PATH=/usr/lib/python2.7/dist-packages/ \
+-DPYTHON_PACKAGES_PATH=$PWD/ep/lib/python2.7/dist-packages/ \
 -DITK_WRAP_PYTHON:BOOL=true \
 -DWITH_IPP:BOOL=FALSE \
 -DWITH_VFW:BOOL=FALSE \
