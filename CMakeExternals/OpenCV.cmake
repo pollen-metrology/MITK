@@ -95,9 +95,7 @@ if(MITK_USE_OpenCV)
         -DBUILD_opencv_bgsegm:BOOL=OFF 
         -DBUILD_opencv_bioinspired:BOOL=OFF 
         -DBUILD_opencv_ccalib:BOOL=OFF 
-        -DBUILD_opencv_datasets:BOOL=OFF 
         -DBUILD_opencv_datasettools:BOOL=OFF 
-        -DBUILD_opencv_face:BOOL=OFF 
         -DBUILD_opencv_latentsvm:BOOL=OFF 
         -DBUILD_opencv_line_descriptor:BOOL=OFF
         -DBUILD_opencv_matlab:BOOL=OFF 
