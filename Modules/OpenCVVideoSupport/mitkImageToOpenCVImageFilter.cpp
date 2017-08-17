@@ -85,8 +85,15 @@ namespace mitk{
     cv::Mat mat;
     if( img )
     {
+
+
+#if CV_VERSION_MAJOR >= 3
+        mat = cv::cvarrToMat(img, false);
+#else
+        mat = cv::Mat ( cv::cvarrToMat(img), false );
+#endif
+
       // do not copy data, then release just the header
-      mat = cv::Mat ( cv::cvarrToMat(img), false );
       cvReleaseImageHeader( &img );
     }
 
