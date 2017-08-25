@@ -66,15 +66,16 @@ if(MITK_USE_OpenCV)
       )
     endif()
 
-    set(opencv_url ${MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL}/opencv-2.4.13.2.tar.gz)
-    set(opencv_url_md5 80a4a3bee0e98898bbbc68986ca73655)
+    set(opencv_url ${OPENCV_LIBRARY_ARCHIVE})
+    # set(opencv_url ${MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL}/opencv-2.4.13.2.tar.gz)
+    # set(opencv_url_md5 80a4a3bee0e98898bbbc68986ca73655)
 
     ExternalProject_Add(${proj}
       LIST_SEPARATOR ${sep}
       URL ${opencv_url}
-      URL_MD5 ${opencv_url_md5}
-      # Related bug: http://bugs.mitk.org/show_bug.cgi?id=5912
-      PATCH_COMMAND ${PATCH_COMMAND} -N -p1 -i ${CMAKE_CURRENT_LIST_DIR}/OpenCV.patch
+      #URL_MD5 ${opencv_url_md5}
+     # Related bug: http://bugs.mitk.org/show_bug.cgi?id=5912
+      #PATCH_COMMAND ${PATCH_COMMAND} -N -p1 -i ${CMAKE_CURRENT_LIST_DIR}/OpenCV.patch
       CMAKE_GENERATOR ${gen}
       CMAKE_ARGS
         ${ep_common_args}
@@ -83,6 +84,32 @@ if(MITK_USE_OpenCV)
         -DBUILD_EXAMPLES:BOOL=OFF
         -DBUILD_DOXYGEN_DOCS:BOOL=OFF
         -DWITH_CUDA:BOOL=OFF
+        -DWITH_IPP:BOOL=${WITH_IPP}
+        -DWITH_VFW:BOOL=${WITH_VFW}
+        -DWITH_V4L:BOOL=FALSE
+        -DWITH_GSTREAMER:BOOL=FALSE 
+        -DWITH_VTK:BOOL=${WITH_VTK}
+        -DOPENCV_EXTRA_MODULES_PATH:PATH=${OPENCV_EXTRA_MODULES_PATH}
+        -DBUILD_opencv_adas:BOOL=OFF 
+        -DBUILD_opencv_bgsegm:BOOL=OFF 
+        -DBUILD_opencv_bioinspired:BOOL=OFF 
+        -DBUILD_opencv_ccalib:BOOL=OFF 
+        -DBUILD_opencv_datasettools:BOOL=OFF 
+        -DBUILD_opencv_latentsvm:BOOL=OFF 
+        -DBUILD_opencv_line_descriptor:BOOL=OFF
+        -DBUILD_opencv_matlab:BOOL=OFF 
+        -DBUILD_opencv_optflow:BOOL=OFF 
+        -DBUILD_opencv_reg:BOOL=OFF
+        -DBUILD_opencv_rgbd:BOOL=OFF 
+        -DBUILD_opencv_saliency:BOOL=OFF 
+        -DBUILD_opencv_surface_matching:BOOL=OFF
+        -DBUILD_opencv_text:BOOL=OFF
+        -DBUILD_opencv_tracking:BOOL=OFF
+        -DBUILD_opencv_xfeatures2d:BOOL=OFF
+        -DBUILD_opencv_xobjdetect:BOOL=OFF
+        -DBUILD_opencv_stereo:BOOL=OFF
+        -DBUILD_opencv_cvv:BOOL=OFF
+        -DBUILD_opencv_hdf:BOOL=OFF
         ${additional_cmake_args}
       CMAKE_CACHE_ARGS
         ${ep_common_cache_args}
