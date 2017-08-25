@@ -66,16 +66,15 @@ if(MITK_USE_OpenCV)
       )
     endif()
 
-    set(openCVURL ${OPENCV_LIBRARY_ARCHIVE})
-    set(opencv_url ${openCVURL})
-    #set(opencv_url ${MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL}/opencv-2.4.13.2.tar.gz)
-    #set(opencv_url_md5 80a4a3bee0e98898bbbc68986ca73655)
+    set(opencv_url ${OPENCV_LIBRARY_ARCHIVE})
+    # set(opencv_url ${MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL}/opencv-2.4.13.2.tar.gz)
+    # set(opencv_url_md5 80a4a3bee0e98898bbbc68986ca73655)
 
     ExternalProject_Add(${proj}
       LIST_SEPARATOR ${sep}
       URL ${opencv_url}
-      URL_MD5 ${opencv_url_md5}
-      # Related bug: http://bugs.mitk.org/show_bug.cgi?id=5912
+      #URL_MD5 ${opencv_url_md5}
+     # Related bug: http://bugs.mitk.org/show_bug.cgi?id=5912
       #PATCH_COMMAND ${PATCH_COMMAND} -N -p1 -i ${CMAKE_CURRENT_LIST_DIR}/OpenCV.patch
       CMAKE_GENERATOR ${gen}
       CMAKE_ARGS
