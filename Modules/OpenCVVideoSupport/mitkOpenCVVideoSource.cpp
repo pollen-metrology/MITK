@@ -95,6 +95,13 @@ cv::Mat mitk::OpenCVVideoSource::GetImage()
 {
   if(m_CurrentImage)
   {
+
+#if CV_VERSION_MAJOR >= 3
+        cv::Mat copy = cv::cvarrToMat(m_CurrentImage, false);
+#else
+        cv::Mat copy( cv::cvarrToMat(m_CurrentImage), false );
+#endif
+
     cv::Mat copy( m_CurrentImage, false );
     return copy.clone();
   }
