@@ -137,11 +137,11 @@ public:
 
   void setUp() override
   {
-    image1 = cv::imRead(GetTestDataFilePath("NrrdWritingTestImage.jpg").c_str());
-    image2 = cv::imRead(GetTestDataFilePath("Png2D-bw.png").c_str());
-    image3 = cv::imRead(GetTestDataFilePath("OpenCV-Data/CroppedImage.png").c_str());
-    image4 = cv::imRead(GetTestDataFilePath("OpenCV-Data/GrabCutMask.png").c_str());
-    image5 = cv::imRead(GetTestDataFilePath("OpenCV-Data/GrabCutOutput.png").c_str());
+    image1 = cv::imread(GetTestDataFilePath("NrrdWritingTestImage.jpg").c_str());
+    image2 = cv::imread(GetTestDataFilePath("Png2D-bw.png").c_str());
+    image3 = cv::imread(GetTestDataFilePath("OpenCV-Data/CroppedImage.png").c_str());
+    image4 = cv::imread(GetTestDataFilePath("OpenCV-Data/GrabCutMask.png").c_str());
+    image5 = cv::imread(GetTestDataFilePath("OpenCV-Data/GrabCutOutput.png").c_str());
 
     testFilter = mitk::OpenCVToMitkImageFilter::New();
 
