@@ -28,3 +28,4 @@ cmake .. \
 -DEIGEN_INCLUDE_PATH:PATH=/usr/include/eigen3 \
 -DEigen_INCLUDE_DIR=/usr/include/eigen3 \
 -DCMAKE_INSTALL_PREFIX=/pollen/dist/gcc/x86/mitk-release64
+
