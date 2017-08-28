@@ -78,7 +78,7 @@ namespace mitk
         ImageReadAccessor currentAmplAcc(currentMITKAmplitudeImage, currentMITKAmplitudeImage->GetSliceData(0, 0, 0));
         float* amplitudeFloatData = (float*) currentAmplAcc.GetData();
         memcpy(m_CurrentOpenCVAmplitudeImage->imageData,(unsigned char*)amplitudeFloatData,numOfPixel*sizeof(float));
-        cv::Mat image(m_CurrentOpenCVAmplitudeImage);
+        cv::Mat image = cv::cvarrToMat(m_CurrentOpenCVAmplitudeImage);
         return image;
       }
       else if (m_ImageType==2)
@@ -86,7 +86,7 @@ namespace mitk
         ImageReadAccessor currentIntenAcc(currentMITKIntensityImage, currentMITKIntensityImage->GetSliceData(0, 0, 0));
         float* intensityFloatData = (float*) currentIntenAcc.GetData();
         memcpy(m_CurrentOpenCVIntensityImage->imageData,(unsigned char*)intensityFloatData,numOfPixel*sizeof(float));
-        cv::Mat image(m_CurrentOpenCVIntensityImage);
+        cv::Mat image = cv::cvarrToMat(m_CurrentOpenCVIntensityImage);
         return image;
       }
       else
@@ -94,7 +94,7 @@ namespace mitk
         ImageReadAccessor currentDistAcc(currentMITKDistanceImage, currentMITKDistanceImage->GetSliceData(0, 0, 0));
         float* distanceFloatData = (float*) currentDistAcc.GetData();
         memcpy(m_CurrentOpenCVDistanceImage->imageData,(unsigned char*)distanceFloatData,numOfPixel*sizeof(float));
-        cv::Mat image(m_CurrentOpenCVDistanceImage);
+        cv::Mat image = cv::cvarrToMat(m_CurrentOpenCVDistanceImage);
         return image;
       }
     }
@@ -103,19 +103,19 @@ namespace mitk
       if (m_ImageType==1)
       {
         this->MapScalars(currentMITKAmplitudeImage, m_CurrentOpenCVAmplitudeImage);
-        cv::Mat image(m_CurrentOpenCVAmplitudeImage);
+        cv::Mat image = cv::cvarrToMat(m_CurrentOpenCVAmplitudeImage);
         return image;
       }
       else if (m_ImageType==2)
       {
         this->MapScalars(currentMITKIntensityImage, m_CurrentOpenCVIntensityImage);
-        cv::Mat image(m_CurrentOpenCVIntensityImage);
+        cv::Mat image = cv::cvarrToMat(m_CurrentOpenCVIntensityImage);
         return image;
       }
       else
       {
         this->MapScalars(currentMITKDistanceImage, m_CurrentOpenCVDistanceImage);
-        cv::Mat image(m_CurrentOpenCVDistanceImage);
+        cv::Mat image = cv::cvarrToMat(m_CurrentOpenCVDistanceImage);
         return image;
       }
     }

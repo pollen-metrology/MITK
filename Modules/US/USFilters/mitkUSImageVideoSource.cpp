@@ -18,9 +18,6 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include "mitkUSImageVideoSource.h"
 #include "mitkImage.h"
 
-//OpenCV HEADER
-#include <cv.h>
-#include <highgui.h>
 
 //Other
 #include <stdio.h>

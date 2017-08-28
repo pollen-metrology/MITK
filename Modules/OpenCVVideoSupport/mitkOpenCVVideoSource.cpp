@@ -18,6 +18,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include <iostream>
 #include <algorithm>
 
+
 mitk::OpenCVVideoSource::OpenCVVideoSource()
 : m_VideoCapture(nullptr),
   m_CurrentImage(nullptr),
