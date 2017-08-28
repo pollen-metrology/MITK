@@ -46,7 +46,8 @@ namespace mitk{
 
   void OpenCVToMitkImageFilter::SetOpenCVImage(const IplImage* image)
   {
-    const cv::Mat cvMat = cv::Mat(image);
+
+    const cv::Mat cvMat = cv::cvarrToMat(image, true);
     this->SetOpenCVMat(cvMat);
   }
 
