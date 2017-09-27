@@ -107,6 +107,8 @@ public:
    */
   static void Shutdown();
 
+
+  static Poco::Timestamp::TimeVal CurrentTime();
   //   void Cancel(Object family) ;
 
   IProgressMonitor::Pointer CreateProgressGroup() override;

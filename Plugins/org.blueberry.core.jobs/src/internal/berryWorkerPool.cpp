@@ -132,7 +132,7 @@ InternalJob::Pointer WorkerPool::StartJob(Worker* worker)
   {
     ptr_job = m_ptrManager->StartJob();
     //spin until a job is found or until we have been idle for too long
-    Poco::Timestamp idleStart;
+    Poco::Timestamp::TimeVal idleStart = JobManager::CurrentTime();
     while (m_ptrManager->IsActive() && ptr_job == 0)
     {
       long tmpSleepTime = long(m_ptrManager->SleepHint());
@@ -142,8 +142,8 @@ InternalJob::Pointer WorkerPool::StartJob(Worker* worker)
       //if we were already idle, and there are still no new jobs, then the thread can expire
       {
         Poco::Mutex::ScopedLock lockOne(m_mutexOne);
-        Poco::Timestamp tmpCurrentTime;
-        long long tmpTime = tmpCurrentTime - idleStart;
+        Poco::Timestamp::TimeVal tmpCurrentTime = JobManager::CurrentTime();
+        Poco::Timestamp::TimeVal tmpTime = tmpCurrentTime - idleStart;
         if (ptr_job == 0 && (tmpTime > BEST_BEFORE) && (m_numThreads
             - m_busyThreads) > MIN_THREADS)
         {
