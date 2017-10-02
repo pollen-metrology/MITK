@@ -338,7 +338,7 @@ protected:
   /*
    * @see Job#WakeUp(long)
    */
-  void WakeUp(long delay);
+  void WakeUp(Poco::Timestamp::TimeVal delay);
 
 public:
 

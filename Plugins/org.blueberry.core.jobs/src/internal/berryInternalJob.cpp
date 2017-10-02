@@ -434,7 +434,7 @@ bool InternalJob::Sleep()
   return ptr_manager->Sleep(InternalJob::Pointer(this));
 }
 
-void InternalJob::WakeUp(long delay)
+void InternalJob::WakeUp(Poco::Timestamp::TimeVal delay)
 {
   ptr_manager->WakeUp(InternalJob::Pointer(this), delay);
 }

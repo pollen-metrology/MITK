@@ -202,7 +202,7 @@ void Job::WakeUp()
   InternalJob::WakeUp(0);
 }
 
-void Job::WakeUp(long delay)
+void Job::WakeUp(Poco::Timestamp::TimeVal delay)
 {
   InternalJob::WakeUp(delay);
 }
