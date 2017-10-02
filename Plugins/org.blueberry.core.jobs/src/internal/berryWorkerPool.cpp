@@ -34,13 +34,13 @@ WorkerPool::WorkerPool(JobManager* myJobManager) :
 {
 }
 
-const long WorkerPool::BEST_BEFORE = 60000;
+const Poco::Timestamp::TimeVal WorkerPool::BEST_BEFORE = 60000;
 const int WorkerPool::MIN_THREADS = 1;
 
 
 void WorkerPool::Shutdown()
 {
-  Poco::ScopedLock<Poco::Mutex> LockMe(m_mutexOne);
+//  Poco::ScopedLock<Poco::Mutex> LockMe(m_mutexOne);
   for(int i = 0; i<= m_numThreads; i++)
     {
       notify();
@@ -91,7 +91,7 @@ void WorkerPool::EndWorker(Worker::Pointer sptr_worker)
   Remove(sptr_worker);
 }
 
-void WorkerPool::Sleep(long duration)
+void WorkerPool::Sleep(Poco::Timestamp::TimeVal duration)
 {
   Poco::ScopedLock<Poco::Mutex> lock(m_mutexOne);
   m_sleepingThreads++;
@@ -99,6 +99,12 @@ void WorkerPool::Sleep(long duration)
 
   try
   {
+    long durationLong = -1;
+    if (duration > 0)
+    {
+      durationLong = duration;
+    }
+    m_mutexOne.unlock();
     wait(duration);
     throw FinallyThrowException();
   } catch (FinallyThrowException&)
@@ -132,18 +138,18 @@ InternalJob::Pointer WorkerPool::StartJob(Worker* worker)
   {
     ptr_job = m_ptrManager->StartJob();
     //spin until a job is found or until we have been idle for too long
-    Poco::Timestamp idleStart;
+    Poco::Timestamp::TimeVal idleStart = JobManager::CurrentTime();
     while (m_ptrManager->IsActive() && ptr_job == 0)
     {
-      long tmpSleepTime = long(m_ptrManager->SleepHint());
+      Poco::Timespan::TimeDiff tmpSleepTime = m_ptrManager->SleepHint();
       if (tmpSleepTime > 0)
         Sleep(std::min(tmpSleepTime, BEST_BEFORE));
       ptr_job = m_ptrManager->StartJob();
       //if we were already idle, and there are still no new jobs, then the thread can expire
       {
         Poco::Mutex::ScopedLock lockOne(m_mutexOne);
-        Poco::Timestamp tmpCurrentTime;
-        long long tmpTime = tmpCurrentTime - idleStart;
+        Poco::Timestamp::TimeVal tmpCurrentTime = JobManager::CurrentTime();
+        Poco::Timestamp::TimeVal tmpTime = tmpCurrentTime - idleStart;
         if (ptr_job == 0 && (tmpTime > BEST_BEFORE) && (m_numThreads
             - m_busyThreads) > MIN_THREADS)
         {
@@ -182,13 +188,13 @@ InternalJob::Pointer WorkerPool::StartJob(Worker* worker)
 
 void WorkerPool::JobQueued()
 {
-  Poco::ScopedLock<Poco::Mutex> lockOne(m_mutexOne);
   //if there is a sleeping thread, wake it up
   if (m_sleepingThreads > 0)
   {
     notify();
     return;
   }
+  Poco::ScopedLock<Poco::Mutex> lockOne(m_mutexOne);
   //create a thread if all threads are busy
   if (m_busyThreads >= m_numThreads)
   {

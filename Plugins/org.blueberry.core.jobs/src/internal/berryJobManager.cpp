@@ -122,6 +122,11 @@ void JobManager::Shutdown()
   }
 }
 
+Poco::Timestamp::TimeVal JobManager::CurrentTime()
+{
+  return Poco::Timestamp().raw()/Poco::Timespan::MILLISECONDS;
+}
+
 //void
 //JobManager
 //::Cancel(Object family) {
@@ -459,7 +464,7 @@ void JobManager::ChangeState(InternalJob::Pointer sptr_job, int newState)
     case Job::SLEEPING:
       m_JobQueueSleeping.Remove(sptr_job);
       // assert(false, "Tried to remove a job that wasn't in the queue");
-
+      break;
     case Job::RUNNING:
     case InternalJob::ABOUT_TO_RUN:
       m_running.remove(sptr_job);
@@ -556,16 +561,14 @@ void JobManager::DoSchedule(InternalJob::Pointer job,
   }
   if (delay > 0)
   {
-    // *1000 because job api uses milliseconds where 
     // Poco::Timestamp uses microseconds
-    job->SetStartTime(Poco::Timestamp() + delay * 1000);
+    job->SetStartTime(JobManager::CurrentTime() + delay);
     InternalJob::Pointer sptr_job(job);
     ChangeState(sptr_job, Job::SLEEPING);
   }
   else
   {
-    // *1000 because job api uses milliseconds where Poco::Timestamp uses microseconds
-    job->SetStartTime(Poco::Timestamp() + DelayFor(job->GetPriority()) * 1000);
+    job->SetStartTime(JobManager::CurrentTime() + DelayFor(job->GetPriority()));
     job->SetWaitQueueStamp(m_waitQueueCounter++);
     InternalJob::Pointer sptr_job(job);
     ChangeState(sptr_job, Job::WAITING);
@@ -662,7 +665,7 @@ Job::Pointer JobManager::NextJob()
 
     // tickle the sleep queue to see if anyone wakes up
 
-    Poco::Timestamp now;
+    Poco::Timestamp::TimeVal now = JobManager::CurrentTime();
     InternalJob::Pointer ptr_job = m_JobQueueSleeping.Peek();
 
     while (ptr_job != 0 && ptr_job->GetStartTime() < now)
@@ -863,13 +866,13 @@ void JobManager::EndJob(InternalJob::Pointer ptr_job, IStatus::Pointer result, b
     ptr_job->SetResult(result);
     ptr_job->SetProgressMonitor(IProgressMonitor::Pointer(nullptr));
     ptr_job->SetThread(nullptr);
-    rescheduleDelay = ptr_job->GetStartTime() - Poco::Timestamp();
+    rescheduleDelay = ptr_job->GetStartTime() - JobManager::CurrentTime();
     InternalJob::Pointer sptr_job(ptr_job);
     ChangeState(sptr_job, Job::NONE);
   }
 
-  Poco::Timestamp tmp_currentTime;
-  Poco::Timestamp currentStartTime = ptr_job->GetStartTime();
+  Poco::Timestamp::TimeVal tmp_currentTime = JobManager::CurrentTime();
+  Poco::Timestamp::TimeVal currentStartTime = ptr_job->GetStartTime();
   bool isScheduleInFuture = tmp_currentTime < currentStartTime;
   bool isScheduled = rescheduleDelay > InternalJob::T_NONE;
   bool reschedule = m_active && isScheduled && isScheduleInFuture  && ptr_job->ShouldSchedule();
@@ -1048,13 +1051,7 @@ void JobManager::Schedule(InternalJob::Pointer job, Poco::Timestamp::TimeDiff de
     //if the job is already running, set it to be rescheduled when done
     if (job->GetState() == Job::RUNNING)
     {
-      Poco::Timestamp newTs;
-
-      // *1000 because job API uses milliseconds where
-      // Poco timestamps uses microseconds
-      Poco::Timestamp::TimeDiff diff = delay * 1000;
-      newTs += diff;
-      job->SetStartTime(newTs);
+      job->SetStartTime(JobManager::CurrentTime() + delay);
       return;
     }
     //can't schedule a job that is waiting or sleeping
@@ -1119,8 +1116,8 @@ void JobManager::SetPriority(InternalJob::Pointer job, int newPriority)
     //if the job is waiting to run, re-shuffle the queue
     if (sptr_job->GetState() == Job::WAITING)
     {
-      Poco::Timestamp oldStart = job->GetStartTime();
-      job->SetStartTime(oldStart += (DelayFor(newPriority) - DelayFor(oldPriority)));
+      Poco::Timestamp::TimeVal oldStart = job->GetStartTime();
+      job->SetStartTime(oldStart + (DelayFor(newPriority) - DelayFor(oldPriority)));
       m_JobQueueWaiting.Resort(job);
     }
   }
@@ -1141,8 +1138,8 @@ Poco::Timespan::TimeDiff JobManager::SleepHint()
   if (ptr_next == 0)
   return InternalJob::T_INFINITE;
 
-  Poco::Timestamp tmp_startTime = ptr_next->GetStartTime();
-  Poco::Timestamp tmp_currentTime;
+  Poco::Timestamp::TimeVal tmp_startTime = ptr_next->GetStartTime();
+  Poco::Timestamp::TimeVal tmp_currentTime = JobManager::CurrentTime();
   Poco::Timestamp::TimeDiff timeToStart = tmp_startTime - tmp_currentTime;
 
   return timeToStart;

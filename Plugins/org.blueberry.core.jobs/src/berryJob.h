@@ -86,7 +86,7 @@ public:
    * @see #SetPriority(int)
    * @see #Run(IProgressMonitor::Pointer)
    */
-  static const int INTERACTIVE = 10;
+  static const Poco::Timestamp::TimeVal INTERACTIVE = 10;
   /**
    * Job priority constant (value 20) for short background jobs.
    * Short background jobs are jobs that typically complete within a second,
@@ -97,7 +97,7 @@ public:
    * @see #SetPriority(int)
    * @see #Run(IProgressMonitor::Pointer)
    */
-  static const int SHORT = 20;
+  static const Poco::Timestamp::TimeVal SHORT = 20;
   /**
    * Job priority constant (value 30) for long-running background jobs.
    *
@@ -105,7 +105,7 @@ public:
    * @see #SetPriority(int)
    * @see #Run(IProgressMonitor::Pointer)
    */
-  static const int LONG = 30;
+  static const Poco::Timestamp::TimeVal LONG = 30;
   /**
    * Job priority constant (value 40) for build jobs.  Build jobs are
    * generally run after all other background jobs complete.
@@ -114,7 +114,7 @@ public:
    * @see #SetPriority(int)
    * @see #Run(IProgressMonitor)
    */
-  static const int BUILD = 40;
+  static const Poco::Timestamp::TimeVal BUILD = 40;
 
   /**
    * Job priority constant (value 50) for decoration jobs.
@@ -126,7 +126,7 @@ public:
    * @see #SetPriority(int)
    * @see #Run(IProgressMonitor)
    */
-  static const int DECORATE = 50;
+  static const Poco::Timestamp::TimeVal DECORATE = 50;
   /**
    * Job state code (value 0) indicating that a job is not
    * currently sleeping, waiting, or running (i.e., the job manager doesn't know
@@ -134,26 +134,26 @@ public:
    *
    * @see #GetState()
    */
-  static const int NONE = 0;
+  static const Poco::Timestamp::TimeVal NONE = 0;
   /**
    * Job state code (value 1) indicating that a job is sleeping.
    *
    * @see #Run(IProgressMonitor)
    * @see #GetState()
    */
-  static const int SLEEPING = 0x01;
+  static const Poco::Timestamp::TimeVal SLEEPING = 0x01;
   /**
    * Job state code (value 2) indicating that a job is waiting to be run.
    *
    * @see #GetState()
    */
-  static const int WAITING = 0x02;
+  static const Poco::Timestamp::TimeVal WAITING = 0x02;
   /**
    * Job state code (value 4) indicating that a job is currently running
    *
    * @see #GetState()
    */
-  static const int RUNNING = 0x04;
+  static const Poco::Timestamp::TimeVal RUNNING = 0x04;
 
   /**
    * Returns the job manager.
@@ -591,7 +591,7 @@ public:
    * @param delay the number of milliseconds to delay
    * @see #Sleep()
    */
-  void WakeUp(long delay);
+  void WakeUp(Poco::Timestamp::TimeVal delay);
 
 
 protected:

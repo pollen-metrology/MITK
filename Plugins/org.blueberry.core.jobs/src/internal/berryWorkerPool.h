@@ -93,9 +93,9 @@ private:
   /**
    * Sleep for the given duration or until woken.
    */
-  void Sleep(long duration);
+  void Sleep(Poco::Timestamp::TimeVal duration);
 
-  static const long BEST_BEFORE;
+  static const Poco::Timestamp::TimeVal BEST_BEFORE;
   /**
    * There will always be at least MIN_THREADS workers in the pool.
    */
@@ -107,6 +107,7 @@ private:
    */
 
   Poco::Mutex m_mutexOne;
+
   //
   //   /**
   //   * Records whether new worker threads should be daemon threads.

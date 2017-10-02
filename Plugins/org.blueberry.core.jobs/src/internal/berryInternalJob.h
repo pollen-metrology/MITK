@@ -78,7 +78,7 @@ struct BERRY_JOBS InternalJob : public Object
    * rescheduled, depending on the current state.
    * @return time in milliseconds
    */
-  Poco::Timestamp GetStartTime() const;
+  Poco::Timestamp::TimeVal GetStartTime() const;
 
   /**
    * Returns the raw job state, including internal states no exposed as API.
@@ -181,14 +181,13 @@ struct BERRY_JOBS InternalJob : public Object
    */
   void SetResult(IStatus::Pointer result)  ;
 
+ 
   /**
-   * Sets a time to start, wake up, or schedule this job,
-   * depending on the current state
-   * @param time a time in milliseconds
-   */
-  void SetStartTime(Poco::Timestamp::TimeDiff time);
-
-  void SetStartTime(const Poco::Timestamp& newtime);
+  * Sets a time to start, wake up, or schedule this job,
+  * depending on the current state
+  * @param time a time in milliseconds
+  */
+  void SetStartTime(const Poco::Timestamp::TimeVal& newtime);
 
   /*
    * @see Job.SetThread
@@ -209,12 +208,12 @@ struct BERRY_JOBS InternalJob : public Object
   /**
    * @param waitQueueStamp The waitQueueStamp to set.
    */
-  void SetWaitQueueStamp(Poco::Timestamp waitQueueStamp);
+  void SetWaitQueueStamp(Poco::Timestamp::TimeVal waitQueueStamp);
 
   /**
    * @return Returns the waitQueueStamp.
    */
-  Poco::Timestamp GetWaitQueueStamp();
+  Poco::Timestamp::TimeVal GetWaitQueueStamp();
 
 protected:
 
@@ -339,7 +338,7 @@ protected:
   /*
    * @see Job#WakeUp(long)
    */
-  void WakeUp(long delay);
+  void WakeUp(Poco::Timestamp::TimeVal delay);
 
 public:
 
@@ -433,14 +432,14 @@ private:
    * If this job is running, this represents the delay automatic rescheduling,
    * or -1 if the job should not be rescheduled.
    */
-  Poco::Timestamp m_startTime;
+  Poco::Timestamp::TimeVal m_startTime;
 
   /**
    * Stamp added when a job is added to the wait queue. Used to ensure
    * jobs in the wait queue maintain their insertion order even if they are
    * removed from the wait queue temporarily while blocked
    */
-  Poco::Timestamp waitQueueStamp;
+  Poco::Timestamp::TimeVal waitQueueStamp;
 
   /*
    * The that is currently running this job

@@ -92,7 +92,7 @@ IProgressMonitor::Pointer InternalJob::GetProgressMonitor() const
 }
 
 
-Poco::Timestamp InternalJob::GetStartTime() const
+Poco::Timestamp::TimeVal InternalJob::GetStartTime() const
 {
   return m_startTime;
 }
@@ -205,14 +205,7 @@ void InternalJob::SetResult(IStatus::Pointer result)
   m_result = result;
 }
 
-
-
-void InternalJob::SetStartTime(Poco::Timestamp::TimeDiff time)
-{
-  m_startTime = m_startTime + time;
-}
-
-void InternalJob::SetStartTime(const Poco::Timestamp& newtime)
+void InternalJob::SetStartTime(const Poco::Timestamp::TimeVal& newtime)
 {
   m_startTime = newtime;
 }
@@ -222,12 +215,12 @@ QString InternalJob::ToString() const
   return GetName() + "(" + QString::number(jobNumber) + ")";
 }
 
-void InternalJob::SetWaitQueueStamp(Poco::Timestamp waitQueueStamp)
+void InternalJob::SetWaitQueueStamp(Poco::Timestamp::TimeVal waitQueueStamp)
 {
   this->waitQueueStamp = waitQueueStamp;
 }
 
-Poco::Timestamp InternalJob::GetWaitQueueStamp()
+Poco::Timestamp::TimeVal InternalJob::GetWaitQueueStamp()
 {
   return waitQueueStamp;
 }
@@ -441,7 +434,7 @@ bool InternalJob::Sleep()
   return ptr_manager->Sleep(InternalJob::Pointer(this));
 }
 
-void InternalJob::WakeUp(long delay)
+void InternalJob::WakeUp(Poco::Timestamp::TimeVal delay)
 {
   ptr_manager->WakeUp(InternalJob::Pointer(this), delay);
 }
