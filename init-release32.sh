@@ -22,10 +22,10 @@ cmake .. \
 -DWITH_IPP:BOOL=FALSE \
 -DWITH_VFW:BOOL=FALSE \
 -DWITH_VTK:BOOL=NO \
--DOPENCV_LIBRARY_ARCHIVE=/pollen/libraries/opencv-3.1.0.zip \
--DOPENCV_EXTRA_MODULES_PATH:PATH=/pollen/libraries/opencv_contrib-3.1.0/modules \
+-DOPENCV_LIBRARY_ARCHIVE=/pollen/libraries/opencv-3.3.0.zip \
+-DOPENCV_EXTRA_MODULES_PATH:PATH=/pollen/libraries/opencv_contrib-3.3.0/modules \
 -DBUILD_TESTING:BOOL=YES \
--DEIGEN_INCLUDE_PATH:PATH=/pollen/dist/gcc/amd64/eigen/release/include \
--DEigen_INCLUDE_DIR=/pollen/dist/gcc/amd64/eigen/release/include \
+-DEIGEN_INCLUDE_PATH:PATH=/pollen/dist/gcc/amd64/eigen/release/include/eigen3 \
+-DEigen_INCLUDE_DIR=/pollen/dist/gcc/amd64/eigen/release/include/eigen3 \
 -DCMAKE_INSTALL_PREFIX=/pollen/dist/gcc/x86/mitk-release64
 
