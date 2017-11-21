@@ -27,4 +27,5 @@ cmake .. \
 -DBUILD_TESTING:BOOL=YES \
 -DMITK_USE_Eigen=YES \
 -DEigen_DIR:PATH=/pollen/dist/gcc/amd64/eigen/release/include/eigen3 \
+-DEigen_INCLUDE_DIR=/pollen/dist/gcc/amd64/eigen/release/include/eigen3 \
 -DCMAKE_INSTALL_PREFIX=/pollen/dist/gcc/amd64/mitk-release64 
