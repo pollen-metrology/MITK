@@ -79,6 +79,9 @@ if(MITK_USE_OpenCV)
       CMAKE_GENERATOR ${gen}
       CMAKE_ARGS
         ${ep_common_args}
+        -DBUILD_JPEG=ON
+        -DBUILD_TIFF=ON
+        -DBUILD_PNG=ON
         -DBUILD_TESTS:BOOL=OFF
         -DBUILD_DOCS:BOOL=OFF
         -DBUILD_EXAMPLES:BOOL=OFF
