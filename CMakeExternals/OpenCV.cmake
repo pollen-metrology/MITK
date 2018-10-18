@@ -84,7 +84,7 @@ if(MITK_USE_OpenCV)
         -DBUILD_PNG=ON
         -DBUILD_TESTS:BOOL=OFF
         -DBUILD_DOCS:BOOL=OFF
-        -DBUILD_EXAMPLES:BOOL=OFF
+	-DBUILD_EXAMPLES:BOOL=ON
         -DBUILD_DOXYGEN_DOCS:BOOL=OFF
         -DWITH_CUDA:BOOL=OFF
         -DWITH_IPP:BOOL=${WITH_IPP}
@@ -97,22 +97,22 @@ if(MITK_USE_OpenCV)
         -DBUILD_opencv_adas:BOOL=OFF 
         -DBUILD_opencv_bgsegm:BOOL=OFF 
         -DBUILD_opencv_bioinspired:BOOL=OFF 
-        -DBUILD_opencv_ccalib:BOOL=OFF 
-        -DBUILD_opencv_datasettools:BOOL=OFF 
-        -DBUILD_opencv_latentsvm:BOOL=OFF 
-        -DBUILD_opencv_line_descriptor:BOOL=OFF
+	-DBUILD_opencv_ccalib:BOOL=ON
+	-DBUILD_opencv_datasettools:BOOL=ON
+	-DBUILD_opencv_latentsvm:BOOL=ON
+	-DBUILD_opencv_line_descriptor:BOOL=ON
         -DBUILD_opencv_matlab:BOOL=OFF 
         -DBUILD_opencv_optflow:BOOL=OFF 
-        -DBUILD_opencv_reg:BOOL=OFF
+	-DBUILD_opencv_reg:BOOL=ON
         -DBUILD_opencv_rgbd:BOOL=OFF 
-        -DBUILD_opencv_saliency:BOOL=OFF 
-        -DBUILD_opencv_surface_matching:BOOL=OFF
-        -DBUILD_opencv_text:BOOL=OFF
-        -DBUILD_opencv_tracking:BOOL=OFF
-        -DBUILD_opencv_xfeatures2d:BOOL=OFF
-        -DBUILD_opencv_xobjdetect:BOOL=OFF
-        -DBUILD_opencv_stereo:BOOL=OFF
-        -DBUILD_opencv_cvv:BOOL=OFF
+	-DBUILD_opencv_saliency:BOOL=ON
+	-DBUILD_opencv_surface_matching:BOOL=ON
+	-DBUILD_opencv_text:BOOL=ON
+	-DBUILD_opencv_tracking:BOOL=ON
+	-DBUILD_opencv_xfeatures2d:BOOL=ON
+	-DBUILD_opencv_xobjdetect:BOOL=ON
+	-DBUILD_opencv_stereo:BOOL=ON
+	-DBUILD_opencv_cvv:BOOL=ON
         -DBUILD_opencv_hdf:BOOL=OFF
         ${additional_cmake_args}
       CMAKE_CACHE_ARGS

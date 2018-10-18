@@ -3,18 +3,18 @@ call C:\dev\compilers\msvc14\VC\vcvarsall.bat amd64
 
 set QTDIR=C:/dev/dist/msvc14/amd64/qt551
 
-mkdir debug
-cd debug
+mkdir release
+cd release
 
 cmake .. ^
 -G"Visual Studio 14 2015 Win64" ^
 -DCMAKE_GENERATOR="Visual Studio 14 2015 Win64" ^
--DCMAKE_INSTALL_PREFIX=c:\dev\dist\msvc14\amd64\mitk\debug ^
+-DCMAKE_INSTALL_PREFIX=c:\dev\dist\msvc14\amd64\mitk\release ^
 -DDESIRED_QT_VERSION=5 ^
 -DMITK_USE_QT=ON ^
 -DMITK_USE_BOOST=ON ^
 -DQt5_DIR=C:\dev\dist\msvc14\amd64\qt551\lib\cmake\Qt5 ^
--DCMAKE_BUILD_TYPE=Debug ^
+-DCMAKE_BUILD_TYPE=Release ^
 -DBUILD_SHARED_LIBS=true ^
 -DVTK_USE_QVTK=ON ^
 -DMITK_USE_DCMTK:BOOL=OFF ^
