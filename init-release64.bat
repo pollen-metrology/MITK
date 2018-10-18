@@ -1,4 +1,4 @@
-call C:\dev\pollen-vars.bat msvc14 amd64
+call C:\dev\pollen-vars.bat amd64 release
 call C:\dev\compilers\msvc14\VC\vcvarsall.bat amd64
 
 set QTDIR=C:/dev/dist/msvc14/amd64/qt551
