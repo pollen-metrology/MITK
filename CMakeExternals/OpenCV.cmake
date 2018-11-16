@@ -89,7 +89,7 @@ if(MITK_USE_OpenCV)
         -DWITH_CUDA:BOOL=OFF
         -DWITH_IPP:BOOL=${WITH_IPP}
         -DEIGEN_INCLUDE_PATH:PATH=${EIGEN_INCLUDE_PATH}
-        -DWITH_VFW:BOOL=${WITH_VFW}
+	-DWITH_VFW:BOOL=FALSE
         -DWITH_V4L:BOOL=FALSE
         -DWITH_GSTREAMER:BOOL=FALSE 
         -DWITH_VTK:BOOL=${WITH_VTK}
@@ -114,6 +114,7 @@ if(MITK_USE_OpenCV)
 	-DBUILD_opencv_stereo:BOOL=ON
 	-DBUILD_opencv_cvv:BOOL=ON
         -DBUILD_opencv_hdf:BOOL=OFF
+        -DBUILD_opencv_videoio:BOOL=OFF
         ${additional_cmake_args}
       CMAKE_CACHE_ARGS
         ${ep_common_cache_args}
