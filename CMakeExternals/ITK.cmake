@@ -38,7 +38,7 @@ if(NOT DEFINED ITK_DIR)
 
   if(MITK_USE_OpenCV)
     list(APPEND additional_cmake_args
-	 -DModule_ITKVideoBridgeOpenCV:BOOL=OFF
+         -DModule_ITKVideoBridgeOpenCV:BOOL=ON
          -DOpenCV_DIR:PATH=${OpenCV_DIR}
         )
   endif()
