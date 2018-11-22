@@ -114,7 +114,7 @@ if(MITK_USE_OpenCV)
 	-DBUILD_opencv_stereo:BOOL=ON
 	-DBUILD_opencv_cvv:BOOL=ON
         -DBUILD_opencv_hdf:BOOL=OFF
-        -DBUILD_opencv_videoio:BOOL=OFF
+	-DBUILD_opencv_videoio:BOOL=ON
         ${additional_cmake_args}
       CMAKE_CACHE_ARGS
         ${ep_common_cache_args}
