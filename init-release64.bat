@@ -22,12 +22,15 @@ cmake .. ^
 -DVTK_USE_QVTK_QTOPENGL=ON ^
 -DEigen_DIR=C:/dev/dist/msvc14/amd64/eigen/release ^
 -DEigen_INCLUDE_DIR=C:/dev/dist/msvc14/amd64/eigen/release/include/eigen3 ^
--DMITK_USE_Redland=ON ^
+-DMITK_USE_Redland=OFF ^
 -DMITK_USE_SimpleITK=OFF ^
+-DMITK_USE_PYTHON:BOOL=OFF ^
 -DMITK_BUILD_ALL_PLUGINS:BOOL=ON ^
 -DMITK_SHOW_CONSOLE_WINDOW=OFF ^
 -DMITK_USE_OpenCV=ON ^
 -DWITH_IPP:BOOL=FALSE ^
+-DWITH_VFW:BOOL=FALSE ^
+-DWITH_DIRECTX:BOOL=FALSE ^
 -DMITK_USE_Eigen=YES ^
 -DEigen_DIR:PATH=C:/dev/dist/msvc14/amd64/eigen/release/include/eigen3 ^
 -DEigen_INCLUDE_DIR=C:/dev/dist/msvc14/amd64/eigen/release/include/eigen3 ^
