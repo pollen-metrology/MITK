@@ -37,7 +37,7 @@ cmake .. ^
 -DEIGEN_INCLUDE_PATH:PATH=C:/dev/dist/msvc14/amd64/eigen/release/include/eigen3 ^
 -DWITH_VTK:BOOL=NO ^
 -DBUILD_TESTING:BOOL=YES ^
--DOPENCV_LIBRARY_ARCHIVE=c:/dev/libraries/archives/opencv-3.4.3.zip ^
--DOPENCV_EXTRA_MODULES_PATH=c:/dev/libraries/unpack/opencv_contrib-3.4.3/modules
+-DOPENCV_LIBRARY_ARCHIVE=c:/dev/libraries/archives/opencv-3.4.4.zip ^
+-DOPENCV_EXTRA_MODULES_PATH=c:/dev/libraries/unpack/opencv_contrib-3.4.4/modules
 
 msbuild MITK-superbuild.sln /m:4 /property:Configuration=Release;platform="x64" /t:ALL_BUILD

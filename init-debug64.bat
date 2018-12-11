@@ -30,7 +30,7 @@ cmake .. ^
 -DWITH_IPP:BOOL=FALSE ^
 -DEIGEN_INCLUDE_PATH:PATH=C:/dev/dist/msvc14/amd64/eigen/release/include/eigen3 ^
 -DWITH_VTK:BOOL=NO ^
--DOPENCV_LIBRARY_ARCHIVE=c:/dev/libraries/archives/opencv-3.4.3.zip ^
--DOPENCV_EXTRA_MODULES_PATH=c:/dev/libraries/unpack/opencv_contrib-3.4.3/modules ^
+-DOPENCV_LIBRARY_ARCHIVE=c:/dev/libraries/archives/opencv-3.4.4.zip ^
+-DOPENCV_EXTRA_MODULES_PATH=c:/dev/libraries/unpack/opencv_contrib-3.4.4/modules ^
 -DBUILD_TESTING:BOOL=YES
 
