@@ -125,11 +125,16 @@ bool mitk::Dispatcher::ProcessEvent(InteractionEvent* event)
       return true;
     }
   }
+
+  if (!m_SelectedInteractor)
+  {
+    m_ProcessingMode = REGULAR;
+  }
   switch (m_ProcessingMode)
   {
   case CONNECTEDMOUSEACTION:
     // finished connected mouse action
-    if (std::strcmp(p->GetNameOfClass(), "MouseReleaseEvent") == 0)
+    if (std::strcmp(p->GetNameOfClass(), "MouseReleaseEvent") == 0 && m_SelectedInteractor.IsNotNull())
     {
       m_ProcessingMode = REGULAR;
       eventIsHandled = m_SelectedInteractor->HandleEvent(event, m_SelectedInteractor->GetDataNode());
