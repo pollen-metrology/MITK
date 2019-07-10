@@ -1,3 +1,71 @@
+#
+# function _findInConanEnvironment(package component)
+# 
+# Try to lookup the given component of the given package
+# in the Conan context. A dependency example is : Sql Qt,
+# where 'Qt' is the component, and 'Sql' is the package.
+# NOTE: some libraries (eg. cppunit) does not have any packages.
+#
+# If the dependency is found, following variables will be set,
+# and made available in the call site (`PARENT_SCOPE`):
+# - FOUND_IN_CONAN_LIBS will be set to 1
+# - FOUND_PACKAGE will take the package name
+# - FOUND_LIBRARY will contain a string which can be useable as a LINK 
+#   parameter (`target_link_libraries()`).
+#
+function(_findInConanEnvironment package component)
+    
+  message("- Dependency '${component}|${package}' has not been found in superbuild, trying Conan environment")
+
+  # Note:
+  # package in comments will be Qt
+  # component in comments will be Core
+
+  set(FOUND_IN_CONAN_LIBS 0   PARENT_SCOPE)
+  set(FOUND_COMPONENT ""  PARENT_SCOPE)
+  set(FOUND_LIBRARY   ""  PARENT_SCOPE)
+  string(TOUPPER  "${CONAN_LIBS}" _UC_CONAN_LIBS)
+
+  string(TOUPPER  "${package}" _PACKAGE)
+  string(TOUPPER  "${component}" _COMPONENT)
+
+  foreach(_conan_lib ${CONAN_LIBS})
+    set(_matched "")
+    string(REGEX MATCH "${package}_?[u|s]*${component}[dD0-9]*" _matched "${_conan_lib}") 
+    if(NOT "${_matched}" STREQUAL "")
+        # GMock hack
+        if("${CMAKE_MATCH_0}" STREQUAL "gmock_")
+          set(_LIBNAME "gmock")
+        else()
+          set(_LIBNAME "${CMAKE_MATCH_0}")
+        endif()
+        set(FOUND_IN_CONAN_LIBS 1           PARENT_SCOPE)
+	set(FOUND_PACKAGE       ${package}  PARENT_SCOPE)
+        set(FOUND_LIBRARY       ${_LIBNAME} PARENT_SCOPE)
+        break()
+    else(NOT "${_matched}" STREQUAL "")
+        if(NOT ${component} STREQUAL "")
+            # Try component without package
+            string(REGEX MATCH "[u|s]*${component}[dD0-9]*" _matched "${_conan_lib}") 
+            if(NOT "${_matched}" STREQUAL "")
+
+              if ("${CMAKE_MATCH_0}" STREQUAL "system" AND "${package}" STREQUAL "boost")
+                set(_LIBRARY_NAME "boost_system")
+              else()
+                set (_LIBRARY_NAME "${CMAKE_MATCH_0}")
+              endif()
+                set(FOUND_IN_CONAN_LIBS 1                PARENT_SCOPE)
+                set(FOUND_COMPONENT     ${package}       PARENT_SCOPE)
+                set(FOUND_LIBRARY       ${_LIBRARY_NAME} PARENT_SCOPE)
+                break()
+            endif()
+        endif(NOT ${component} STREQUAL "")
+    endif(NOT "${_matched}" STREQUAL "")
+  endforeach()
+
+endfunction()
+
+
 function(_mitk_parse_package_args)
   set(package_list ${ARGN})
 
@@ -155,7 +223,13 @@ function(mitk_use_modules)
           target_compile_options(${USE_TARGET} ${_package_visibility} ${ALL_COMPILE_OPTIONS})
         endif()
       else()
-        message(SEND_ERROR "Missing package: ${_package}")
+	_findInConanEnvironment(${_package} "")
+	if(FOUND_IN_CONAN_LIBS)
+	  message("Found.")
+	  target_link_libraries(${USE_TARGET} PUBLIC ${FOUND_LIBRARY})
+	else()
+          message(SEND_ERROR "Missing package: ${_package}")
+        endif()
       endif()
     endforeach()
     endforeach()
