@@ -23,9 +23,7 @@ if(NOT MITK_DIR)
   option(MITK_USE_Qt5 "Use Qt 5 library in MITK" ON)
   option(MITK_USE_DCMQI "Use dcmqi in MITK" OFF)
   option(MITK_USE_OpenCV "Use Intel's OpenCV library" OFF)
-  option(MITK_USE_SOFA "Use Simulation Open Framework Architecture" OFF)
-  option(MITK_USE_VMTK "Use the Vascular Modeling Toolkit in MITK" OFF)
-  option(MITK_USE_Python "Enable Python wrapping in MITK" OFF)
+  option(MITK_USE_Python3 "Enable Python wrapping in MITK" OFF)
 
   if(MITK_USE_BLUEBERRY AND NOT MITK_USE_CTK)
     message("Forcing MITK_USE_CTK to ON because of MITK_USE_BLUEBERRY")
@@ -37,7 +35,7 @@ if(NOT MITK_DIR)
     set(MITK_USE_Qt5 ON CACHE BOOL "Use Qt 5 library in MITK" FORCE)
   endif()
 
-  set(MITK_USE_CableSwig ${MITK_USE_Python})
+  set(MITK_USE_CableSwig ${MITK_USE_Python3})
   set(MITK_USE_GDCM 1)
   set(MITK_USE_ITK 1)
   set(MITK_USE_VTK 1)
@@ -58,9 +56,7 @@ if(NOT MITK_DIR)
     MITK_USE_Qt5
     MITK_USE_DCMQI
     MITK_USE_OpenCV
-    MITK_USE_SOFA
-    MITK_USE_VMTK
-    MITK_USE_Python
+    MITK_USE_Python3
    )
 
   if(MITK_USE_Qt5)
@@ -97,7 +93,7 @@ if(NOT MITK_DIR)
   # Create options to inject pre-build dependencies
   #-----------------------------------------------------------------------------
 
-  foreach(proj CTK DCMTK DCMQI GDCM VTK ACVD ITK OpenCV SOFA VMTK CableSwig)
+  foreach(proj CTK DCMTK DCMQI GDCM VTK ACVD ITK OpenCV CableSwig)
     if(MITK_USE_${proj})
       set(MITK_${proj}_DIR "${${proj}_DIR}" CACHE PATH "Path to ${proj} build directory")
       mark_as_advanced(MITK_${proj}_DIR)
@@ -115,7 +111,7 @@ if(NOT MITK_DIR)
 
   set(MITK_SOURCE_DIR "" CACHE PATH "MITK source code location. If empty, MITK will be cloned from MITK_GIT_REPOSITORY")
   set(MITK_GIT_REPOSITORY "https://phabricator.mitk.org/diffusion/MITK/mitk.git" CACHE STRING "The git repository for cloning MITK")
-  set(MITK_GIT_TAG "origin/release/2016-11" CACHE STRING "The git tag/hash to be used when cloning from MITK_GIT_REPOSITORY")
+  set(MITK_GIT_TAG "origin/master" CACHE STRING "The git tag/hash to be used when cloning from MITK_GIT_REPOSITORY")
   mark_as_advanced(MITK_SOURCE_DIR MITK_GIT_REPOSITORY MITK_GIT_TAG)
 
   #-----------------------------------------------------------------------------

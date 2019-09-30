@@ -2,34 +2,21 @@ set(MITK_CONFIG_PACKAGES )
 
 set(_apple_package_excludes)
 
-if(APPLE)
-  set(_apple_package_excludes
-    SOFA
-  )
-endif()
-
-set(_python_excludes )
-
-if(NOT (CMAKE_SIZEOF_VOID_P EQUAL 8) )
-  set(_python_excludes
-    Python
-    Numpy
-   )
-endif()
-
 set(_package_excludes
   ${_apple_package_excludes}
-  ${_python_excludes}
   OpenCL
+  OpenMP
   SYSTEM_Boost
   Boost_LIBRARIES
   SYSTEM_PYTHON
-  SOFA_PLUGINS
-  SOFA_PLUGINS_DIR
   SUPERBUILD
   BiophotonicsHardware_SpectroCam
+  POLHEMUS_TRACKER
 
-  KWSTYLE
+  US_DiPhAS_SDK
+  GALIL_HARDWARE
+  OPHIR_PYRO_HARDWARE
+
   MICROBIRD_TRACKER
   MICROBIRD_TRACKER_INCLUDE_DIR
   MICROBIRD_TRACKER_LIB
@@ -62,4 +49,3 @@ set(MITK_BUILD_ALL_APPS ON CACHE BOOL "Build all MITK applications" FORCE)
 set(MITK_BUILD_ALL_PLUGINS ON CACHE BOOL "Build all MITK plugins" FORCE)
 set(MITK_BUILD_EXAMPLES ON CACHE BOOL "Build the MITK examples" FORCE)
 set(BLUEBERRY_BUILD_ALL_PLUGINS ON CACHE BOOL "Build all BlueBerry plugins" FORCE)
-set(BUILD_DiffusionMiniApps ON CACHE BOOL "Build MITK Diffusion MiniApps" FORCE)

@@ -7,7 +7,7 @@
 # Note: The specific version and processor type of this machine should be reported in the
 # header above. Indeed, this file will be send to the dashboard as a NOTE file.
 
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14.5 FATAL_ERROR)
 
 #
 # Dashboard properties
@@ -22,13 +22,19 @@ set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CTEST_DASHBOARD_ROOT "/opt/dartclients")
 # For Windows, e.g.
 #set(CTEST_CMAKE_COMMAND "cmake")
-#set(CTEST_CMAKE_GENERATOR "Visual Studio 12 2013 Win64")
-#set(CTEST_DASHBOARD_ROOT "C:/dartclients")
+#set(CTEST_CMAKE_GENERATOR "Visual Studio 16 2019")
+#set(CTEST_CMAKE_GENERATOR_PLATFORM "x64")
+#set(CTEST_DASHBOARD_ROOT "D:/dc")
+
+set(MITK_EXTENSIONS # "<repo>|<branch/tag/commit>|<src dir>"
+# "https://phabricator.mitk.org/source/mitk-projecttemplate.git|master|MITK-ProjectTemplate"
+# "https://phabricator.mitk.org/source/mitk-diffusion.git|master|MITK-Diffusion"
+)
 
 # The directory containing the Qt binaries
-set(QT5_INSTALL_PREFIX "/home/user/Qt/5.6/gcc_64")
+set(QT5_INSTALL_PREFIX "/home/user/Qt/5.11.4/gcc_64")
 # For Windows, e.g.
-#set(QT5_INSTALL_PREFIX "C:/Qt/5.6/msvc2013_64")
+#set(QT5_INSTALL_PREFIX "C:/Qt/5.11.4/msvc2017_64")
 
 set(QT_BINARY_DIR "${QT5_INSTALL_PREFIX}/bin")
 
@@ -42,7 +48,7 @@ set(WITH_DOCUMENTATION FALSE)
 #set(DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY ) # for example: $ENV{HOME}/Projects/Doxygen
 set(CTEST_BUILD_CONFIGURATION "Release")
 set(CTEST_TEST_TIMEOUT 500)
-if(UNIX OR MINGW)
+if(UNIX)
   set(CTEST_BUILD_FLAGS "-j4") # Use multiple CPU cores to build
 else()
   set(CTEST_BUILD_FLAGS "")
@@ -139,7 +145,8 @@ if(NOT DEFINED GIT_BRANCH OR GIT_BRANCH STREQUAL "")
   set(url "https://raw.githubusercontent.com/MITK/MITK/master/CMake/MITKDashboardSetup.cmake")
 else()
   set(IS_PHABRICATOR_URL TRUE)
-  set(url "https://phabricator.mitk.org/source/mitk/browse/${GIT_BRANCH}/CMake/MITKDashboardSetup.cmake?view=raw")
+  string(REPLACE "/" "%252F" GIT_BRANCH_URL ${GIT_BRANCH})
+  set(url "https://phabricator.mitk.org/source/mitk/browse/${GIT_BRANCH_URL}/CMake/MITKDashboardSetup.cmake?view=raw")
 endif()
 set(dest ${CTEST_SCRIPT_DIRECTORY}/${CTEST_SCRIPT_NAME}.setup)
 downloadFile("${url}" "${dest}")

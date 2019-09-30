@@ -15,36 +15,23 @@ if(MITK_USE_CTK)
 
   if(NOT DEFINED CTK_DIR)
 
-    set(revision_tag 9440d3c9)
-    #IF(${proj}_REVISION_TAG)
-    #  SET(revision_tag ${${proj}_REVISION_TAG})
-    #ENDIF()
+    set(revision_tag "kislinsk_fix-pythonlibs-handling") # Switch back to official CTK repo when PR874 was merged
 
     set(ctk_optional_cache_args )
-    if(MITK_USE_Python)
-      if(NOT MITK_USE_SYSTEM_PYTHON)
-        list(APPEND proj_DEPENDENCIES Python)
-      endif()
+    if(MITK_USE_Python3)
       list(APPEND ctk_optional_cache_args
            -DCTK_LIB_Scripting/Python/Widgets:BOOL=ON
-           -DCTK_ENABLE_Python_Wrapping:BOOL=ON
-           -DCTK_APP_ctkSimplePythonShell:BOOL=ON
-           -DPYTHON_EXECUTABLE:FILEPATH=${PYTHON_EXECUTABLE}
-           -DPYTHON_INCLUDE_DIR:PATH=${PYTHON_INCLUDE_DIR}
-           -DPYTHON_INCLUDE_DIR2:PATH=${PYTHON_INCLUDE_DIR2}
-           -DPYTHON_LIBRARY:FILEPATH=${PYTHON_LIBRARY}
+           -DCTK_ENABLE_Python_Wrapping:BOOL=OFF
+           -DCTK_APP_ctkSimplePythonShell:BOOL=OFF
+           "-DPYTHON_INCLUDE_DIR:PATH=${Python3_INCLUDE_DIR}"
+           "-DPYTHON_LIBRARY:FILEPATH=${Python3_LIBRARY_RELEASE}"
       )
     else()
       list(APPEND ctk_optional_cache_args
            -DCTK_LIB_Scripting/Python/Widgets:BOOL=OFF
            -DCTK_ENABLE_Python_Wrapping:BOOL=OFF
            -DCTK_APP_ctkSimplePythonShell:BOOL=OFF
-      )
-    endif()
-
-    if(NOT MITK_USE_Python)
-      list(APPEND ctk_optional_cache_args
-        -DDCMTK_CMAKE_DEBUG_POSTFIX:STRING=d
+           -DDCMTK_CMAKE_DEBUG_POSTFIX:STRING=d
       )
     endif()
 
@@ -60,16 +47,16 @@ if(MITK_USE_CTK)
       ENDIF()
     ENDFOREACH()
 
+    mitk_query_custom_ep_vars()
+
     ExternalProject_Add(${proj}
       LIST_SEPARATOR ${sep}
       URL ${MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL}/CTK_${revision_tag}.tar.gz
-      #GIT_REPOSITORY https://github.com/commontk/CTK.git
-      #GIT_TAG origin/master
-      URL_MD5 2c04925496e6818706ccffa8a71afaae
-      PATCH_COMMAND ${PATCH_COMMAND} -N -p1 -i ${CMAKE_CURRENT_LIST_DIR}/CTK.patch
+      URL_MD5 49e1652cc505bdf3f77210976df97d63
       UPDATE_COMMAND ""
       INSTALL_COMMAND ""
       CMAKE_GENERATOR ${gen}
+      CMAKE_GENERATOR_PLATFORM ${gen_platform}
       CMAKE_ARGS
         ${ep_common_args}
         ${ctk_optional_cache_args}
@@ -78,8 +65,10 @@ if(MITK_USE_CTK)
         # libraries yet.
         -DCMAKE_DEBUG_POSTFIX:STRING=
         -DCTK_QT_VERSION:STRING=5
+        -DQt5_DIR=${Qt5_DIR}
         -DGit_EXECUTABLE:FILEPATH=${GIT_EXECUTABLE}
         -DGIT_EXECUTABLE:FILEPATH=${GIT_EXECUTABLE}
+        -DCTK_BUILD_QTDESIGNER_PLUGINS:BOOL=OFF
         -DCTK_LIB_CommandLineModules/Backend/LocalProcess:BOOL=ON
         -DCTK_LIB_CommandLineModules/Frontend/QtGui:BOOL=ON
         -DCTK_LIB_PluginFramework:BOOL=ON
@@ -89,19 +78,19 @@ if(MITK_USE_CTK)
         -DCTK_PLUGIN_org.commontk.configadmin:BOOL=ON
         -DCTK_USE_GIT_PROTOCOL:BOOL=OFF
         -DDCMTK_DIR:PATH=${DCMTK_DIR}
-        -DqRestAPI_URL:STRING=${MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL}/qRestAPI_c5e4c2a7_patched.tar.gz
-        -DPythonQt_URL:STRING=${MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL}/PythonQt_a081f9d6.tar.gz
+        -DPythonQt_URL:STRING=${MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL}/PythonQt_fae23012.tar.gz
+        ${${proj}_CUSTOM_CMAKE_ARGS}
       CMAKE_CACHE_ARGS
         ${ep_common_cache_args}
+        ${${proj}_CUSTOM_CMAKE_CACHE_ARGS}
       CMAKE_CACHE_DEFAULT_ARGS
         ${ep_common_cache_default_args}
+        ${${proj}_CUSTOM_CMAKE_CACHE_DEFAULT_ARGS}
       DEPENDS ${proj_DEPENDENCIES}
      )
 
     ExternalProject_Get_Property(${proj} binary_dir)
     set(CTK_DIR ${binary_dir})
-    #set(CTK_DIR ${ep_prefix})
-    #mitkFunctionInstallExternalCMakeProject(${proj})
 
   else()
 

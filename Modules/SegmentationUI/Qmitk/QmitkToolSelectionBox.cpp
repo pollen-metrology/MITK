@@ -16,6 +16,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 //#define MBILOG_ENABLE_DEBUG 1
 
+#include <QmitkStyleManager.h>
 #include "QmitkToolSelectionBox.h"
 #include "QmitkToolGUI.h"
 #include "mitkBaseRenderer.h"
@@ -41,10 +42,10 @@ QmitkToolSelectionBox::QmitkToolSelectionBox(QWidget *parent, mitk::DataStorage 
     m_LayoutColumns(2),
     m_ShowNames(true),
     m_GenerateAccelerators(false),
-    m_ToolGUIWidget(NULL),
-    m_LastToolGUI(NULL),
-    m_ToolButtonGroup(NULL),
-    m_ButtonLayout(NULL),
+    m_ToolGUIWidget(nullptr),
+    m_LastToolGUI(nullptr),
+    m_ToolButtonGroup(nullptr),
+    m_ButtonLayout(nullptr),
     m_EnabledMode(EnabledWithReferenceAndWorkingDataVisible)
 {
   QFont currentFont = QWidget::font();
@@ -62,7 +63,7 @@ QmitkToolSelectionBox::QmitkToolSelectionBox(QWidget *parent, mitk::DataStorage 
   RecreateButtons();
 
   QWidget::setContentsMargins(0, 0, 0, 0);
-  if (layout() != NULL)
+  if (layout() != nullptr)
   {
     layout()->setContentsMargins(0, 0, 0, 0);
   }
@@ -107,7 +108,7 @@ mitk::ToolManager *QmitkToolSelectionBox::GetToolManager()
 }
 
 void QmitkToolSelectionBox::SetToolManager(
-  mitk::ToolManager &newManager) // no NULL pointer allowed here, a manager is required
+  mitk::ToolManager &newManager) // no nullptr pointer allowed here, a manager is required
 {
   // say bye to the old manager
   m_ToolManager->ActiveToolChanged -=
@@ -204,11 +205,11 @@ void QmitkToolSelectionBox::SetOrUnsetButtonForActiveTool()
       m_ToolGUIWidget->layout()->removeWidget(m_LastToolGUI);
     }
 
-    // m_LastToolGUI->reparent(NULL, QPoint(0,0));
+    // m_LastToolGUI->reparent(nullptr, QPoint(0,0));
     // TODO: reparent <-> setParent, Daniel fragen
-    m_LastToolGUI->setParent(0);
+    m_LastToolGUI->setParent(nullptr);
     delete m_LastToolGUI; // will hopefully notify parent and layouts
-    m_LastToolGUI = NULL;
+    m_LastToolGUI = nullptr;
 
     QLayout *layout = m_ToolGUIWidget->layout();
     if (layout)
@@ -217,7 +218,7 @@ void QmitkToolSelectionBox::SetOrUnsetButtonForActiveTool()
     }
   }
 
-  QToolButton *toolButton(NULL);
+  QToolButton *toolButton(nullptr);
   // mitk::Tool* tool = m_ToolManager->GetActiveTool();
 
   if (m_ButtonIDForToolID.find(id) != m_ButtonIDForToolID.end()) // if this tool is in our box
@@ -230,7 +231,7 @@ void QmitkToolSelectionBox::SetOrUnsetButtonForActiveTool()
   {
     // mmueller
     // uncheck all other buttons
-    QAbstractButton *tmpBtn = 0;
+    QAbstractButton *tmpBtn = nullptr;
     QList<QAbstractButton *>::iterator it;
     for (int i = 0; i < m_ToolButtonGroup->buttons().size(); ++i)
     {
@@ -245,6 +246,10 @@ void QmitkToolSelectionBox::SetOrUnsetButtonForActiveTool()
     {
       // create and reparent new GUI (if any)
       itk::Object::Pointer possibleGUI = tool->GetGUI("Qmitk", "GUI").GetPointer(); // prefix and postfix
+
+      if (possibleGUI.IsNull())
+        possibleGUI = tool->GetGUI("", "GUI").GetPointer();
+
       QmitkToolGUI *gui = dynamic_cast<QmitkToolGUI *>(possibleGUI.GetPointer());
 
       //!
@@ -463,7 +468,7 @@ void QmitkToolSelectionBox::RecreateButtons()
   // Q3GroupBox::setColumnLayout ( m_LayoutColumns, Qt::Horizontal );
   // mmueller using gridlayout instead of Q3GroupBox
   // this->setLayout(0);
-  if (m_ButtonLayout == NULL)
+  if (m_ButtonLayout == nullptr)
     m_ButtonLayout = new QGridLayout;
   /*else
     delete m_ButtonLayout;*/
@@ -474,7 +479,7 @@ void QmitkToolSelectionBox::RecreateButtons()
   int currentButtonID(0);
   m_ButtonIDForToolID.clear();
   m_ToolIDForButtonID.clear();
-  QToolButton *button = 0;
+  QToolButton *button = nullptr;
 
   MITK_DEBUG << "Creating buttons for tools";
   // fill group box with buttons
@@ -555,19 +560,29 @@ void QmitkToolSelectionBox::RecreateButtons()
     }
     else
     {
-      us::ModuleResourceStream resourceStream(iconResource, std::ios::binary);
+      auto isSVG = "svg" == iconResource.GetSuffix();
+      auto openmode = isSVG ? std::ios_base::in : std::ios_base::binary;
+
+      us::ModuleResourceStream resourceStream(iconResource, openmode);
       resourceStream.seekg(0, std::ios::end);
       std::ios::pos_type length = resourceStream.tellg();
       resourceStream.seekg(0, std::ios::beg);
 
       char *data = new char[length];
       resourceStream.read(data, length);
-      QPixmap pixmap;
-      pixmap.loadFromData(QByteArray::fromRawData(data, length));
-      QIcon *icon = new QIcon(pixmap);
-      delete[] data;
 
-      button->setIcon(*icon);
+      if (isSVG)
+      {
+        button->setIcon(QmitkStyleManager::ThemeIcon(QByteArray::fromRawData(data, length)));
+      }
+      else
+      {
+        QPixmap pixmap;
+        pixmap.loadFromData(QByteArray::fromRawData(data, length));
+        button->setIcon(QIcon(pixmap));
+      }
+
+      delete[] data;
 
       if (m_ShowNames)
       {
@@ -596,7 +611,7 @@ void QmitkToolSelectionBox::RecreateButtons()
 
     mitk::DataNode *dataNode = m_ToolManager->GetReferenceData(0);
 
-    if (dataNode != NULL && !tool->CanHandle(dataNode->GetData()))
+    if (dataNode != nullptr && !tool->CanHandle(dataNode->GetData()))
       button->setEnabled(false);
 
     m_ButtonIDForToolID[currentToolID] = currentButtonID;

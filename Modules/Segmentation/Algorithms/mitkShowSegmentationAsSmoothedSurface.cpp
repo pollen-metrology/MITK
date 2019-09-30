@@ -63,16 +63,16 @@ void ShowSegmentationAsSmoothedSurface::Initialize(const NonBlockingAlgorithm *o
 
   // The Smoothing value is used as variance for a Gauss filter.
   // A reasonable default value equals the image spacing in mm.
-  SetParameter("Smoothing", 1.0f);
+  SetParameter("Smoothing", 1.0);
 
   // Valid range for decimation value is [0, 1). High values
   // increase decimation, especially when very close to 1.
   // A value of 0 disables decimation.
-  SetParameter("Decimation", 0.5f);
+  SetParameter("Decimation", 0.5);
 
   // Valid range for closing value is [0, 1]. Higher values
   // increase closing. A value of 0 disables closing.
-  SetParameter("Closing", 0.0f);
+  SetParameter("Closing", 0.0);
 }
 
 bool ShowSegmentationAsSmoothedSurface::ReadyToRun()
@@ -95,13 +95,13 @@ bool ShowSegmentationAsSmoothedSurface::ThreadedUpdateFunction()
   Image::Pointer image;
   GetPointerParameter("Input", image);
 
-  float smoothing;
+  double smoothing;
   GetParameter("Smoothing", smoothing);
 
-  float decimation;
+  double decimation;
   GetParameter("Decimation", decimation);
 
-  float closing;
+  double closing;
   GetParameter("Closing", closing);
 
   int timeNr = 0;
@@ -259,7 +259,7 @@ bool ShowSegmentationAsSmoothedSurface::ThreadedUpdateFunction()
   typedef itk::BinaryMedianImageFilter<CharImageType, CharImageType> MedianFilterType;
 
   MedianFilterType::Pointer medianFilter = MedianFilterType::New();
-  CharImageType::SizeType radius = {0};
+  CharImageType::SizeType radius = {{0}};
 
   medianFilter->SetRadius(radius);
   medianFilter->SetBackgroundValue(0);
@@ -275,7 +275,7 @@ bool ShowSegmentationAsSmoothedSurface::ThreadedUpdateFunction()
 
   MITK_INFO << "Intelligent closing...";
 
-  unsigned int surfaceRatio = (unsigned int)((1.0f - closing) * 100.0f);
+  auto surfaceRatio = (unsigned int)((1.0f - closing) * 100.0f);
 
   typedef itk::IntelligentBinaryClosingFilter<CharImageType, ShortImageType> ClosingFilterType;
 
@@ -460,7 +460,7 @@ void ShowSegmentationAsSmoothedSurface::ThreadedUpdateSuccessful()
 
   if (wireframe)
   {
-    VtkRepresentationProperty *representation =
+    auto *representation =
       dynamic_cast<VtkRepresentationProperty *>(node->GetProperty("material.representation"));
 
     if (representation != nullptr)

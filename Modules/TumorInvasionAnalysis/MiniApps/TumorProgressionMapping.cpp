@@ -291,7 +291,7 @@ static ImageList LoadPreprocessedFiles(FileList files)
   ImageList images;
   for (unsigned int i = 0; i < files.size(); ++i)
   {
-    images.push_back(mitk::IOUtil::LoadImage(files.at(i)));
+    images.push_back(mitk::IOUtil::Load<mitk::Image>(files.at(i)));
   }
   return images;
 }
@@ -310,13 +310,13 @@ int main(int argc, char *argv[])
                         "IDENTIFIER_YYYY-MM-DD_MODALITY.nrrd");
 
   parser.setArgumentPrefix("--", "-");
-  parser.addArgument("input", "i", mitkCommandLineParser::InputDirectory, "Input folder containing all follow ups");
-  parser.addArgument("output", "o", mitkCommandLineParser::OutputFile, "Output file (PNG)");
+  parser.addArgument("input", "i", mitkCommandLineParser::Directory, "Input folder containing all follow ups", "", us::Any(), false, false, false, mitkCommandLineParser::Input);
+  parser.addArgument("output", "o", mitkCommandLineParser::File, "Output file (PNG)", "", us::Any(), false, false, false, mitkCommandLineParser::Output);
   parser.addArgument("blanked", "b", mitkCommandLineParser::Bool, "Only Display Morphology");
   parser.addArgument("morphology", "m", mitkCommandLineParser::String, "Morphology postfix.", "_T2.nrrd");
   parser.addArgument(
     "segmentation", "s", mitkCommandLineParser::String, "Segmentation postfix. Default: _GTV.nrrd", "_GTV.nrrd");
-  parser.addArgument("4dVolume", "v", mitkCommandLineParser::OutputFile, "Filepath to merged 4d NRRD Volume.");
+  parser.addArgument("4dVolume", "v", mitkCommandLineParser::File, "Filepath to merged 4d NRRD Volume.", "", us::Any(), false, false, false, mitkCommandLineParser::Output);
   parser.addArgument(
     "skip", "k", mitkCommandLineParser::Int, "Number of slices to be skipped from top and from button (Default 0)");
   parser.addArgument(
@@ -450,7 +450,7 @@ int main(int argc, char *argv[])
 
   // Now iterate over all data sets, extract overlay and add it to reference image
   mitk::Image *morphImage;
-  mitk::Image *segmentationImage = NULL;
+  mitk::Image *segmentationImage = nullptr;
 
   for (unsigned int i = 0; i < noOfTimeSteps; i++)
   {
@@ -482,7 +482,7 @@ int main(int argc, char *argv[])
     if (!blank)
     {
       segmentationImage = segImages.at(i);
-      if (segmentationImage != NULL)
+      if (segmentationImage != nullptr)
       {
         MITK_INFO << "-- Add Overlay";
         progressVis.AddColouredOverlay(rgbImage, segmentationImage, color);

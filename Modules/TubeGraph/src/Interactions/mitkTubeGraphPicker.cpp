@@ -21,20 +21,18 @@ mitk::TubeGraphPicker::TubeGraphPicker()
   m_WorldPosition.Fill(0.0);
 }
 
-mitk::TubeGraphPicker::~TubeGraphPicker()
-{
-}
+mitk::TubeGraphPicker::~TubeGraphPicker() {}
 
 void mitk::TubeGraphPicker::SetTubeGraph(const mitk::TubeGraph *tubeGraph)
 {
-  m_TubeGraph = const_cast<mitk::TubeGraph *>(tubeGraph);
+  m_TubeGraph = tubeGraph;
   m_TubeGraphProperty =
     dynamic_cast<TubeGraphProperty *>(m_TubeGraph->GetProperty("Tube Graph.Visualization Information").GetPointer());
 }
 
 /**
-* Implements the picking process
-*/
+ * Implements the picking process
+ */
 std::pair<mitk::TubeGraph::TubeDescriptorType, mitk::TubeElement *> mitk::TubeGraphPicker::GetPickedTube(
   const Point3D pickedPosition)
 {
@@ -77,6 +75,13 @@ std::pair<mitk::TubeGraph::TubeDescriptorType, mitk::TubeElement *> mitk::TubeGr
           currentRadius = 0;
 
         // calculate point->point distance
+        itk::Index<3> worldIndex;
+        m_TubeGraph->GetGeometry()->WorldToIndex(pickedPosition, worldIndex);
+
+        m_WorldPosition[0] = worldIndex[0];
+        m_WorldPosition[1] = worldIndex[1];
+        m_WorldPosition[2] = worldIndex[2];
+
         currentDistance = m_WorldPosition.EuclideanDistanceTo(currentPosition);
         if (currentDistance < closestDistance && (currentDistance - currentRadius) < 1.0)
         {
@@ -87,6 +92,6 @@ std::pair<mitk::TubeGraph::TubeDescriptorType, mitk::TubeElement *> mitk::TubeGr
       }
     }
   }
-  std::pair<mitk::TubeGraph::TubeDescriptorType, mitk::TubeElement *> pickedTubeWithElement(tubeId, tubeElement);
-  return pickedTubeWithElement;
+
+  return std::make_pair(tubeId, tubeElement);
 }

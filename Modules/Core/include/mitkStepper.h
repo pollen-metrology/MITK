@@ -111,13 +111,15 @@ namespace mitk
 
     virtual void Previous();
 
+    virtual void MoveSlice(int sliceDelta);
+
     virtual void First();
 
     virtual void Last();
 
   protected:
     Stepper();
-    virtual ~Stepper();
+    ~Stepper() override;
 
     void Increase();
 

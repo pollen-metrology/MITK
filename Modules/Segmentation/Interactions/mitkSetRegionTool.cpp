@@ -21,7 +21,6 @@ See LICENSE.txt or http://www.mitk.org for details.
 #include "mitkBaseRenderer.h"
 #include "mitkImageDataItem.h"
 #include "mitkLabelSetImage.h"
-#include "mitkLegacyAdaptors.h"
 
 #include <mitkITKImageImport.h>
 #include <mitkImagePixelReadAccessor.h>
@@ -58,7 +57,7 @@ void mitk::SetRegionTool::Deactivated()
 
 void mitk::SetRegionTool::OnMousePressed(StateMachineAction *, InteractionEvent *interactionEvent)
 {
-  mitk::InteractionPositionEvent *positionEvent = dynamic_cast<mitk::InteractionPositionEvent *>(interactionEvent);
+  auto *positionEvent = dynamic_cast<mitk::InteractionPositionEvent *>(interactionEvent);
   if (!positionEvent)
     return;
 
@@ -76,7 +75,7 @@ void mitk::SetRegionTool::OnMousePressed(StateMachineAction *, InteractionEvent 
   sliceGeometry->WorldToIndex(positionEvent->GetPositionInWorld(), projectedPointIn2D);
   if (!sliceGeometry->IsIndexInside(projectedPointIn2D))
   {
-    MITK_ERROR << "point apparently not inside segmentation slice" << std::endl;
+    MITK_WARN << "Point outside of segmentation slice." << std::endl;
     return; // can't use that as a seed point
   }
 
@@ -115,27 +114,24 @@ void mitk::SetRegionTool::OnMousePressed(StateMachineAction *, InteractionEvent 
   if (!workingNode)
     return;
 
-  Image *image = dynamic_cast<Image *>(workingNode->GetData());
-  LabelSetImage *labelImage = dynamic_cast<LabelSetImage *>(image);
-  int activeColor = 1;
-  if (labelImage != 0)
-  {
-    activeColor = labelImage->GetActiveLabel()->GetValue();
-  }
-
   mitk::ImageToContourModelFilter::Pointer contourextractor = mitk::ImageToContourModelFilter::New();
   contourextractor->SetInput(resultImage);
   contourextractor->Update();
 
   mitk::ContourModel::Pointer awesomeContour = contourextractor->GetOutput();
-  FeedbackContourTool::SetFeedbackContour(awesomeContour);
+  auto t = positionEvent->GetSender()->GetTimeStep();
+
+  FeedbackContourTool::SetFeedbackContour(0 != t
+    ? ContourModelUtils::MoveZerothContourTimeStep(awesomeContour, t)
+    : awesomeContour);
+
   FeedbackContourTool::SetFeedbackContourVisible(true);
   mitk::RenderingManager::GetInstance()->RequestUpdate(positionEvent->GetSender()->GetRenderWindow());
 }
 
 void mitk::SetRegionTool::OnMouseReleased(StateMachineAction *, InteractionEvent *interactionEvent)
 {
-  mitk::InteractionPositionEvent *positionEvent = dynamic_cast<mitk::InteractionPositionEvent *>(interactionEvent);
+  auto *positionEvent = dynamic_cast<mitk::InteractionPositionEvent *>(interactionEvent);
   if (!positionEvent)
     return;
 
@@ -151,7 +147,7 @@ void mitk::SetRegionTool::OnMouseReleased(StateMachineAction *, InteractionEvent
   if (!workingNode)
     return;
 
-  Image *image = dynamic_cast<Image *>(workingNode->GetData());
+  auto *image = dynamic_cast<Image *>(workingNode->GetData());
   const PlaneGeometry *planeGeometry((positionEvent->GetSender()->GetCurrentWorldPlaneGeometry()));
   if (!image || !planeGeometry)
     return;
@@ -171,9 +167,9 @@ void mitk::SetRegionTool::OnMouseReleased(StateMachineAction *, InteractionEvent
   if (projectedContour.IsNull())
     return;
 
-  LabelSetImage *labelImage = dynamic_cast<LabelSetImage *>(image);
+  auto *labelImage = dynamic_cast<LabelSetImage *>(image);
   int activeColor = 1;
-  if (labelImage != 0)
+  if (labelImage != nullptr)
   {
     activeColor = labelImage->GetActiveLabel()->GetValue();
   }

@@ -26,18 +26,21 @@ if(MITK_USE_DCMTK)
       )
     endif()
 
+    mitk_query_custom_ep_vars()
+
     ExternalProject_Add(${proj}
       LIST_SEPARATOR ${sep}
-      URL ${MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL}/dcmtk-3.6.1_20161102.tar.gz
-      URL_MD5 682e12cf52c405e79724be614545709f
-      PATCH_COMMAND ${PATCH_COMMAND} -N -p1 -i ${CMAKE_CURRENT_LIST_DIR}/DCMTK.patch
+      URL ${MITK_THIRDPARTY_DOWNLOAD_PREFIX_URL}/dcmtk_29f9de10.tar.gz
+      URL_MD5 c4b13ef2e694f3b8c50d7181fc959f4a
       CMAKE_GENERATOR ${gen}
+      CMAKE_GENERATOR_PLATFORM ${gen_platform}
       CMAKE_ARGS
          ${ep_common_args}
          ${additional_args}
          "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} ${DCMTK_CXX_FLAGS}"
          "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS} ${DCMTK_C_FLAGS}"
-         -DDCMTK_USE_CXX11_STL:BOOL=OFF
+         -DDCMTK_ENABLE_CXX11:BOOL=ON
+         -DDCMTK_ENABLE_STL:BOOL=ON
          -DDCMTK_WITH_DOXYGEN:BOOL=OFF
          -DDCMTK_WITH_ZLIB:BOOL=OFF # see bug #9894
          -DDCMTK_WITH_OPENSSL:BOOL=OFF # see bug #9894
@@ -45,10 +48,14 @@ if(MITK_USE_DCMTK)
          -DDCMTK_WITH_TIFF:BOOL=OFF  # see bug #9894
          -DDCMTK_WITH_XML:BOOL=OFF  # see bug #9894
          -DDCMTK_WITH_ICONV:BOOL=OFF  # see bug #9894
+         -DDCMTK_WITH_ICU:BOOL=OFF  # see T26438
+         ${${proj}_CUSTOM_CMAKE_ARGS}
       CMAKE_CACHE_ARGS
         ${ep_common_cache_args}
+        ${${proj}_CUSTOM_CMAKE_CACHE_ARGS}
       CMAKE_CACHE_DEFAULT_ARGS
         ${ep_common_cache_default_args}
+        ${${proj}_CUSTOM_CMAKE_CACHE_DEFAULT_ARGS}
       DEPENDS ${proj_DEPENDENCIES}
       )
     set(DCMTK_DIR ${ep_prefix})

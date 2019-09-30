@@ -27,9 +27,10 @@ set(CPP_FILES
   mitkUnstructuredGridClusteringFilter.cpp
   mitkUnstructuredGridToUnstructuredGridFilter.cpp
   mitkSurfaceToPointSetFilter.cpp
+  mitkCropTimestepsImageFilter.cpp
 )
 
-if(WIN32 AND NOT MINGW)
+if(WIN32)
   list(APPEND CPP_FILES
     mitkMovieGeneratorWin32.cpp
   )

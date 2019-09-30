@@ -31,9 +31,6 @@ if(UNIX AND NOT APPLE)
   # Check for libtiff4-dev
   mitkFunctionCheckPackageHeader(tiff.h libtiff4-dev)
 
-  # Check for libwrap0-dev
-  mitkFunctionCheckPackageHeader(tcpd.h libwrap0-dev)
-
 endif()
 
 # We need a proper patch program. On Linux and MacOS, we assume
@@ -69,7 +66,7 @@ endif()
 
 # A list of "nice" external projects, playing well together with CMake
 set(nice_external_projects ${external_projects})
-list(REMOVE_ITEM nice_external_projects Boost Python)
+list(REMOVE_ITEM nice_external_projects Boost)
 foreach(proj ${nice_external_projects})
   if(MITK_USE_${proj})
     set(EXTERNAL_${proj}_DIR "${${proj}_DIR}" CACHE PATH "Path to ${proj} build directory")
@@ -106,6 +103,7 @@ endif()
 #-----------------------------------------------------------------------------
 
 include(ExternalProject)
+include(mitkMacroQueryCustomEPVars)
 
 set(ep_prefix "${CMAKE_BINARY_DIR}/ep")
 set_property(DIRECTORY PROPERTY EP_PREFIX ${ep_prefix})
@@ -117,6 +115,8 @@ else()
   set(gen "${CMAKE_GENERATOR}")
 endif()
 
+set(gen_platform ${CMAKE_GENERATOR_PLATFORM})
+
 # Use this value where semi-colons are needed in ep_add args:
 set(sep "^^")
 
@@ -125,6 +125,10 @@ set(sep "^^")
 if(MSVC_VERSION)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /bigobj /MP")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /MP")
+endif()
+
+if(MITK_USE_Boost_LIBRARIES)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_ALL_DYN_LINK")
 endif()
 
 # This is a workaround for passing linker flags
@@ -183,7 +187,7 @@ set(ep_common_args
 set(DCMTK_CMAKE_DEBUG_POSTFIX )
 
 # python libraries wont work with it
-if(NOT MITK_USE_Python)
+if(NOT MITK_USE_Python3)
   list(APPEND ep_common_args -DCMAKE_DEBUG_POSTFIX:STRING=d)
   set(DCMTK_CMAKE_DEBUG_POSTFIX d)
 endif()
@@ -216,7 +220,18 @@ set(mitk_depends )
 # Include external projects
 include(CMakeExternals/MITKData.cmake)
 foreach(p ${external_projects})
-  include(CMakeExternals/${p}.cmake)
+  if(EXISTS ${CMAKE_SOURCE_DIR}/CMakeExternals/${p}.cmake)
+    include(CMakeExternals/${p}.cmake)
+  else()
+    foreach(MITK_EXTENSION_DIR ${MITK_EXTENSION_DIRS})
+      get_filename_component(MITK_EXTENSION_DIR ${MITK_EXTENSION_DIR} ABSOLUTE)
+      set(MITK_CMAKE_EXTERNALS_EXTENSION_DIR ${MITK_EXTENSION_DIR}/CMakeExternals)
+      if(EXISTS ${MITK_CMAKE_EXTERNALS_EXTENSION_DIR}/${p}.cmake)
+        include(${MITK_CMAKE_EXTERNALS_EXTENSION_DIR}/${p}.cmake)
+        break()
+      endif()
+    endforeach()
+  endif()
 
   list(APPEND mitk_superbuild_ep_args
        -DMITK_USE_${p}:BOOL=${MITK_USE_${p}}
@@ -228,6 +243,9 @@ foreach(p ${external_projects})
 
   list(APPEND mitk_depends ${${p}_DEPENDS})
 endforeach()
+if (SWIG_EXECUTABLE)
+  list(APPEND mitk_superbuild_ep_args -DSWIG_EXECUTABLE=${SWIG_EXECUTABLE})
+endif()
 
 #-----------------------------------------------------------------------------
 # Set superbuild boolean args
@@ -237,17 +255,14 @@ set(mitk_cmake_boolean_args
   BUILD_SHARED_LIBS
   WITH_COVERAGE
   BUILD_TESTING
-
   MITK_BUILD_ALL_PLUGINS
   MITK_BUILD_ALL_APPS
   MITK_BUILD_EXAMPLES
-
   MITK_USE_Qt5
-  MITK_USE_Qt5_WebEngine
   MITK_USE_SYSTEM_Boost
   MITK_USE_BLUEBERRY
   MITK_USE_OpenCL
-
+  MITK_USE_OpenMP
   MITK_ENABLE_PIC_READER
   )
 
@@ -312,15 +327,40 @@ foreach(type RUNTIME ARCHIVE LIBRARY)
 endforeach()
 
 # Optional python variables
-if(MITK_USE_Python)
+if(MITK_USE_Python3)
   list(APPEND mitk_optional_cache_args
-       -DMITK_USE_Python:BOOL=${MITK_USE_Python}
-       -DPYTHON_EXECUTABLE:FILEPATH=${PYTHON_EXECUTABLE}
-       -DPYTHON_INCLUDE_DIR:PATH=${PYTHON_INCLUDE_DIR}
-       -DPYTHON_LIBRARY:FILEPATH=${PYTHON_LIBRARY}
-       -DPYTHON_INCLUDE_DIR2:PATH=${PYTHON_INCLUDE_DIR2}
-       -DMITK_USE_SYSTEM_PYTHON:BOOL=${MITK_USE_SYSTEM_PYTHON}
+       -DMITK_USE_Python3:BOOL=${MITK_USE_Python3}
+       "-DPython3_EXECUTABLE:FILEPATH=${Python3_EXECUTABLE}"
+       "-DPython3_INCLUDE_DIR:PATH=${Python3_INCLUDE_DIR}"
+       "-DPython3_LIBRARY:FILEPATH=${Python3_LIBRARY}"
+       "-DPython3_STDLIB:FILEPATH=${Python3_STDLIB}"
+       "-DPython3_SITELIB:FILEPATH=${Python3_SITELIB}"
       )
+endif()
+
+if(OPENSSL_ROOT_DIR)
+  list(APPEND mitk_optional_cache_args
+    "-DOPENSSL_ROOT_DIR:PATH=${OPENSSL_ROOT_DIR}"
+  )
+endif()
+
+if(CMAKE_FRAMEWORK_PATH)
+  list(APPEND mitk_optional_cache_args
+    "-DCMAKE_FRAMEWORK_PATH:PATH=${CMAKE_FRAMEWORK_PATH}"
+  )
+endif()
+
+if(Eigen_INCLUDE_DIR)
+    list(APPEND mitk_optional_cache_args
+      -DEigen_INCLUDE_DIR:PATH=${Eigen_INCLUDE_DIR}
+    )
+endif()
+
+# Optional pass through of Doxygen
+if(DOXYGEN_EXECUTABLE)
+  list(APPEND mitk_optional_cache_args
+       -DDOXYGEN_EXECUTABLE:FILEPATH=${DOXYGEN_EXECUTABLE}
+  )
 endif()
 
 set(proj MITK-Configure)
@@ -329,6 +369,7 @@ ExternalProject_Add(${proj}
   LIST_SEPARATOR ${sep}
   DOWNLOAD_COMMAND ""
   CMAKE_GENERATOR ${gen}
+  CMAKE_GENERATOR_PLATFORM ${gen_platform}
   CMAKE_CACHE_ARGS
     # --------------- Build options ----------------
     -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
@@ -337,6 +378,9 @@ ExternalProject_Add(${proj}
     "-DCMAKE_LIBRARY_PATH:PATH=${CMAKE_LIBRARY_PATH}"
     "-DCMAKE_INCLUDE_PATH:PATH=${CMAKE_INCLUDE_PATH}"
     # --------------- Compile options ----------------
+    -DCMAKE_CXX_EXTENSIONS:STRING=${CMAKE_CXX_EXTENSIONS}
+    -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD}
+    -DCMAKE_CXX_STANDARD_REQUIRED:BOOL=${CMAKE_CXX_STANDARD_REQUIRED}
     -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
     -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
     "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS} ${MITK_ADDITIONAL_C_FLAGS}"
@@ -373,6 +417,7 @@ ExternalProject_Add(${proj}
     -DMITK_WHITELIST:STRING=${MITK_WHITELIST}
     -DMITK_WHITELISTS_EXTERNAL_PATH:STRING=${MITK_WHITELISTS_EXTERNAL_PATH}
     -DMITK_WHITELISTS_INTERNAL_PATH:STRING=${MITK_WHITELISTS_INTERNAL_PATH}
+    -DMITK_EXTENSION_DIRS:STRING=${MITK_EXTENSION_DIRS}
     -DMITK_ACCESSBYITK_INTEGRAL_PIXEL_TYPES:STRING=${MITK_ACCESSBYITK_INTEGRAL_PIXEL_TYPES}
     -DMITK_ACCESSBYITK_FLOATING_PIXEL_TYPES:STRING=${MITK_ACCESSBYITK_FLOATING_PIXEL_TYPES}
     -DMITK_ACCESSBYITK_COMPOSITE_PIXEL_TYPES:STRING=${MITK_ACCESSBYITK_COMPOSITE_PIXEL_TYPES}
@@ -382,11 +427,11 @@ ExternalProject_Add(${proj}
     -DMITK_DATA_DIR:PATH=${MITK_DATA_DIR}
     -DMITK_EXTERNAL_PROJECT_PREFIX:PATH=${ep_prefix}
     -DCppMicroServices_DIR:PATH=${CppMicroServices_DIR}
-    -DMITK_KWSTYLE_EXECUTABLE:FILEPATH=${MITK_KWSTYLE_EXECUTABLE}
     -DDCMTK_CMAKE_DEBUG_POSTFIX:STRING=${DCMTK_CMAKE_DEBUG_POSTFIX}
     -DBOOST_ROOT:PATH=${BOOST_ROOT}
     -DBOOST_LIBRARYDIR:PATH=${BOOST_LIBRARYDIR}
     -DMITK_USE_Boost_LIBRARIES:STRING=${MITK_USE_Boost_LIBRARIES}
+    -DQt5_DIR:PATH=${Qt5_DIR}
   CMAKE_ARGS
     ${mitk_initial_cache_arg}
     ${MAC_OSX_ARCHITECTURE_ARGS}

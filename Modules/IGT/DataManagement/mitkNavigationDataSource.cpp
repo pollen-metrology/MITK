@@ -30,7 +30,7 @@ const std::string mitk::NavigationDataSource::US_PROPKEY_ID = US_INTERFACE_NAME 
 const std::string mitk::NavigationDataSource::US_PROPKEY_ISACTIVE = US_INTERFACE_NAME + ".isActive";
 
 mitk::NavigationDataSource::NavigationDataSource()
-: itk::ProcessObject(), m_Name("NavigationDataSource (no defined type)"), m_IsFrozen(false)
+: itk::ProcessObject(), m_Name("NavigationDataSource (no defined type)"), m_IsFrozen(false), m_ToolMetaDataCollection(mitk::NavigationToolStorage::New())
 {
 }
 
@@ -41,7 +41,7 @@ mitk::NavigationDataSource::~NavigationDataSource()
 mitk::NavigationData* mitk::NavigationDataSource::GetOutput()
 {
   if (this->GetNumberOfIndexedOutputs() < 1)
-    return NULL;
+    return nullptr;
 
   return static_cast<NavigationData*>(this->ProcessObject::GetPrimaryOutput());
 }
@@ -49,7 +49,7 @@ mitk::NavigationData* mitk::NavigationDataSource::GetOutput()
 mitk::NavigationData* mitk::NavigationDataSource::GetOutput(DataObjectPointerArraySizeType idx)
 {
   NavigationData* out = dynamic_cast<NavigationData*>( this->ProcessObject::GetOutput(idx) );
-  if ( out == NULL && this->ProcessObject::GetOutput(idx) != NULL )
+  if ( out == nullptr && this->ProcessObject::GetOutput(idx) != nullptr )
   {
     itkWarningMacro (<< "Unable to convert output number " << idx << " to type " <<  typeid( NavigationData ).name () );
   }
@@ -62,7 +62,7 @@ mitk::NavigationData* mitk::NavigationDataSource::GetOutput(const std::string& n
   for (DataObjectPointerArray::iterator it = outputs.begin(); it != outputs.end(); ++it)
     if (navDataName == (static_cast<NavigationData*>(it->GetPointer()))->GetName())
       return static_cast<NavigationData*>(it->GetPointer());
-  return NULL;
+  return nullptr;
 }
 
 itk::ProcessObject::DataObjectPointerArraySizeType mitk::NavigationDataSource::GetOutputIndex( std::string navDataName )
@@ -87,7 +87,7 @@ void mitk::NavigationDataSource::RegisterAsMicroservice(){
 }
 
 void mitk::NavigationDataSource::UnRegisterMicroservice(){
-  if (m_ServiceRegistration != NULL) m_ServiceRegistration.Unregister();
+  if (m_ServiceRegistration != nullptr) m_ServiceRegistration.Unregister();
   m_ServiceRegistration = 0;
 }
 
@@ -110,13 +110,13 @@ void mitk::NavigationDataSource::GraftNthOutput(unsigned int idx, itk::DataObjec
 
   if ( !graft )
   {
-    itkExceptionMacro(<<"Requested to graft output with a NULL pointer object" );
+    itkExceptionMacro(<<"Requested to graft output with a nullptr pointer object" );
   }
 
   itk::DataObject* output = this->GetOutput(idx);
   if ( !output )
   {
-    itkExceptionMacro(<<"Requested to graft output that is a NULL pointer" );
+    itkExceptionMacro(<<"Requested to graft output that is a nullptr pointer" );
   }
   // Call Graft on NavigationData to copy member data
   output->Graft( graft );
@@ -153,4 +153,17 @@ void mitk::NavigationDataSource::Freeze()
 void mitk::NavigationDataSource::UnFreeze()
 {
   m_IsFrozen = false;
+}
+
+mitk::NavigationTool::Pointer mitk::NavigationDataSource::GetToolMetaData(DataObjectPointerArraySizeType idx)
+{
+  if (idx >= this->GetNumberOfIndexedOutputs()) { return mitk::NavigationTool::New(); }
+  else { return GetToolMetaData(this->GetOutput(idx)->GetName()); }
+}
+
+mitk::NavigationTool::Pointer mitk::NavigationDataSource::GetToolMetaData(const std::string& navDataName)
+{
+  mitk::NavigationTool::Pointer returnValue = m_ToolMetaDataCollection->GetToolByName(navDataName);
+  if (returnValue == nullptr) { returnValue = mitk::NavigationTool::New(); }
+  return returnValue;
 }

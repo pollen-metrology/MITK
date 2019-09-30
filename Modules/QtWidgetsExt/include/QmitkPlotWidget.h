@@ -51,10 +51,12 @@ See LICENSE.txt or http://www.mitk.org for details.
 * 3. You can modify the behavior of the plot by directly referencing
 *    the QwtPlot instance using the method GetPlot().
 * @see QwtPlot
+* @deprecatedSince{2018_04} Use QmitkChartWidget instead
 */
 
-class MITKQTWIDGETSEXT_EXPORT QmitkPlotWidget : public QWidget
-{
+class MITKQTWIDGETSEXT_EXPORT QmitkPlotWidget
+  : public QWidget
+  {
 private:
   Q_OBJECT
 
@@ -90,7 +92,7 @@ public:
   /**
   * Virtual destructor
   */
-  virtual ~QmitkPlotWidget();
+  ~QmitkPlotWidget() override;
 
   /**
   * Returns the instance of the plot-widget. This may be used
@@ -246,7 +248,7 @@ public:
   /**
   * Set a curve's legend attribute
   * @param curveId the id of the curve
-  * @param attribute the öegend attribute to be set
+  * @param attribute the legend attribute to be set
   */
   void SetLegendAttribute(unsigned int curveId, const QwtPlotCurve::LegendAttribute &attribute);
 

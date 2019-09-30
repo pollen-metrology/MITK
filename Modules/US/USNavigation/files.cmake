@@ -1,7 +1,7 @@
 SET(CPP_FILES
   mitkUSCombinedModality.cpp
+  mitkTrackedUltrasound.cpp
+  mitkAbstractUltrasoundTrackerDevice.cpp
 
-  Filter/mitkNavigationDataPassThroughFilter.cpp
-  Filter/mitkNeedleProjectionFilter.cpp
   Filter/mitkNodeDisplacementFilter.cpp
 )

@@ -22,32 +22,49 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include <Colortables/HotIron.h>
 #include <Colortables/Jet.h>
+#include <Colortables/Inferno.h>
+#include <Colortables/Viridis.h>
+#include <Colortables/Plasma.h>
+#include <Colortables/Magma.h>
+#include <Colortables/Multilabel.h>
 #include <Colortables/PET20.h>
 #include <Colortables/PETColor.h>
 #include <mitkLookupTableProperty.h>
 
-const char *const mitk::LookupTable::typenameList[] = {
+std::vector<std::string> mitk::LookupTable::typenameList = {
   "Grayscale",
   "Inverse Grayscale",
   "Hot Iron",
   "Jet",
   "Jet Transparent",
+  "Plasma",
+  "Inferno",
+  "Viridis",
+  "Magma",
   "Legacy Binary",
   "Legacy Rainbow Color",
   "Multilabel",
   "PET Color",
-  "PET 20",
-  "END_OF_ARRAY" // Do not add typenames after this entry (see QmitkDataManagerView::ColormapMenuAboutToShow())
+  "PET 20"
 };
 
-mitk::LookupTable::LookupTable() : m_Window(0.0), m_Level(0.0), m_Opacity(1.0), m_type(mitk::LookupTable::GRAYSCALE)
+mitk::LookupTable::LookupTable()
+  : m_LookupTable(vtkSmartPointer<vtkLookupTable>::New())
+  , m_Window(0.0)
+  , m_Level(0.0)
+  , m_Opacity(1.0)
+  , m_Type(mitk::LookupTable::GRAYSCALE)
 {
-  m_LookupTable = vtkSmartPointer<vtkLookupTable>::New();
   this->BuildGrayScaleLookupTable();
 }
 
 mitk::LookupTable::LookupTable(const LookupTable &other)
-  : itk::DataObject(), m_LookupTable(vtkSmartPointer<vtkLookupTable>::New())
+  : itk::DataObject()
+  , m_LookupTable(vtkSmartPointer<vtkLookupTable>::New())
+  , m_Window(other.m_Window)
+  , m_Level(other.m_Level)
+  , m_Opacity(other.m_Opacity)
+  , m_Type(other.m_Type)
 {
   m_LookupTable->DeepCopy(other.m_LookupTable);
 }
@@ -69,7 +86,7 @@ void mitk::LookupTable::SetVtkLookupTable(vtkSmartPointer<vtkLookupTable> lut)
 
 void mitk::LookupTable::SetType(const mitk::LookupTable::LookupTableType type)
 {
-  if (m_type == type)
+  if (m_Type == type)
     return;
 
   switch (type)
@@ -88,6 +105,18 @@ void mitk::LookupTable::SetType(const mitk::LookupTable::LookupTableType type)
       break;
     case (mitk::LookupTable::JET_TRANSPARENT):
       this->BuildJetLookupTable(true);
+      break;
+    case (mitk::LookupTable::PLASMA):
+	    this->BuildPlasmaLookupTable();
+	    break;
+	  case (mitk::LookupTable::INFERNO):
+	    this->BuildInfernoLookupTable();
+      break;
+	  case (mitk::LookupTable::VIRIDIS):
+	    this->BuildViridisLookupTable();
+	    break;
+    case (mitk::LookupTable::MAGMA):
+      this->BuildMagmaLookupTable();
       break;
     case (mitk::LookupTable::LEGACY_BINARY):
       this->BuildLegacyBinaryLookupTable();
@@ -109,28 +138,33 @@ void mitk::LookupTable::SetType(const mitk::LookupTable::LookupTableType type)
       return;
   }
 
-  m_type = type;
+  m_Type = type;
 }
 
 void mitk::LookupTable::SetType(const std::string &typeName)
 {
-  int i = 0;
-  std::string lutType = this->typenameList[i];
-
-  while (lutType != "END_OF_ARRAY")
+  for (size_t i = 0; i < typenameList.size(); ++i)
   {
-    if (lutType == typeName)
+    if (typenameList.at(i) == typeName)
     {
       this->SetType(static_cast<mitk::LookupTable::LookupTableType>(i));
     }
-
-    lutType = this->typenameList[++i];
   }
 }
 
-const std::string mitk::LookupTable::GetActiveTypeAsString()
+mitk::LookupTable::LookupTableType mitk::LookupTable::GetActiveType() const
 {
-  return std::string(typenameList[(int)m_type]);
+  return m_Type;
+}
+
+std::string mitk::LookupTable::GetActiveTypeAsString() const
+{
+  if (static_cast<unsigned int>(m_Type) < typenameList.size())
+  {
+    return typenameList.at(m_Type);
+  }
+
+  return "";
 }
 
 void mitk::LookupTable::ChangeOpacityForAll(float opacity)
@@ -193,9 +227,6 @@ mitk::LookupTable::RawLookupTableType *mitk::LookupTable::GetRawLookupTable() co
   return m_LookupTable->GetPointer(0);
 }
 
-/*!
-* \brief equality operator inplementation
-*/
 bool mitk::LookupTable::operator==(const mitk::LookupTable &other) const
 {
   if (m_LookupTable == other.GetVtkLookupTable())
@@ -232,17 +263,11 @@ bool mitk::LookupTable::operator==(const mitk::LookupTable &other) const
   return true;
 }
 
-/*!
-* \brief un-equality operator implementation
-*/
 bool mitk::LookupTable::operator!=(const mitk::LookupTable &other) const
 {
   return !(*this == other);
 }
 
-/*!
-* \brief assignment operator implementation
-*/
 mitk::LookupTable &mitk::LookupTable::operator=(const mitk::LookupTable &LookupTable)
 {
   if (this == &LookupTable)
@@ -508,34 +533,14 @@ void mitk::LookupTable::BuildMultiLabelLookupTable()
   vtkSmartPointer<vtkLookupTable> lut = vtkSmartPointer<vtkLookupTable>::New();
   lut->SetNumberOfTableValues(65536);
   lut->SetTableRange(0, 65536);
+  lut->Build();
+
   lut->SetTableValue(0, 0.0, 0.0, 0.0, 0.0); // background
 
-  lut->SetTableValue(1, 1.0, 1.0, 0.0, 0.4);
-  lut->SetTableValue(2, 0.0, 1.0, 0.0, 0.4);
-  lut->SetTableValue(3, 0.0, 0.0, 1.0, 0.4);
-  lut->SetTableValue(4, 1.0, 1.0, 0.4, 0.4);
-  lut->SetTableValue(5, 0.0, 0.4, 0.7, 0.4);
-  lut->SetTableValue(6, 1.0, 0.0, 1.0, 0.4);
-
-  lut->SetTableValue(7, 1.0, 0.5, 0.0, 0.4);
-  lut->SetTableValue(8, 0.0, 1.0, 0.5, 0.4);
-  lut->SetTableValue(9, 0.5, 0.0, 1.0, 0.4);
-  lut->SetTableValue(10, 1.0, 1.0, 0.5, 0.4);
-  lut->SetTableValue(11, 0.5, 1.0, 1.0, 0.4);
-  lut->SetTableValue(12, 1.0, 0.5, 0.6, 0.4);
-  lut->SetTableValue(13, 1.0, 0.3, 0.3, 0.4);
-  lut->SetTableValue(14, 0.4, 0.7, 1.0, 0.4);
-  lut->SetTableValue(15, 0.4, 0.5, 1.0, 0.4);
-  lut->SetTableValue(16, 0.8, 0.5, 1.0, 0.4);
-  lut->SetTableValue(17, 1.0, 0.3, 1.0, 0.4);
-  lut->SetTableValue(18, 1.0, 0.5, 0.6, 0.4);
-  lut->SetTableValue(19, 1.0, 0.5, 0.4, 0.4);
-  lut->SetTableValue(20, 0.4, 0.5, 0.4, 0.4);
-  lut->SetTableValue(21, 1.0, 0.5, 0.76, 0.4);
-  lut->SetTableValue(22, 0.76, 0.4, 0.4, 0.4);
-  lut->SetTableValue(23, 1.0, 0.5, 0.4, 0.4);
-  lut->SetTableValue(24, 0.76, 0.3, 0.4, 0.4);
-  lut->SetTableValue(25, 1.0, 0.3, 0.4, 0.4);
+  for (int i = 0; i < 25; i++)
+  {
+    lut->SetTableValue(i+1, Multilabel[i][0], Multilabel[i][1], Multilabel[i][2], 0.4);
+  }
 
   for (int i = 26; i < 65536; i++)
   {
@@ -576,6 +581,70 @@ void mitk::LookupTable::BuildLegacyRainbowColorLookupTable()
   lut->SetHueRange(0.6667, 0.0);
   lut->SetTableRange(0.0, 20.0);
   lut->Build();
+
+  m_LookupTable = lut;
+  this->Modified();
+}
+
+void mitk::LookupTable::BuildPlasmaLookupTable()
+{
+	vtkSmartPointer<vtkLookupTable> lut = vtkSmartPointer<vtkLookupTable>::New();
+	lut->SetNumberOfTableValues(256);
+	lut->Build();
+
+	for (int i = 0; i < 256; i++)
+	{
+		lut->SetTableValue(
+			i, (double)Plasma[i][0] / 255.0, (double)Plasma[i][1] / 255.0, (double)Plasma[i][2] / 255.0, 1.0);
+	}
+
+	m_LookupTable = lut;
+	this->Modified();
+}
+
+void mitk::LookupTable::BuildInfernoLookupTable()
+{
+	vtkSmartPointer<vtkLookupTable> lut = vtkSmartPointer<vtkLookupTable>::New();
+	lut->SetNumberOfTableValues(256);
+	lut->Build();
+
+	for (int i = 0; i < 256; i++)
+	{
+		lut->SetTableValue(
+			i, (double)Inferno[i][0] / 255.0, (double)Inferno[i][1] / 255.0, (double)Inferno[i][2] / 255.0, 1.0);
+	}
+
+	m_LookupTable = lut;
+	this->Modified();
+}
+
+void mitk::LookupTable::BuildViridisLookupTable()
+{
+	vtkSmartPointer<vtkLookupTable> lut = vtkSmartPointer<vtkLookupTable>::New();
+	lut->SetNumberOfTableValues(256);
+	lut->Build();
+
+	for (int i = 0; i < 256; i++)
+	{
+		lut->SetTableValue(
+			i, (double)Viridis[i][0] / 255.0, (double)Viridis[i][1] / 255.0, (double)Viridis[i][2] / 255.0, 1.0);
+	}
+
+	m_LookupTable = lut;
+	this->Modified();
+}
+
+void mitk::LookupTable::BuildMagmaLookupTable()
+{
+  vtkSmartPointer<vtkLookupTable> lut = vtkSmartPointer<vtkLookupTable>::New();
+  lut->SetNumberOfTableValues(256);
+  lut->Build();
+
+  for (int i = 0; i < 256; i++)
+  {
+    lut->SetTableValue(
+      i, (double)Magma[i][0] / 255.0, (double)Magma[i][1] / 255.0, (double)Magma[i][2] / 255.0, 1.0);
+  }
 
   m_LookupTable = lut;
   this->Modified();

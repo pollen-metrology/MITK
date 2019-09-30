@@ -42,9 +42,9 @@ int main(int argc, char* argv[])
   mitkCommandLineParser parser;
   parser.setArgumentPrefix("--", "-");
   // required params
-  parser.addArgument("polydata", "p", mitkCommandLineParser::InputDirectory, "Input Polydata", "Path to the input VTK polydata", us::Any(), false);
-  parser.addArgument("image", "i", mitkCommandLineParser::OutputDirectory, "Input Image", "Image which defines the dimensions of the Segmentation", us::Any(), false);
-  parser.addArgument("output", "o", mitkCommandLineParser::InputFile, "Output file", "Output files. Two files are create, a .nrrd image and a 3d-vtk.", us::Any(), false);
+  parser.addArgument("polydata", "p", mitkCommandLineParser::Directory, "Input Polydata", "Path to the input VTK polydata", us::Any(), false, false, false, mitkCommandLineParser::Input);
+  parser.addArgument("image", "i", mitkCommandLineParser::Directory, "Input Image", "Image which defines the dimensions of the Segmentation", us::Any(), false, false, false, mitkCommandLineParser::Output);
+  parser.addArgument("output", "o", mitkCommandLineParser::File, "Output file", "Output files. Two files are create, a .nrrd image and a 3d-vtk.", us::Any(), false, false, false, mitkCommandLineParser::Input);
   // Miniapp Infos
   parser.setCategory("Classification Tools");
   parser.setTitle("2D-Polydata to Nrrd Segmentation");
@@ -62,8 +62,8 @@ int main(int argc, char* argv[])
     return EXIT_SUCCESS;
   }
 
-  mitk::BaseData::Pointer data = mitk::IOUtil::LoadBaseData(parsedArgs["polydata"].ToString());
-  mitk::Image::Pointer image = mitk::IOUtil::LoadImage(parsedArgs["image"].ToString());
+  mitk::BaseData::Pointer data = mitk::IOUtil::Load(parsedArgs["polydata"].ToString())[0];
+  mitk::Image::Pointer image = mitk::IOUtil::Load<mitk::Image>(parsedArgs["image"].ToString());
 
   //MITK_INFO << data;
   mitk::Surface::Pointer surf = dynamic_cast<mitk::Surface*>(data.GetPointer());
@@ -95,12 +95,12 @@ int main(int argc, char* argv[])
   std::string saveAs = parsedArgs["output"].ToString();
   MITK_INFO << "Save as: " << saveAs;
   saveAs = saveAs + ".vtk";
-  mitk::IOUtil::SaveSurface(surf.GetPointer(),saveAs);
+  mitk::IOUtil::Save(surf.GetPointer(),saveAs);
 
   saveAs = parsedArgs["output"].ToString();
   MITK_INFO << "Save as: " << saveAs;
   saveAs = saveAs + ".nrrd";
-  mitk::IOUtil::SaveImage(resultImage,saveAs);
+  mitk::IOUtil::Save(resultImage,saveAs);
 
   return 0;
 }

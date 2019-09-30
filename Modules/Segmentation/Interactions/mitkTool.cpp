@@ -16,15 +16,15 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include "mitkTool.h"
 
+#include <mitkAnatomicalStructureColorPresets.h>
 #include "mitkDisplayInteractor.h"
 #include "mitkImageReadAccessor.h"
 #include "mitkImageWriteAccessor.h"
-#include "mitkLabelSetImage.h"
 #include "mitkLevelWindowProperty.h"
 #include "mitkLookupTableProperty.h"
 #include "mitkProperties.h"
-#include "mitkProperties.h"
 #include "mitkVtkResliceInterpolationProperty.h"
+#include <mitkDICOMSegmentationPropertyHelper.cpp>
 
 // us
 #include <usGetModuleContext.h>
@@ -33,9 +33,10 @@ See LICENSE.txt or http://www.mitk.org for details.
 // itk
 #include <itkObjectFactory.h>
 
-mitk::Tool::Tool(const char *type)
-  : m_PredicateImages(NodePredicateDataType::New("Image")) // for reference images
-    ,
+mitk::Tool::Tool(const char *type, const us::Module *interactorModule)
+  : m_EventConfig("DisplayConfigMITK.xml"),
+    m_ToolManager(nullptr),
+    m_PredicateImages(NodePredicateDataType::New("Image")), // for reference images
     m_PredicateDim3(NodePredicateDimension::New(3, 1)),
     m_PredicateDim4(NodePredicateDimension::New(4, 1)),
     m_PredicateDimension(mitk::NodePredicateOr::New(m_PredicateDim3, m_PredicateDim4)),
@@ -53,7 +54,7 @@ mitk::Tool::Tool(const char *type)
       NodePredicateAnd::New(NodePredicateOr::New(m_PredicateBinary, m_PredicateSegmentation), m_PredicateNotHelper)),
     m_InteractorType(type),
     m_DisplayInteractorConfigs(),
-    m_EventConfig("DisplayConfigMITK.xml")
+    m_InteractorModule(interactorModule)
 {
 }
 
@@ -71,16 +72,20 @@ void mitk::Tool::InitializeStateMachine()
   if (m_InteractorType.empty())
     return;
 
-  m_InteractorType += ".xml";
-
   try
   {
-    LoadStateMachine(m_InteractorType, us::GetModuleContext()->GetModule());
-    SetEventConfig("SegmentationToolsConfig.xml", us::GetModuleContext()->GetModule());
+    auto isThisModule = nullptr == m_InteractorModule;
+
+    auto module = isThisModule
+      ? us::GetModuleContext()->GetModule()
+      : m_InteractorModule;
+
+    LoadStateMachine(m_InteractorType + ".xml", module);
+    SetEventConfig(isThisModule ? "SegmentationToolsConfig.xml" : m_InteractorType + "Config.xml", module);
   }
   catch (const std::exception &e)
   {
-    MITK_ERROR << "Could not load statemachine pattern " << m_InteractorType << " with exception: " << e.what();
+    MITK_ERROR << "Could not load statemachine pattern " << m_InteractorType << ".xml with exception: " << e.what();
   }
 }
 
@@ -122,11 +127,11 @@ void mitk::Tool::Activated()
   m_DisplayInteractorConfigs.clear();
   std::vector<us::ServiceReference<InteractionEventObserver>> listEventObserver =
     us::GetModuleContext()->GetServiceReferences<InteractionEventObserver>();
-  for (std::vector<us::ServiceReference<InteractionEventObserver>>::iterator it = listEventObserver.begin();
+  for (auto it = listEventObserver.begin();
        it != listEventObserver.end();
        ++it)
   {
-    DisplayInteractor *displayInteractor =
+    auto *displayInteractor =
       dynamic_cast<DisplayInteractor *>(us::GetModuleContext()->GetService<InteractionEventObserver>(*it));
     if (displayInteractor != nullptr)
     {
@@ -142,7 +147,7 @@ void mitk::Tool::Deactivated()
 {
   // Re-enabling InteractionEventObservers that have been previously disabled for legacy handling of Tools
   // in new interaction framework
-  for (std::map<us::ServiceReferenceU, EventConfig>::iterator it = m_DisplayInteractorConfigs.begin();
+  for (auto it = m_DisplayInteractorConfigs.begin();
        it != m_DisplayInteractorConfigs.end();
        ++it)
   {
@@ -168,7 +173,7 @@ itk::Object::Pointer mitk::Tool::GetGUI(const std::string &toolkitPrefix, const 
   std::string guiClassname = toolkitPrefix + classname + toolkitPostfix;
 
   std::list<itk::LightObject::Pointer> allGUIs = itk::ObjectFactoryBase::CreateAllInstance(guiClassname.c_str());
-  for (std::list<itk::LightObject::Pointer>::iterator iter = allGUIs.begin(); iter != allGUIs.end(); ++iter)
+  for (auto iter = allGUIs.begin(); iter != allGUIs.end(); ++iter)
   {
     if (object.IsNull())
     {

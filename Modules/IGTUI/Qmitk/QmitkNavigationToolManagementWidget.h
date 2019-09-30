@@ -55,8 +55,8 @@ public:
    */
   void LoadStorage(mitk::NavigationToolStorage::Pointer storageToLoad);
 
-  QmitkNavigationToolManagementWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
-  ~QmitkNavigationToolManagementWidget();
+  QmitkNavigationToolManagementWidget(QWidget* parent = nullptr, Qt::WindowFlags f = nullptr);
+  ~QmitkNavigationToolManagementWidget() override;
 
 signals:
 
@@ -80,6 +80,7 @@ signals:
   void OnLoadStorage();
   void OnSaveStorage();
   void OnCreateStorage();
+  void OnToolSelected();
 
   //widget page "add tool":
   void OnAddToolCancel();
@@ -104,7 +105,7 @@ protected:
   bool m_edit;
 
   //############## private help methods #######################
-  void MessageBox(std::string s);
+  void MessageBox(const std::string &s);
   void UpdateToolTable();
   void DisableStorageControls();
   void EnableStorageControls();

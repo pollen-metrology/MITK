@@ -40,14 +40,14 @@ int main(int argc, char *argv[])
   parser.setArgumentPrefix("--", "-");
 
   // Add command line argument names
-  parser.addArgument("input", "i", mitkCommandLineParser::InputImage, "input image");
-  parser.addArgument("output", "o", mitkCommandLineParser::OutputFile, "output image");
+  parser.addArgument("input", "i", mitkCommandLineParser::Image, "input image", "", us::Any(), false, false, false, mitkCommandLineParser::Input);
+  parser.addArgument("output", "o", mitkCommandLineParser::File, "output image", "", us::Any(), false, false, false, mitkCommandLineParser::Output);
   parser.addArgument(
-    "maxMask", "m", mitkCommandLineParser::InputImage, "mask of which median is set as maximal value (1)");
+    "maxMask", "m", mitkCommandLineParser::Image, "mask of which median is set as maximal value (1)", "", us::Any(), false, false, false, mitkCommandLineParser::Input);
   parser.addArgument(
-    "minMask", "l", mitkCommandLineParser::InputImage, "mask of which median is set as minimal value (0)");
+    "minMask", "l", mitkCommandLineParser::Image, "mask of which median is set as minimal value (0)", "", us::Any(), false, false, false, mitkCommandLineParser::Input);
   parser.addArgument(
-    "excludeMask", "e", mitkCommandLineParser::InputImage, "region which is exluded from the other two");
+    "excludeMask", "e", mitkCommandLineParser::Image, "region which is exluded from the other two", "", us::Any(), false, false, false, mitkCommandLineParser::Input);
 
   map<string, us::Any> parsedArgs = parser.parseArguments(argc, argv);
 
@@ -59,10 +59,10 @@ int main(int argc, char *argv[])
   }
 
   std::string outFile = us::any_cast<string>(parsedArgs["output"]);
-  mitk::Image::Pointer inputFile = mitk::IOUtil::LoadImage(us::any_cast<string>(parsedArgs["input"]));
-  mitk::Image::Pointer maxMask = mitk::IOUtil::LoadImage(us::any_cast<string>(parsedArgs["maxMask"]));
-  mitk::Image::Pointer minMask = mitk::IOUtil::LoadImage(us::any_cast<string>(parsedArgs["minMask"]));
-  mitk::Image::Pointer excludeMask = mitk::IOUtil::LoadImage(us::any_cast<string>(parsedArgs["excludeMask"]));
+  mitk::Image::Pointer inputFile = mitk::IOUtil::Load<mitk::Image>(us::any_cast<string>(parsedArgs["input"]));
+  mitk::Image::Pointer maxMask = mitk::IOUtil::Load<mitk::Image>(us::any_cast<string>(parsedArgs["maxMask"]));
+  mitk::Image::Pointer minMask = mitk::IOUtil::Load<mitk::Image>(us::any_cast<string>(parsedArgs["minMask"]));
+  mitk::Image::Pointer excludeMask = mitk::IOUtil::Load<mitk::Image>(us::any_cast<string>(parsedArgs["excludeMask"]));
 
   SeedImage::Pointer itkMaxImage = SeedImage::New();
   SeedImage::Pointer itkMinImage = SeedImage::New();

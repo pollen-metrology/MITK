@@ -31,22 +31,22 @@ namespace mitk
 
   protected:
     ShowSegmentationAsSurface(); // use smart pointers
-    virtual ~ShowSegmentationAsSurface();
+    ~ShowSegmentationAsSurface() override;
 
-    virtual void Initialize(const NonBlockingAlgorithm *other = NULL) override;
-    virtual bool ReadyToRun() override;
+    void Initialize(const NonBlockingAlgorithm *other = nullptr) override;
+    bool ReadyToRun() override;
 
-    virtual bool ThreadedUpdateFunction() override; // will be called from a thread after calling StartAlgorithm
+    bool ThreadedUpdateFunction() override; // will be called from a thread after calling StartAlgorithm
 
-    virtual void ThreadedUpdateSuccessful() override; // will be called from a thread after calling StartAlgorithm
+    void ThreadedUpdateSuccessful() override; // will be called from a thread after calling StartAlgorithm
 
   private:
+    mitk::Surface::Pointer ConvertBinaryImageToSurface(mitk::Image::Pointer binaryImage);
+
     UIDGenerator m_UIDGeneratorSurfaces;
 
-    Surface::Pointer m_Surface;
-    DataNode::Pointer m_Node;
-
-    bool m_AddToTree;
+    std::vector<DataNode::Pointer> m_SurfaceNodes;
+    bool m_IsLabelSetImage;
   };
 
 } // namespace

@@ -37,8 +37,8 @@ int main(int argc, char *argv[])
   parser.setContributor("MBI");
 
   parser.setArgumentPrefix("--", "-");
-  parser.addArgument("input", "i", mitkCommandLineParser::InputImage, "(binary) seed file");
-  parser.addArgument("output", "o", mitkCommandLineParser::OutputFile, "distance map file name");
+  parser.addArgument("input", "i", mitkCommandLineParser::Image, "(binary) seed file", "", us::Any(), false, false, false, mitkCommandLineParser::Input);
+  parser.addArgument("output", "o", mitkCommandLineParser::File, "distance map file name", "", us::Any(), false, false, false, mitkCommandLineParser::Output);
 
   map<string, us::Any> parsedArgs = parser.parseArguments(argc, argv);
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
   std::string resultFile = us::any_cast<string>(parsedArgs["output"]);
   std::string seedFile = us::any_cast<string>(parsedArgs["input"]);
 
-  mitk::Image::Pointer seedImage = mitk::IOUtil::LoadImage(seedFile);
+  mitk::Image::Pointer seedImage = mitk::IOUtil::Load<mitk::Image>(seedFile);
 
   BinaryType::Pointer itkSeed = BinaryType::New();
 

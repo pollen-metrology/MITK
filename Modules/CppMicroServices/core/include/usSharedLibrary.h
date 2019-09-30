@@ -27,11 +27,6 @@
 
 #include <string>
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable:4251)
-#endif
-
 US_BEGIN_NAMESPACE
 
 class SharedLibraryPrivate;
@@ -196,7 +191,7 @@ public:
   /**
    * Gets the internal handle of this SharedLibrary object.
    *
-   * @return \c NULL if the shared library is not loaded, the operating
+   * @return \c nullptr if the shared library is not loaded, the operating
    * system specific handle otherwise.
    */
   void* GetHandle() const;
@@ -215,9 +210,5 @@ private:
 };
 
 US_END_NAMESPACE
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
 
 #endif // USTESTUTILSHAREDLIBRARY_H

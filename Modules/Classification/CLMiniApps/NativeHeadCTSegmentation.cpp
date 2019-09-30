@@ -16,7 +16,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include <mitkCoreObjectFactory.h>
 #include "mitkImage.h"
-#include <boost/lexical_cast.hpp>
+#include <mitkLexicalCast.h>
 #include "mitkCommandLineParser.h"
 #include <mitkIOUtil.h>
 #include <itksys/SystemTools.hxx>
@@ -56,8 +56,8 @@ int main(int argc, char* argv[])
   parser.setArgumentPrefix("--", "-");
 
   // required params
-  parser.addArgument("inputdir", "i", mitkCommandLineParser::InputDirectory, "Input Directory", "Contains input feature files.", us::Any(), false);
-  parser.addArgument("outputdir", "o", mitkCommandLineParser::OutputDirectory, "Output Directory", "Destination of output files.", us::Any(), false);
+  parser.addArgument("inputdir", "i", mitkCommandLineParser::Directory, "Input Directory", "Contains input feature files.", us::Any(), false, false, false, mitkCommandLineParser::Input);
+  parser.addArgument("outputdir", "o", mitkCommandLineParser::Directory, "Output Directory", "Destination of output files.", us::Any(), false, false, false, mitkCommandLineParser::Output);
 
   // optional params
   parser.addArgument("select", "s", mitkCommandLineParser::String, "Item selection", "Using Regular expression, seperated by space e.g.: '*.nrrd *.vtk *test*'",std::string("*.mitk"),true);

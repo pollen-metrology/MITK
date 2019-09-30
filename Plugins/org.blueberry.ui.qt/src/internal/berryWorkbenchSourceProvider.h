@@ -67,7 +67,7 @@ public:
 
   void Initialize(IServiceLocator* locator) override;
 
-  ~WorkbenchSourceProvider();
+  ~WorkbenchSourceProvider() override;
 
   QList<QString> GetProvidedSourceNames() const override;
 
@@ -127,7 +127,7 @@ private:
   void WindowDeactivated(const SmartPointer<IWorkbenchWindow>& window) override;
   void WindowOpened(const SmartPointer<IWorkbenchWindow>& window) override;
 
-  const IEditorInput* lastEditorInput;
+  WeakPointer<const IEditorInput> lastEditorInput;
 
   void HandleCheck(const SmartPointer<const Shell>& s);
 

@@ -4,9 +4,7 @@ set(SRC_CPP_FILES
 
 set(INTERNAL_CPP_FILES
   QmitkMeasurementView.cpp
-  QmitkPlanarFiguresTableModel.cpp
   QmitkImageStatisticsView.cpp
-  QmitkImageStatisticsCalculationThread.cpp
   mitkPluginActivator.cpp
 )
 
@@ -16,11 +14,8 @@ set(UI_FILES
 
 set(MOC_H_FILES
   src/internal/QmitkMeasurementView.h
-  src/internal/QmitkPlanarFiguresTableModel.h
   src/internal/QmitkImageStatisticsView.h
-  src/internal/QmitkImageStatisticsCalculationThread.h
   src/internal/mitkPluginActivator.h
-
 )
 
 set(CACHED_RESOURCE_FILES
@@ -28,17 +23,16 @@ set(CACHED_RESOURCE_FILES
   resources/arrow.png
   resources/circle.png
   resources/four-point-angle.png
-  resources/ImageStatistic_24.png
-  resources/ImageStatistic_48.png
-  resources/ImageStatistic_64.png
   resources/lena.xpm
   resources/line.png
-  resources/measurement.png
+  resources/measurement.svg
   resources/path.png
   resources/polygon.png
   resources/rectangle.png
   resources/stats.png
   resources/text.png
+  resources/bar-chart.svg
+  resources/bar-chart2.svg
   plugin.xml
 )
 

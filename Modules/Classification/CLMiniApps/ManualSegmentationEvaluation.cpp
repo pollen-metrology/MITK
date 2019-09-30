@@ -16,7 +16,7 @@ See LICENSE.txt or http://www.mitk.org for details.
 
 #include <mitkCoreObjectFactory.h>
 #include "mitkImage.h"
-#include <boost/lexical_cast.hpp>
+#include <mitkLexicalCast.h>
 #include <vnl/vnl_random.h>
 #include "mitkCommandLineParser.h"
 #include <mitkIOUtil.h>
@@ -59,7 +59,6 @@ void ProcessFeatureImages(const mitk::Image::Pointer & raw_image, const mitk::Im
   typedef itk::ConstNeighborhoodIterator<DoubleImageType> NeighborhoodType; // Neighborhood iterator to access image
   typedef itk::Functor::NeighborhoodFirstOrderStatistics<NeighborhoodType, double> FunctorType;
   typedef itk::NeighborhoodFunctorImageFilter<DoubleImageType, DoubleImageType, FunctorType> FOSFilerType;
-  typedef FOSFilerType::MaskImageType MaskImageType;
 
   m_FeatureImageVector.clear();
 
@@ -178,12 +177,12 @@ int main(int argc, char* argv[])
   parser.setArgumentPrefix("--", "-");
 
   // required params
-  parser.addArgument("inputdir", "i", mitkCommandLineParser::InputDirectory, "Input Directory", "Contains input feature files.", us::Any(), false);
-  parser.addArgument("outputdir", "o", mitkCommandLineParser::OutputDirectory, "Output Directory", "Destination of output files.", us::Any(), false);
-  parser.addArgument("mitkprojectdata", "d", mitkCommandLineParser::InputFile, "original class mask and raw image", "Orig. data.", us::Any(), false);
-  parser.addArgument("csfmps", "csf", mitkCommandLineParser::InputFile, "CSF Pointset", ".", us::Any(), false);
-  parser.addArgument("lesmps", "les", mitkCommandLineParser::InputFile, "LES Pointset", ".", us::Any(), false);
-  parser.addArgument("bramps", "bra", mitkCommandLineParser::InputFile, "BRA Pointset", ".", us::Any(), false);
+  parser.addArgument("inputdir", "i", mitkCommandLineParser::Directory, "Input Directory", "Contains input feature files.", us::Any(), false, false, false, mitkCommandLineParser::Input);
+  parser.addArgument("outputdir", "o", mitkCommandLineParser::Directory, "Output Directory", "Destination of output files.", us::Any(), false, false, false, mitkCommandLineParser::Output);
+  parser.addArgument("mitkprojectdata", "d", mitkCommandLineParser::File, "original class mask and raw image", "Orig. data.", us::Any(), false, false, false, mitkCommandLineParser::Input);
+  parser.addArgument("csfmps", "csf", mitkCommandLineParser::File, "CSF Pointset", ".", us::Any(), false, false, false, mitkCommandLineParser::Input);
+  parser.addArgument("lesmps", "les", mitkCommandLineParser::File, "LES Pointset", ".", us::Any(), false, false, false, mitkCommandLineParser::Input);
+  parser.addArgument("bramps", "bra", mitkCommandLineParser::File, "BRA Pointset", ".", us::Any(), false, false, false, mitkCommandLineParser::Input);
   //  parser.addArgument("points", "p", mitkCommandLineParser::Int, "Ensure that p points are selected", ".", us::Any(), false);
 
   // Miniapp Infos
@@ -214,9 +213,9 @@ int main(int argc, char* argv[])
   raw_image = map.size() <= 7 ? dynamic_cast<mitk::Image *>(so[0].GetPointer()) : dynamic_cast<mitk::Image *>(so[1].GetPointer());
   class_mask = map.size() <= 7 ? dynamic_cast<mitk::Image *>(so[1].GetPointer()) : dynamic_cast<mitk::Image *>(so[0].GetPointer());
 
-  CSF_mps = mitk::IOUtil::LoadPointSet(inputdir + "/" + csf_mps_name);
-  LES_mps = mitk::IOUtil::LoadPointSet(inputdir + "/" + les_mps_name);
-  BRA_mps = mitk::IOUtil::LoadPointSet(inputdir + "/" + bra_mps_name);
+  CSF_mps = mitk::IOUtil::Load<mitk::PointSet>(inputdir + "/" + csf_mps_name);
+  LES_mps = mitk::IOUtil::Load<mitk::PointSet>(inputdir + "/" + les_mps_name);
+  BRA_mps = mitk::IOUtil::Load<mitk::PointSet>(inputdir + "/" + bra_mps_name);
 
   unsigned int num_points = CSF_mps->GetSize() + LES_mps->GetSize() + BRA_mps->GetSize();
   MITK_INFO << "Found #" << num_points << " points over all classes.";

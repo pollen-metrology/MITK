@@ -36,9 +36,7 @@ mitk::TubeGraphDataInteractor::TubeGraphDataInteractor()
 {
 }
 
-mitk::TubeGraphDataInteractor::~TubeGraphDataInteractor()
-{
-}
+mitk::TubeGraphDataInteractor::~TubeGraphDataInteractor() {}
 
 void mitk::TubeGraphDataInteractor::ConnectActionsAndFunctions()
 {
@@ -55,7 +53,7 @@ void mitk::TubeGraphDataInteractor::DataNodeChanged()
 {
   if (GetDataNode() != nullptr)
   {
-    if (GetDataNode()->GetData() != NULL)
+    if (GetDataNode()->GetData() != nullptr)
     {
       m_TubeGraph = dynamic_cast<TubeGraph *>(GetDataNode()->GetData());
       m_TubeGraphProperty = dynamic_cast<TubeGraphProperty *>(
@@ -64,25 +62,28 @@ void mitk::TubeGraphDataInteractor::DataNodeChanged()
         MITK_ERROR << "Something went wrong! No tube graph property!";
     }
     else
-      m_TubeGraph = NULL;
+      m_TubeGraph = nullptr;
   }
   else
-    m_TubeGraph = NULL;
+    m_TubeGraph = nullptr;
 }
 
 bool mitk::TubeGraphDataInteractor::CheckOverTube(const InteractionEvent *interactionEvent)
 {
-  const InteractionPositionEvent *positionEvent = dynamic_cast<const InteractionPositionEvent *>(interactionEvent);
-  if (positionEvent == NULL)
+  const auto *positionEvent = dynamic_cast<const InteractionPositionEvent *>(interactionEvent);
+  if (positionEvent == nullptr)
     return false;
 
-  TubeGraphPicker *picker = new mitk::TubeGraphPicker();
+  auto *picker = new mitk::TubeGraphPicker();
   picker->SetTubeGraph(m_TubeGraph);
 
-  TubeGraph::TubeDescriptorType tubeDescriptor = picker->GetPickedTube(positionEvent->GetPositionInWorld()).first;
+  auto pickedTube = picker->GetPickedTube(positionEvent->GetPositionInWorld());
+
+  TubeGraph::TubeDescriptorType tubeDescriptor = pickedTube.first;
 
   if (tubeDescriptor != TubeGraph::ErrorId)
   {
+    m_LastPickedElement = pickedTube.second;
     m_SecondLastPickedTube = m_LastPickedTube;
     m_LastPickedTube = tubeDescriptor;
     return true;
@@ -277,4 +278,12 @@ void mitk::TubeGraphDataInteractor::ResetPickedTubes()
 {
   m_LastPickedTube = TubeGraph::ErrorId;
   m_SecondLastPickedTube = TubeGraph::ErrorId;
+}
+
+mitk::Point3D mitk::TubeGraphDataInteractor::GetLastPickedPosition()
+{
+  if (m_LastPickedElement)
+    return m_LastPickedElement->GetCoordinates();
+  else
+    return mitk::Point3D();
 }

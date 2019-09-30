@@ -97,8 +97,8 @@ namespace mitk
 
   protected:
     SegTool2D();             // purposely hidden
-    SegTool2D(const char *); // purposely hidden
-    virtual ~SegTool2D();
+    SegTool2D(const char *, const us::Module *interactorModule = nullptr); // purposely hidden
+    ~SegTool2D() override;
 
     struct SliceInformation
     {
@@ -121,7 +121,7 @@ namespace mitk
     * Current an event is discarded if it was not sent by a 2D renderwindow and if it is
     * not of type InteractionPositionEvent
     */
-    virtual bool FilterEvents(InteractionEvent *interactionEvent, DataNode *dataNode) override;
+    bool FilterEvents(InteractionEvent *interactionEvent, DataNode *dataNode) override;
 
     /**
     * \brief Extract the slice of an image that the user just scribbles on. The given component denotes the vector component of a dwi-image.
@@ -148,7 +148,7 @@ namespace mitk
 
     /**
       \brief Extract the slice of the currently selected working image that the user just scribbles on.
-      \return NULL if SegTool2D is either unable to determine which slice was affected, or if there was some problem
+      \return nullptr if SegTool2D is either unable to determine which slice was affected, or if there was some problem
       getting the image data at that position,
                    or just no working image is selected.
     */
@@ -156,7 +156,7 @@ namespace mitk
 
     /**
       \brief Extract the slice of the currently selected reference image that the user just scribbles on.
-      \return NULL if SegTool2D is either unable to determine which slice was affected, or if there was some problem
+      \return nullptr if SegTool2D is either unable to determine which slice was affected, or if there was some problem
       getting the image data at that position,
                    or just no reference image is selected.
     */
@@ -166,12 +166,12 @@ namespace mitk
 
     void WriteBackSegmentationResult(const PlaneGeometry *planeGeometry, Image *, unsigned int timeStep);
 
-    void WriteBackSegmentationResult(std::vector<SliceInformation> sliceList, bool writeSliceToVolume = true);
+    void WriteBackSegmentationResult(const std::vector<SliceInformation> &sliceList, bool writeSliceToVolume = true);
 
     void WritePreviewOnWorkingImage(
       Image *targetSlice, Image *sourceSlice, Image *workingImage, int paintingPixelValue, int timestep);
 
-    void WriteSliceToVolume(SliceInformation sliceInfo);
+    void WriteSliceToVolume(const SliceInformation &sliceInfo);
     /**
       \brief Adds a new node called Contourmarker to the datastorage which holds a mitk::PlanarFigure.
              By selecting this node the slicestack will be reoriented according to the PlanarFigure's Geometry

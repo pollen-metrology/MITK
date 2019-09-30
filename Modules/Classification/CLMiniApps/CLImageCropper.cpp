@@ -31,9 +31,9 @@ int main(int argc, char* argv[])
   parser.setArgumentPrefix("--","-");
   // Add command line argument names
   parser.addArgument("help", "h",mitkCommandLineParser::Bool, "Help:", "Show this help text");
-  parser.addArgument("reference", "r", mitkCommandLineParser::InputDirectory, "Input file:", "Input file",us::Any(),false);
-  parser.addArgument("input", "i", mitkCommandLineParser::InputDirectory, "Input file:", "Input file",us::Any(),false);
-  parser.addArgument("output", "o", mitkCommandLineParser::OutputFile, "Output file:", "Output file",us::Any(),false);
+  parser.addArgument("reference", "r", mitkCommandLineParser::Directory, "Input file:", "Input file",us::Any(),false, false, false, mitkCommandLineParser::Input);
+  parser.addArgument("input", "i", mitkCommandLineParser::Directory, "Input file:", "Input file",us::Any(),false, false, false, mitkCommandLineParser::Input);
+  parser.addArgument("output", "o", mitkCommandLineParser::File, "Output file:", "Output file",us::Any(),false, false, false, mitkCommandLineParser::Output);
 
   std::map<std::string, us::Any> parsedArgs = parser.parseArguments(argc, argv);
 
@@ -51,8 +51,8 @@ int main(int argc, char* argv[])
   std::string inputName = us::any_cast<std::string>(parsedArgs["input"]);
   std::string outputName = us::any_cast<std::string>(parsedArgs["output"]);
 
-  mitk::Image::Pointer imageToCrop = mitk::IOUtil::LoadImage(inputName);
-  mitk::Image::Pointer referenceImage = mitk::IOUtil::LoadImage(referenceName);
+  mitk::Image::Pointer imageToCrop = mitk::IOUtil::Load<mitk::Image>(inputName);
+  mitk::Image::Pointer referenceImage = mitk::IOUtil::Load<mitk::Image>(referenceName);
   mitk::BoundingObjectCutter::Pointer cutter = mitk::BoundingObjectCutter::New();
   mitk::BoundingObject::Pointer boundingObject = (mitk::Cuboid::New()).GetPointer();
   boundingObject->FitGeometry(referenceImage->GetGeometry());
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
   cutter->SetBoundingObject(boundingObject);
   cutter->SetInput(imageToCrop);
   cutter->Update();
-  mitk::IOUtil::SaveImage(cutter->GetOutput(), outputName);
+  mitk::IOUtil::Save(cutter->GetOutput(), outputName);
 
   return EXIT_SUCCESS;
 }

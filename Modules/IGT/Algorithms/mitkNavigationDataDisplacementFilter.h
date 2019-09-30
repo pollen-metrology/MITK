@@ -39,6 +39,10 @@ namespace mitk
 
     mitkSetVectorMacro(Offset, mitk::Vector3D); ///< Get Offset parameter
     mitkGetVectorMacro(Offset, mitk::Vector3D); ///< Set Offset parameter
+    itkSetMacro(Transform6DOF, bool);
+    itkGetMacro(Transform6DOF, bool);
+
+    void SetTransformation( mitk::AffineTransform3D::Pointer transform );
 
     /**
     *\brief Set all filter parameters (Offset) as the PropertyList p
@@ -46,7 +50,7 @@ namespace mitk
     * This method reads the following properties from the PropertyList (name : data type):
     *  - "NavigationDataDisplacementFilter_Offset" : mitk::Vector3DProperty
     */
-    virtual void SetParameters(const mitk::PropertyList* p) override;
+    void SetParameters(const mitk::PropertyList* p) override;
 
     /**
     *\brief Get all filter parameters (offset) as a PropertyList
@@ -61,16 +65,21 @@ namespace mitk
 
   protected:
     NavigationDataDisplacementFilter();
-    virtual ~NavigationDataDisplacementFilter();
+    ~NavigationDataDisplacementFilter() override;
 
     /**Documentation
     * \brief filter execute method
     *
     * adds the offset m_Offset to all inputs
     */
-    virtual void GenerateData() override;
+    void GenerateData() override;
 
     mitk::Vector3D m_Offset; ///< offset that is added to all inputs
+
+    bool m_Transform6DOF;
+
+    mitk::NavigationData::Pointer m_Transformation;
+
   };
 } // namespace mitk
 #endif /* MITKNAVIGATIONDATATONAVIGATIONDATAFILTER_H_HEADER_INCLUDED_ */

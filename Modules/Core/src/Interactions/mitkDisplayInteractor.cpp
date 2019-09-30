@@ -15,13 +15,14 @@
  ===================================================================*/
 
 #include "mitkDisplayInteractor.h"
+
 #include "mitkBaseRenderer.h"
 #include "mitkCameraController.h"
 #include "mitkInteractionPositionEvent.h"
 #include "mitkPropertyList.h"
 #include <mitkAbstractTransformGeometry.h>
 #include <mitkRotationOperation.h>
-#include <string.h>
+#include <cstring>
 // level window
 #include "mitkLevelWindow.h"
 #include "mitkLevelWindowProperty.h"
@@ -49,8 +50,30 @@ void mitk::DisplayInteractor::Notify(InteractionEvent *interactionEvent, bool is
   // the event is passed to the state machine interface to be handled
   if (!isHandled || m_AlwaysReact)
   {
-    this->HandleEvent(interactionEvent, NULL);
+    HandleEvent(interactionEvent, nullptr);
   }
+}
+
+mitk::DisplayInteractor::DisplayInteractor()
+  : m_IndexToSliceModifier(4)
+  , m_AutoRepeat(false)
+  , m_InvertScrollDirection(false)
+  , m_InvertZoomDirection(false)
+  , m_InvertMoveDirection(false)
+  , m_InvertLevelWindowDirection(false)
+  , m_AlwaysReact(false)
+  , m_ZoomFactor(2)
+  , m_LinkPlanes(true)
+{
+  m_StartCoordinateInMM.Fill(0);
+  m_LastDisplayCoordinate.Fill(0);
+  m_LastCoordinateInMM.Fill(0);
+  m_CurrentDisplayCoordinate.Fill(0);
+}
+
+mitk::DisplayInteractor::~DisplayInteractor()
+{
+  // nothing here
 }
 
 void mitk::DisplayInteractor::ConnectActionsAndFunctions()
@@ -75,33 +98,15 @@ void mitk::DisplayInteractor::ConnectActionsAndFunctions()
   CONNECT_FUNCTION("rotate", Rotate);
 
   CONNECT_FUNCTION("swivel", Swivel);
-}
 
-mitk::DisplayInteractor::DisplayInteractor()
-  : m_IndexToSliceModifier(4),
-    m_AutoRepeat(false),
-    m_InvertScrollDirection(false),
-    m_InvertZoomDirection(false),
-    m_InvertMoveDirection(false),
-    m_InvertLevelWindowDirection(false),
-    m_AlwaysReact(false),
-    m_ZoomFactor(2),
-    m_LinkPlanes(true)
-{
-  m_StartCoordinateInMM.Fill(0);
-  m_LastDisplayCoordinate.Fill(0);
-  m_LastCoordinateInMM.Fill(0);
-  m_CurrentDisplayCoordinate.Fill(0);
-}
-
-mitk::DisplayInteractor::~DisplayInteractor()
-{
+  CONNECT_FUNCTION("IncreaseTimeStep", IncreaseTimeStep);
+  CONNECT_FUNCTION("DecreaseTimeStep", DecreaseTimeStep);
 }
 
 bool mitk::DisplayInteractor::CheckPositionEvent(const InteractionEvent *interactionEvent)
 {
-  const InteractionPositionEvent *positionEvent = dynamic_cast<const InteractionPositionEvent *>(interactionEvent);
-  if (positionEvent == NULL)
+  const auto *positionEvent = dynamic_cast<const InteractionPositionEvent *>(interactionEvent);
+  if (positionEvent == nullptr)
   {
     return false;
   }
@@ -131,7 +136,7 @@ bool mitk::DisplayInteractor::CheckRotationPossible(const mitk::InteractionEvent
   - if no, then we have a situation where the mouse is near two other lines (e.g. crossing point) and don't want to
   rotate
   */
-  const InteractionPositionEvent *posEvent = dynamic_cast<const InteractionPositionEvent *>(interactionEvent);
+  const auto *posEvent = dynamic_cast<const InteractionPositionEvent *>(interactionEvent);
   if (posEvent == nullptr)
     return false;
 
@@ -142,8 +147,9 @@ bool mitk::DisplayInteractor::CheckRotationPossible(const mitk::InteractionEvent
     return false;
 
   Point3D cursorPosition = posEvent->GetPositionInWorld();
-  const PlaneGeometry *geometryToBeRotated = NULL; // this one is under the mouse cursor
-  const PlaneGeometry *anyOtherGeometry = NULL;    // this is also visible (for calculation of intersection ONLY)
+  const auto spacing = ourViewportGeometry->GetSpacing();
+  const PlaneGeometry *geometryToBeRotated = nullptr; // this one is under the mouse cursor
+  const PlaneGeometry *anyOtherGeometry = nullptr;    // this is also visible (for calculation of intersection ONLY)
   Line3D intersectionLineWithGeometryToBeRotated;
 
   bool hitMultipleLines(false);
@@ -162,7 +168,7 @@ bool mitk::DisplayInteractor::CheckRotationPossible(const mitk::InteractionEvent
       continue;
 
     const PlaneGeometry *otherRenderersRenderPlane = snc->GetCurrentPlaneGeometry();
-    if (otherRenderersRenderPlane == NULL)
+    if (otherRenderersRenderPlane == nullptr)
       continue; // ignore, we don't see a plane
 
     // check if there is an intersection
@@ -173,7 +179,8 @@ bool mitk::DisplayInteractor::CheckRotationPossible(const mitk::InteractionEvent
     }
 
     // check distance from intersection line
-    double distanceFromIntersectionLine = intersectionLine.Distance(cursorPosition);
+    const double distanceFromIntersectionLine =
+      intersectionLine.Distance(cursorPosition) / spacing[snc->GetDefaultViewDirection()];
 
     // far away line, only remember for linked rotation if necessary
     if (distanceFromIntersectionLine > threshholdDistancePixels)
@@ -188,7 +195,7 @@ bool mitk::DisplayInteractor::CheckRotationPossible(const mitk::InteractionEvent
     }
     else // close to cursor
     {
-      if (geometryToBeRotated == NULL) // first one close to the cursor
+      if (geometryToBeRotated == nullptr) // first one close to the cursor
       {
         geometryToBeRotated = otherRenderersRenderPlane;
         intersectionLineWithGeometryToBeRotated = intersectionLine;
@@ -250,7 +257,7 @@ bool mitk::DisplayInteractor::CheckSwivelPossible(const mitk::InteractionEvent *
   // Decide between moving and rotation: if we're close to the crossing
   // point of the planes, moving mode is entered, otherwise
   // rotation/swivel mode
-  const InteractionPositionEvent *posEvent = dynamic_cast<const InteractionPositionEvent *>(interactionEvent);
+  const auto *posEvent = dynamic_cast<const InteractionPositionEvent *>(interactionEvent);
 
   BaseRenderer *renderer = interactionEvent->GetSender();
 
@@ -261,9 +268,9 @@ bool mitk::DisplayInteractor::CheckSwivelPossible(const mitk::InteractionEvent *
 
   m_SNCsToBeRotated.clear();
 
-  const PlaneGeometry *clickedGeometry(NULL);
-  const PlaneGeometry *otherGeometry1(NULL);
-  const PlaneGeometry *otherGeometry2(NULL);
+  const PlaneGeometry *clickedGeometry(nullptr);
+  const PlaneGeometry *otherGeometry1(nullptr);
+  const PlaneGeometry *otherGeometry2(nullptr);
 
   auto renWindows = interactionEvent->GetSender()->GetRenderingManager()->GetAllRegisteredRenderWindows();
 
@@ -289,7 +296,7 @@ bool mitk::DisplayInteractor::CheckSwivelPossible(const mitk::InteractionEvent *
     }
     else
     {
-      if (otherGeometry1 == NULL)
+      if (otherGeometry1 == nullptr)
       {
         otherGeometry1 = planeGeometry;
       }
@@ -307,7 +314,7 @@ bool mitk::DisplayInteractor::CheckSwivelPossible(const mitk::InteractionEvent *
 
   mitk::Line3D line;
   mitk::Point3D point;
-  if ((clickedGeometry != NULL) && (otherGeometry1 != NULL) && (otherGeometry2 != NULL) &&
+  if ((clickedGeometry != nullptr) && (otherGeometry1 != nullptr) && (otherGeometry2 != nullptr) &&
       clickedGeometry->IntersectionLine(otherGeometry1, line) && otherGeometry2->IntersectionPoint(line, point))
   {
     m_CenterOfRotation = point;
@@ -347,7 +354,7 @@ bool mitk::DisplayInteractor::CheckSwivelPossible(const mitk::InteractionEvent *
 
 void mitk::DisplayInteractor::Init(StateMachineAction *, InteractionEvent *interactionEvent)
 {
-  InteractionPositionEvent *positionEvent = static_cast<InteractionPositionEvent *>(interactionEvent);
+  auto *positionEvent = static_cast<InteractionPositionEvent *>(interactionEvent);
 
   m_LastDisplayCoordinate = positionEvent->GetPointerPositionOnScreen();
   m_CurrentDisplayCoordinate = m_LastDisplayCoordinate;
@@ -358,7 +365,7 @@ void mitk::DisplayInteractor::Init(StateMachineAction *, InteractionEvent *inter
 void mitk::DisplayInteractor::Move(StateMachineAction *, InteractionEvent *interactionEvent)
 {
   BaseRenderer *sender = interactionEvent->GetSender();
-  InteractionPositionEvent *positionEvent = static_cast<InteractionPositionEvent *>(interactionEvent);
+  auto *positionEvent = static_cast<InteractionPositionEvent *>(interactionEvent);
 
   float invertModifier = -1.0;
   if (m_InvertMoveDirection)
@@ -368,6 +375,7 @@ void mitk::DisplayInteractor::Move(StateMachineAction *, InteractionEvent *inter
   // perform translation
   Vector2D moveVector = (positionEvent->GetPointerPositionOnScreen() - m_LastDisplayCoordinate) * invertModifier;
   moveVector *= sender->GetScaleFactorMMPerDisplayUnit();
+
   sender->GetCameraController()->MoveBy(moveVector);
   sender->GetRenderingManager()->RequestUpdate(sender->GetRenderWindow());
   m_LastDisplayCoordinate = positionEvent->GetPointerPositionOnScreen();
@@ -375,24 +383,38 @@ void mitk::DisplayInteractor::Move(StateMachineAction *, InteractionEvent *inter
 
 void mitk::DisplayInteractor::SetCrosshair(mitk::StateMachineAction *, mitk::InteractionEvent *interactionEvent)
 {
-  const BaseRenderer::Pointer sender = interactionEvent->GetSender();
-  auto renWindows = sender->GetRenderingManager()->GetAllRegisteredRenderWindows();
-  InteractionPositionEvent *positionEvent = static_cast<InteractionPositionEvent *>(interactionEvent);
+  auto* positionEvent = static_cast<InteractionPositionEvent*>(interactionEvent);
   Point3D pos = positionEvent->GetPositionInWorld();
 
+  const BaseRenderer::Pointer sender = interactionEvent->GetSender();
+  auto renWindows = sender->GetRenderingManager()->GetAllRegisteredRenderWindows();
   for (auto renWin : renWindows)
   {
-    if (BaseRenderer::GetInstance(renWin)->GetMapperID() == BaseRenderer::Standard2D &&
-        renWin != sender->GetRenderWindow())
+    if (BaseRenderer::GetInstance(renWin)->GetMapperID() == BaseRenderer::Standard2D && renWin != sender->GetRenderWindow())
+    {
       BaseRenderer::GetInstance(renWin)->GetSliceNavigationController()->SelectSliceByPoint(pos);
+    }
   }
+}
+
+void mitk::DisplayInteractor::IncreaseTimeStep(StateMachineAction *, InteractionEvent *interactionEvent)
+{
+  auto sliceNaviController = interactionEvent->GetSender()->GetRenderingManager()->GetTimeNavigationController();
+  auto stepper = sliceNaviController->GetTime();
+  stepper->SetAutoRepeat(true);
+  stepper->Next();
+}
+
+void mitk::DisplayInteractor::DecreaseTimeStep(StateMachineAction *, InteractionEvent *interactionEvent)
+{
+  auto sliceNaviController = interactionEvent->GetSender()->GetRenderingManager()->GetTimeNavigationController();
+  auto stepper = sliceNaviController->GetTime();
+  stepper->SetAutoRepeat(true);
+  stepper->Previous();
 }
 
 void mitk::DisplayInteractor::Zoom(StateMachineAction *, InteractionEvent *interactionEvent)
 {
-  const BaseRenderer::Pointer sender = interactionEvent->GetSender();
-  InteractionPositionEvent *positionEvent = static_cast<InteractionPositionEvent *>(interactionEvent);
-
   float factor = 1.0;
   float distance = 0;
 
@@ -420,22 +442,23 @@ void mitk::DisplayInteractor::Zoom(StateMachineAction *, InteractionEvent *inter
     factor = 1.0 * m_ZoomFactor;
   }
 
+  auto* positionEvent = static_cast<InteractionPositionEvent*>(interactionEvent);
+  m_LastDisplayCoordinate = m_CurrentDisplayCoordinate;
+  m_CurrentDisplayCoordinate = positionEvent->GetPointerPositionOnScreen();
+
   if (factor != 1.0)
   {
+    const BaseRenderer::Pointer sender = interactionEvent->GetSender();
     sender->GetCameraController()->Zoom(factor, m_StartCoordinateInMM);
     sender->GetRenderingManager()->RequestUpdate(sender->GetRenderWindow());
   }
-
-  m_LastDisplayCoordinate = m_CurrentDisplayCoordinate;
-  m_CurrentDisplayCoordinate = positionEvent->GetPointerPositionOnScreen();
 }
 
 void mitk::DisplayInteractor::Scroll(StateMachineAction *, InteractionEvent *interactionEvent)
 {
-  InteractionPositionEvent *positionEvent = static_cast<InteractionPositionEvent *>(interactionEvent);
+  auto* positionEvent = static_cast<InteractionPositionEvent *>(interactionEvent);
 
-  mitk::SliceNavigationController::Pointer sliceNaviController =
-    interactionEvent->GetSender()->GetSliceNavigationController();
+  mitk::SliceNavigationController::Pointer sliceNaviController = interactionEvent->GetSender()->GetSliceNavigationController();
   if (sliceNaviController)
   {
     int delta = 0;
@@ -491,10 +514,12 @@ void mitk::DisplayInteractor::Scroll(StateMachineAction *, InteractionEvent *int
         newPos = 0;
       }
     }
-    // set the new position
-    sliceNaviController->GetSlice()->SetPos(newPos);
+
     m_LastDisplayCoordinate = m_CurrentDisplayCoordinate;
     m_CurrentDisplayCoordinate = positionEvent->GetPointerPositionOnScreen();
+
+    // set the new position
+    sliceNaviController->GetSlice()->SetPos(newPos);
   }
 }
 
@@ -531,16 +556,15 @@ void mitk::DisplayInteractor::ScrollOneUp(StateMachineAction *, InteractionEvent
 void mitk::DisplayInteractor::AdjustLevelWindow(StateMachineAction *, InteractionEvent *interactionEvent)
 {
   BaseRenderer::Pointer sender = interactionEvent->GetSender();
-  InteractionPositionEvent *positionEvent = static_cast<InteractionPositionEvent *>(interactionEvent);
+  auto *positionEvent = static_cast<InteractionPositionEvent *>(interactionEvent);
 
   m_LastDisplayCoordinate = m_CurrentDisplayCoordinate;
   m_CurrentDisplayCoordinate = positionEvent->GetPointerPositionOnScreen();
   // search for active image
   mitk::DataStorage::Pointer storage = sender->GetDataStorage();
-  mitk::DataNode::Pointer node = NULL;
-  mitk::DataStorage::SetOfObjects::ConstPointer allImageNodes =
-    storage->GetSubset(mitk::NodePredicateDataType::New("Image"));
-  for (unsigned int i = 0; i < allImageNodes->size(); i++)
+  mitk::DataNode::Pointer node = nullptr;
+  mitk::DataStorage::SetOfObjects::ConstPointer allImageNodes = storage->GetSubset(mitk::NodePredicateDataType::New("Image"));
+  for (unsigned int i = 0; i < allImageNodes->size(); ++i)
   {
     bool isActiveImage = false;
     bool propFound = allImageNodes->at(i)->GetBoolProperty("imageForLevelWindow", isActiveImage);
@@ -604,7 +628,7 @@ void mitk::DisplayInteractor::EndRotation(mitk::StateMachineAction *, mitk::Inte
 
 void mitk::DisplayInteractor::Rotate(mitk::StateMachineAction *, mitk::InteractionEvent *event)
 {
-  const InteractionPositionEvent *posEvent = dynamic_cast<const InteractionPositionEvent *>(event);
+  const auto *posEvent = dynamic_cast<const InteractionPositionEvent *>(event);
   if (posEvent == nullptr)
     return;
 
@@ -628,7 +652,7 @@ void mitk::DisplayInteractor::Rotate(mitk::StateMachineAction *, mitk::Interacti
   RotationOperation rotationOperation(OpROTATE, m_CenterOfRotation, axisOfRotation, angle);
 
   // iterate the OTHER slice navigation controllers: these are filled in DoDecideBetweenRotationAndSliceSelection
-  for (SNCVector::iterator iter = m_SNCsToBeRotated.begin(); iter != m_SNCsToBeRotated.end(); ++iter)
+  for (auto iter = m_SNCsToBeRotated.begin(); iter != m_SNCsToBeRotated.end(); ++iter)
   {
     TimeGeometry *timeGeometry = (*iter)->GetCreatedWorldGeometry();
     if (!timeGeometry)
@@ -644,7 +668,7 @@ void mitk::DisplayInteractor::Rotate(mitk::StateMachineAction *, mitk::Interacti
 
 void mitk::DisplayInteractor::Swivel(mitk::StateMachineAction *, mitk::InteractionEvent *event)
 {
-  const InteractionPositionEvent *posEvent = dynamic_cast<const InteractionPositionEvent *>(event);
+  const auto *posEvent = dynamic_cast<const InteractionPositionEvent *>(event);
 
   if (!posEvent)
     return;
@@ -707,16 +731,20 @@ void mitk::DisplayInteractor::Swivel(mitk::StateMachineAction *, mitk::Interacti
 
 void mitk::DisplayInteractor::UpdateStatusbar(mitk::StateMachineAction *, mitk::InteractionEvent *event)
 {
-  const InteractionPositionEvent *posEvent = dynamic_cast<const InteractionPositionEvent *>(event);
-
-  if (!posEvent)
+  const auto* posEvent = dynamic_cast<const InteractionPositionEvent *>(event);
+  if (nullptr == posEvent)
+  {
     return;
+  }
 
-  std::string statusText;
+  const mitk::BaseRenderer::Pointer baseRenderer = posEvent->GetSender();
   TNodePredicateDataType<mitk::Image>::Pointer isImageData = TNodePredicateDataType<mitk::Image>::New();
-
-  mitk::DataStorage::SetOfObjects::ConstPointer nodes =
-    posEvent->GetSender()->GetDataStorage()->GetSubset(isImageData).GetPointer();
+  auto globalCurrentTimePoint = baseRenderer->GetTime();
+  mitk::DataStorage::SetOfObjects::ConstPointer nodes = baseRenderer->GetDataStorage()->GetSubset(isImageData).GetPointer();
+  if (nodes.IsNull())
+  {
+    return;
+  }
 
   // posEvent->GetPositionInWorld() would return the world position at the
   // time of initiating the interaction. However, we need to update the
@@ -724,7 +752,7 @@ void mitk::DisplayInteractor::UpdateStatusbar(mitk::StateMachineAction *, mitk::
   // translate the same display position with the renderer again to
   // get the new world position.
   Point3D worldposition;
-  event->GetSender()->DisplayToWorld(posEvent->GetPointerPositionOnScreen(), worldposition);
+  baseRenderer->DisplayToWorld(posEvent->GetPointerPositionOnScreen(), worldposition);
 
   mitk::Image::Pointer image3D;
   mitk::DataNode::Pointer node;
@@ -732,21 +760,23 @@ void mitk::DisplayInteractor::UpdateStatusbar(mitk::StateMachineAction *, mitk::
 
   int component = 0;
 
-  node = this->GetTopLayerNode(nodes, worldposition, posEvent->GetSender());
-  if (node.IsNotNull())
+  node = FindTopmostVisibleNode(nodes, worldposition, globalCurrentTimePoint, baseRenderer);
+  if (node.IsNull())
   {
-    bool isBinary(false);
-    node->GetBoolProperty("binary", isBinary);
-    if (isBinary)
+    return;
+  }
+
+  bool isBinary(false);
+  node->GetBoolProperty("binary", isBinary);
+  if (isBinary)
+  {
+    mitk::DataStorage::SetOfObjects::ConstPointer sourcenodes = baseRenderer->GetDataStorage()->GetSources(node, nullptr, true);
+    if (!sourcenodes->empty())
     {
-      mitk::DataStorage::SetOfObjects::ConstPointer sourcenodes =
-        posEvent->GetSender()->GetDataStorage()->GetSources(node, NULL, true);
-      if (!sourcenodes->empty())
-      {
-        topSourceNode = this->GetTopLayerNode(sourcenodes, worldposition, posEvent->GetSender());
-      }
-      if (topSourceNode.IsNotNull())
-      {
+        topSourceNode = mitk::FindTopmostVisibleNode(sourcenodes, worldposition, globalCurrentTimePoint, baseRenderer);
+     }
+     if (topSourceNode.IsNotNull())
+     {
         image3D = dynamic_cast<mitk::Image *>(topSourceNode->GetData());
         topSourceNode->GetIntProperty("Image.Displayed Component", component);
       }
@@ -755,29 +785,31 @@ void mitk::DisplayInteractor::UpdateStatusbar(mitk::StateMachineAction *, mitk::
         image3D = dynamic_cast<mitk::Image *>(node->GetData());
         node->GetIntProperty("Image.Displayed Component", component);
       }
-    }
-    else
-    {
-      image3D = dynamic_cast<mitk::Image *>(node->GetData());
-      node->GetIntProperty("Image.Displayed Component", component);
-    }
-  }
+     }
+	  else
+	  {
+	    image3D = dynamic_cast<mitk::Image *>(node->GetData());
+	    node->GetIntProperty("Image.Displayed Component", component);
+	  }
 
   // get the position and gray value from the image and build up status bar text
   auto statusBar = StatusBar::GetInstance();
-
   if (image3D.IsNotNull() && statusBar != nullptr)
   {
     itk::Index<3> p;
     image3D->GetGeometry()->WorldToIndex(worldposition, p);
 
     auto pixelType = image3D->GetChannelDescriptor().GetPixelType().GetPixelType();
-
     if (pixelType == itk::ImageIOBase::RGB || pixelType == itk::ImageIOBase::RGBA)
     {
       std::string pixelValue = "Pixel RGB(A) value: ";
       pixelValue.append(ConvertCompositePixelValueToString(image3D, p));
-      statusBar->DisplayImageInfo(worldposition, p, posEvent->GetSender()->GetTime(), pixelValue.c_str());
+      statusBar->DisplayImageInfo(worldposition, p, globalCurrentTimePoint, pixelValue.c_str());
+    }
+    else if (pixelType == itk::ImageIOBase::DIFFUSIONTENSOR3D || pixelType == itk::ImageIOBase::SYMMETRICSECONDRANKTENSOR)
+    {
+      std::string pixelValue = "See ODF Details view. ";
+      statusBar->DisplayImageInfo(worldposition, p, globalCurrentTimePoint, pixelValue.c_str());
     }
     else
     {
@@ -785,11 +817,11 @@ void mitk::DisplayInteractor::UpdateStatusbar(mitk::StateMachineAction *, mitk::
       mitkPixelTypeMultiplex5(mitk::FastSinglePixelAccess,
         image3D->GetChannelDescriptor().GetPixelType(),
         image3D,
-        image3D->GetVolumeData(posEvent->GetSender()->GetTimeStep()),
+        image3D->GetVolumeData(image3D->GetTimeGeometry()->TimePointToTimeStep(globalCurrentTimePoint)),
         p,
         pixelValue,
         component);
-      statusBar->DisplayImageInfo(worldposition, p, posEvent->GetSender()->GetTime(), pixelValue);
+      statusBar->DisplayImageInfo(worldposition, p, globalCurrentTimePoint, pixelValue);
     }
   }
   else
@@ -916,36 +948,4 @@ bool mitk::DisplayInteractor::GetBoolProperty(mitk::PropertyList::Pointer proper
       return false;
     }
   }
-}
-
-mitk::DataNode::Pointer mitk::DisplayInteractor::GetTopLayerNode(mitk::DataStorage::SetOfObjects::ConstPointer nodes,
-                                                                 mitk::Point3D worldposition,
-                                                                 BaseRenderer *ren)
-{
-  mitk::DataNode::Pointer node;
-
-  if (nodes.IsNotNull())
-  {
-    int maxlayer = -32768;
-    bool isHelper(false);
-    for (unsigned int x = 0; x < nodes->size(); x++)
-    {
-      nodes->at(x)->GetBoolProperty("helper object", isHelper);
-      if (nodes->at(x)->GetData()->GetGeometry()->IsInside(worldposition) && isHelper == false)
-      {
-        int layer = 0;
-        if (!(nodes->at(x)->GetIntProperty("layer", layer)))
-          continue;
-        if (layer > maxlayer)
-        {
-          if (static_cast<mitk::DataNode::Pointer>(nodes->at(x))->IsVisible(ren))
-          {
-            node = nodes->at(x);
-            maxlayer = layer;
-          }
-        }
-      }
-    }
-  }
-  return node;
 }

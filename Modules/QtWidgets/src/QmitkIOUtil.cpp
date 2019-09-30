@@ -43,7 +43,7 @@ struct QmitkIOUtil::Impl
 {
   struct ReaderOptionsDialogFunctor : public ReaderOptionsFunctorBase
   {
-    virtual bool operator()(LoadInfo &loadInfo) override
+    bool operator()(LoadInfo &loadInfo) const override
     {
       QmitkFileReaderOptionsDialog dialog(loadInfo);
       if (dialog.exec() == QDialog::Accepted)
@@ -60,7 +60,7 @@ struct QmitkIOUtil::Impl
 
   struct WriterOptionsDialogFunctor : public WriterOptionsFunctorBase
   {
-    virtual bool operator()(SaveInfo &saveInfo) override
+    bool operator()(SaveInfo &saveInfo) const override
     {
       QmitkFileWriterOptionsDialog dialog(saveInfo);
       if (dialog.exec() == QDialog::Accepted)
@@ -119,11 +119,11 @@ QList<mitk::BaseData::Pointer> QmitkIOUtil::Load(const QStringList &paths, QWidg
   std::vector<LoadInfo> loadInfos;
   foreach (const QString &file, paths)
   {
-    loadInfos.push_back(LoadInfo(file.toStdString()));
+    loadInfos.push_back(LoadInfo(file.toLocal8Bit().constData()));
   }
 
   Impl::ReaderOptionsDialogFunctor optionsCallback;
-  std::string errMsg = Load(loadInfos, NULL, NULL, &optionsCallback);
+  std::string errMsg = Load(loadInfos, nullptr, nullptr, &optionsCallback);
   if (!errMsg.empty())
   {
     QMessageBox::warning(parent, "Error reading files", QString::fromStdString(errMsg));
@@ -149,7 +149,7 @@ mitk::DataStorage::SetOfObjects::Pointer QmitkIOUtil::Load(const QStringList &pa
   std::vector<LoadInfo> loadInfos;
   foreach (const QString &file, paths)
   {
-    loadInfos.push_back(LoadInfo(QFile::encodeName(file).constData()));
+    loadInfos.push_back(LoadInfo(file.toLocal8Bit().constData()));
   }
 
   mitk::DataStorage::SetOfObjects::Pointer nodeResult = mitk::DataStorage::SetOfObjects::New();
@@ -181,19 +181,21 @@ mitk::DataStorage::SetOfObjects::Pointer QmitkIOUtil::Load(const QString &path,
 QString QmitkIOUtil::Save(const mitk::BaseData *data,
                           const QString &defaultBaseName,
                           const QString &defaultPath,
-                          QWidget *parent)
+                          QWidget *parent,
+                          bool setPathProperty)
 {
   std::vector<const mitk::BaseData *> dataVector;
   dataVector.push_back(data);
   QStringList defaultBaseNames;
   defaultBaseNames.push_back(defaultBaseName);
-  return Save(dataVector, defaultBaseNames, defaultPath, parent).back();
+  return Save(dataVector, defaultBaseNames, defaultPath, parent, setPathProperty).back();
 }
 
 QStringList QmitkIOUtil::Save(const std::vector<const mitk::BaseData *> &data,
                               const QStringList &defaultBaseNames,
                               const QString &defaultPath,
-                              QWidget *parent)
+                              QWidget *parent,
+                              bool setPathProperty)
 {
   QStringList fileNames;
   QString currentPath = defaultPath;
@@ -251,7 +253,7 @@ QStringList QmitkIOUtil::Save(const std::vector<const mitk::BaseData *> &data,
     }
 
     fileName = nextName;
-    std::string stdFileName = QFile::encodeName(fileName).constData();
+    std::string stdFileName = fileName.toLocal8Bit().constData();
     QFileInfo fileInfo(fileName);
     currentPath = fileInfo.absolutePath();
     QString suffix = fileInfo.completeSuffix();
@@ -310,7 +312,7 @@ QStringList QmitkIOUtil::Save(const std::vector<const mitk::BaseData *> &data,
         {
           suffix = QString::fromStdString(selectedMimeType.GetExtensions().front());
           fileName += "." + suffix;
-          stdFileName = QFile::encodeName(fileName).constData();
+          stdFileName = fileName.toLocal8Bit().constData();
           // We changed the file name (added a suffix) so ask in case
           // the file aready exists.
           fileInfo = QFileInfo(fileName);
@@ -360,7 +362,7 @@ QStringList QmitkIOUtil::Save(const std::vector<const mitk::BaseData *> &data,
   if (!saveInfos.empty())
   {
     Impl::WriterOptionsDialogFunctor optionsCallback;
-    std::string errMsg = Save(saveInfos, &optionsCallback);
+    std::string errMsg = Save(saveInfos, &optionsCallback, setPathProperty);
     if (!errMsg.empty())
     {
       QMessageBox::warning(parent, "Error writing files", QString::fromStdString(errMsg));

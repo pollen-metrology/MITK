@@ -41,7 +41,7 @@ public:
     QmitkExtWorkbenchWindowAdvisor(berry::WorkbenchAdvisor* wbAdvisor,
         berry::IWorkbenchWindowConfigurer::Pointer configurer);
 
-    ~QmitkExtWorkbenchWindowAdvisor();
+    ~QmitkExtWorkbenchWindowAdvisor() override;
 
     berry::SmartPointer<berry::ActionBarAdvisor> CreateActionBarAdvisor(
         berry::SmartPointer<berry::IActionBarConfigurer> configurer) override;
@@ -174,6 +174,8 @@ private:
   QAction* resetPerspAction;
   QAction* closePerspAction;
   QAction* openDicomEditorAction;
+  QAction* openStdMultiWidgetEditorAction;
+  QAction* openMxNMultiWidgetEditorAction;
 };
 
 #endif /*QMITKEXTWORKBENCHWINDOWADVISOR_H_*/
