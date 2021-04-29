@@ -37,13 +37,15 @@ diff -burN tinyxml/tinyxml.cpp tinyxml-src/tinyxml.cpp
  	}
  }
  #endif 
-@@ -1242,33 +1245,73 @@
+@@ -1242,33 +1245,80 @@
  
  int TiXmlAttribute::QueryDoubleValue( double* dval ) const
  {
 +  //save old locale
 +  char * oldLocale;
-+  oldLocale = setlocale( LC_ALL, 0 );
++  char * old = setlocale( LC_ALL, 0 );
++  oldLocale = new char[strlen(old) + 1];
++  strcpy(oldLocale, old);
 +
 +  //set new locale
 +  setlocale( LC_ALL, "C" );
@@ -51,10 +53,12 @@ diff -burN tinyxml/tinyxml.cpp tinyxml-src/tinyxml.cpp
 +  {
 +    //restore locale
 +    setlocale( LC_ALL, oldLocale );
++    delete[] oldLocale;
  		return TIXML_SUCCESS;
 +  }
 +  //restore locale
 +  setlocale( LC_ALL, oldLocale );
++  delete[] oldLocale;
  	return TIXML_WRONG_TYPE;
  }
  
@@ -82,7 +86,9 @@ diff -burN tinyxml/tinyxml.cpp tinyxml-src/tinyxml.cpp
 +  std::ostringstream ss;
 +  //save old locale
 +  char * oldLocale;
-+  oldLocale = setlocale( LC_ALL, 0 );
++  char * old = setlocale( LC_ALL, 0 );
++  oldLocale = new char[strlen(old) + 1];
++  strcpy(oldLocale, old);
 +
 +  //set new locale
 +  setlocale( LC_ALL, "C" );
@@ -98,7 +104,7 @@ diff -burN tinyxml/tinyxml.cpp tinyxml-src/tinyxml.cpp
 -	#else
 -		sprintf (buf, "%g", _value);
 -	#endif
-+
++  
 +  //save old locale
 +  char * oldLocale;
 +  oldLocale = setlocale( LC_ALL, 0 );
@@ -114,13 +120,14 @@ diff -burN tinyxml/tinyxml.cpp tinyxml-src/tinyxml.cpp
 +  //restore locale
 +  setlocale( LC_ALL, oldLocale );
 +#endif
++  delete[] oldLocale;
  }
  
 +
  int TiXmlAttribute::IntValue() const
  {
  	return atoi (value.c_str ());
-@@ -1276,7 +1319,15 @@
+@@ -1276,7 +1326,15 @@
  
  double  TiXmlAttribute::DoubleValue() const
  {
@@ -136,7 +143,7 @@ diff -burN tinyxml/tinyxml.cpp tinyxml-src/tinyxml.cpp
  }
  
  
-@@ -1884,3 +1935,36 @@
+@@ -1884,3 +1942,36 @@
  	return true;
  }
  
